@@ -17,10 +17,7 @@ import {
   ToggleButtonGroup,
   IconButton,
   Tooltip,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  TableSortLabel,
 } from '@mui/material';
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import { gameService, playerService } from '../services/api';
@@ -32,6 +29,7 @@ const AdminPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('ageDiff'); // 'ageDiff', 'rated'
+  const [sortOrder, setSortOrder] = useState('desc'); // 'asc', 'desc'
 
   useEffect(() => {
     if (view === 'games') {
@@ -95,25 +93,66 @@ const AdminPage = () => {
     });
   };
 
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      // Toggle sort order if clicking the same column
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new column and default to descending for ageDiff, ascending for rated
+      setSortBy(column);
+      setSortOrder(column === 'ageDiff' ? 'desc' : 'asc');
+    }
+  };
+
   const getSortedGames = () => {
     const gamesCopy = [...games];
     
-    switch (sortBy) {
-      case 'rated':
-        return gamesCopy.sort((a, b) => {
-          // Rated games first (true > false)
-          if (a.rated === b.rated) return 0;
-          return a.rated ? -1 : 1;
-        });
+    // First, separate valid and invalid games
+    const validGames = gamesCopy.filter(game => game.valid_for_prizes);
+    const invalidGames = gamesCopy.filter(game => !game.valid_for_prizes);
+    
+    // Sort valid games based on selected column
+    const sortedValidGames = validGames.sort((a, b) => {
+      let comparison = 0;
       
-      case 'ageDiff':
-      default:
-        return gamesCopy.sort((a, b) => {
-          const ageDiffA = Math.abs(a.player1_age - a.player2_age);
-          const ageDiffB = Math.abs(b.player1_age - b.player2_age);
-          return ageDiffB - ageDiffA; // Descending order (largest difference first)
-        });
-    }
+      if (sortBy === 'ageDiff') {
+        const ageDiffA = Math.abs(a.player1_age - a.player2_age);
+        const ageDiffB = Math.abs(b.player1_age - b.player2_age);
+        comparison = ageDiffB - ageDiffA; // Default descending (largest first)
+      } else if (sortBy === 'rated') {
+        // Rated games first when ascending
+        if (a.rated === b.rated) {
+          comparison = 0;
+        } else {
+          comparison = a.rated ? -1 : 1;
+        }
+      }
+      
+      // Apply sort order
+      return sortOrder === 'asc' ? -comparison : comparison;
+    });
+    
+    // Sort invalid games the same way
+    const sortedInvalidGames = invalidGames.sort((a, b) => {
+      let comparison = 0;
+      
+      if (sortBy === 'ageDiff') {
+        const ageDiffA = Math.abs(a.player1_age - a.player2_age);
+        const ageDiffB = Math.abs(b.player1_age - b.player2_age);
+        comparison = ageDiffB - ageDiffA;
+      } else if (sortBy === 'rated') {
+        if (a.rated === b.rated) {
+          comparison = 0;
+        } else {
+          comparison = a.rated ? -1 : 1;
+        }
+      }
+      
+      return sortOrder === 'asc' ? -comparison : comparison;
+    });
+    
+    // Return valid games first, then invalid games
+    return [...sortedValidGames, ...sortedInvalidGames];
   };
 
   if (loading) {
@@ -150,10 +189,34 @@ const AdminPage = () => {
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age Diff</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold', cursor: 'pointer' }} onClick={() => handleSort('ageDiff')}>
+                <TableSortLabel
+                  active={sortBy === 'ageDiff'}
+                  direction={sortBy === 'ageDiff' ? sortOrder : 'desc'}
+                  sx={{
+                    color: 'white !important',
+                    '&:hover': { color: 'white !important' },
+                    '& .MuiTableSortLabel-icon': { color: 'white !important' },
+                  }}
+                >
+                  Age Diff
+                </TableSortLabel>
+              </TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Handicap</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Winner</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rated</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold', cursor: 'pointer' }} onClick={() => handleSort('rated')}>
+                <TableSortLabel
+                  active={sortBy === 'rated'}
+                  direction={sortBy === 'rated' ? sortOrder : 'asc'}
+                  sx={{
+                    color: 'white !important',
+                    '&:hover': { color: 'white !important' },
+                    '& .MuiTableSortLabel-icon': { color: 'white !important' },
+                  }}
+                >
+                  Rated
+                </TableSortLabel>
+              </TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Valid for Prizes</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
             </TableRow>
@@ -285,24 +348,6 @@ const AdminPage = () => {
         <Typography variant="subtitle1" gutterBottom align="center" color="text.secondary">
           {view === 'games' ? `Total Games: ${games.length}` : `Total Players: ${players.length}`}
         </Typography>
-
-        {view === 'games' && games.length > 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-            <FormControl sx={{ minWidth: 220 }}>
-              <InputLabel id="sort-label">Sort By</InputLabel>
-              <Select
-                labelId="sort-label"
-                id="sort-select"
-                value={sortBy}
-                label="Sort By"
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <MenuItem value="ageDiff">Age Difference (Largest First)</MenuItem>
-                <MenuItem value="rated">Rated Games First</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        )}
 
         {view === 'games' && games.length === 0 ? (
           <Box sx={{ textAlign: 'center', mt: 4 }}>
