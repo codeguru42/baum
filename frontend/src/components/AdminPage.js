@@ -31,7 +31,7 @@ const AdminPage = () => {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortBy, setSortBy] = useState('date'); // 'date', 'ageDiff', 'rated'
+  const [sortBy, setSortBy] = useState('ageDiff'); // 'ageDiff', 'rated'
 
   useEffect(() => {
     if (view === 'games') {
@@ -99,13 +99,6 @@ const AdminPage = () => {
     const gamesCopy = [...games];
     
     switch (sortBy) {
-      case 'ageDiff':
-        return gamesCopy.sort((a, b) => {
-          const ageDiffA = Math.abs(a.player1_age - a.player2_age);
-          const ageDiffB = Math.abs(b.player1_age - b.player2_age);
-          return ageDiffB - ageDiffA; // Descending order (largest difference first)
-        });
-      
       case 'rated':
         return gamesCopy.sort((a, b) => {
           // Rated games first (true > false)
@@ -113,10 +106,12 @@ const AdminPage = () => {
           return a.rated ? -1 : 1;
         });
       
-      case 'date':
+      case 'ageDiff':
       default:
         return gamesCopy.sort((a, b) => {
-          return new Date(b.created_at) - new Date(a.created_at); // Most recent first
+          const ageDiffA = Math.abs(a.player1_age - a.player2_age);
+          const ageDiffB = Math.abs(b.player1_age - b.player2_age);
+          return ageDiffB - ageDiffA; // Descending order (largest difference first)
         });
     }
   };
@@ -302,7 +297,6 @@ const AdminPage = () => {
                 label="Sort By"
                 onChange={(e) => setSortBy(e.target.value)}
               >
-                <MenuItem value="date">Date (Most Recent First)</MenuItem>
                 <MenuItem value="ageDiff">Age Difference (Largest First)</MenuItem>
                 <MenuItem value="rated">Rated Games First</MenuItem>
               </Select>
