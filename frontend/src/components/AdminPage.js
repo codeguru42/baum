@@ -250,15 +250,11 @@ const AdminPage = ({ view = 'games' }) => {
                   <TableCell>{whitePlayer.rank}</TableCell>
                   <TableCell>{whitePlayer.age}</TableCell>
                   <TableCell>
-                    {ageDiff > 40 ? (
-                      <Chip
-                        label={ageDiff}
-                        size="small"
-                        color="success"
-                      />
-                    ) : (
-                      ageDiff
-                    )}
+                    <Chip
+                      label={ageDiff}
+                      size="small"
+                      color={ageDiff >= 40 ? 'success' : 'warning'}
+                    />
                   </TableCell>
                   <TableCell>{game.handicap}</TableCell>
                   <TableCell>
