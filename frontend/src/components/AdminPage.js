@@ -15,7 +15,10 @@ import {
   Chip,
   ToggleButton,
   ToggleButtonGroup,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
+import { CheckCircle, Cancel } from '@mui/icons-material';
 import { gameService, playerService } from '../services/api';
 
 const AdminPage = () => {
@@ -58,6 +61,21 @@ const AdminPage = () => {
       console.error('Error fetching players:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleGameValidity = async (gameId, currentValidity) => {
+    try {
+      await gameService.update(gameId, { valid_for_prizes: !currentValidity });
+      // Update local state
+      setGames(games.map(game => 
+        game.id === gameId 
+          ? { ...game, valid_for_prizes: !currentValidity }
+          : game
+      ));
+    } catch (err) {
+      setError('Failed to update game validity. Please try again.');
+      console.error('Error updating game:', err);
     }
   };
 
@@ -106,6 +124,7 @@ const AdminPage = () => {
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Handicap</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Winner</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rated</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Valid for Prizes</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
           </TableRow>
         </TableHead>
@@ -150,6 +169,17 @@ const AdminPage = () => {
                     size="small"
                     color={game.rated ? 'primary' : 'default'}
                   />
+                </TableCell>
+                <TableCell>
+                  <Tooltip title={game.valid_for_prizes ? 'Mark as invalid for prizes' : 'Mark as valid for prizes'}>
+                    <IconButton
+                      onClick={() => toggleGameValidity(game.id, game.valid_for_prizes)}
+                      color={game.valid_for_prizes ? 'success' : 'error'}
+                      size="small"
+                    >
+                      {game.valid_for_prizes ? <CheckCircle /> : <Cancel />}
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
                 <TableCell>{formatDate(game.created_at)}</TableCell>
               </TableRow>

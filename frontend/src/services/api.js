@@ -21,6 +21,7 @@ export const gameService = {
   getAll: () => api.get('/games/'),
   getById: (id) => api.get(`/games/${id}/`),
   create: (gameData) => api.post('/games/', gameData),
+  update: (id, gameData) => api.patch(`/games/${id}/`, gameData),
 };
 
 export default api;
