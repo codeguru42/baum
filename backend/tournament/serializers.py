@@ -47,8 +47,14 @@ class GameSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         """Validate game data."""
-        if attrs['player1_color'] == attrs['player2_color']:
-            raise serializers.ValidationError("Players must have different colors.")
-        if attrs['player1'] == attrs['player2']:
-            raise serializers.ValidationError("Player 1 and Player 2 must be different.")
+        # Only validate colors if they're being updated
+        if 'player1_color' in attrs and 'player2_color' in attrs:
+            if attrs['player1_color'] == attrs['player2_color']:
+                raise serializers.ValidationError("Players must have different colors.")
+        
+        # Only validate players if they're being updated
+        if 'player1' in attrs and 'player2' in attrs:
+            if attrs['player1'] == attrs['player2']:
+                raise serializers.ValidationError("Player 1 and Player 2 must be different.")
+        
         return attrs
