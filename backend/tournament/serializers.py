@@ -14,6 +14,12 @@ class GameSerializer(serializers.ModelSerializer):
     """Serializer for Game model."""
     player1_details = PlayerSerializer(source='player1', read_only=True)
     player2_details = PlayerSerializer(source='player2', read_only=True)
+    player1_name = serializers.CharField(source='player1.name', read_only=True)
+    player1_rank = serializers.CharField(source='player1.aga_rank', read_only=True)
+    player1_age = serializers.IntegerField(source='player1.age', read_only=True)
+    player2_name = serializers.CharField(source='player2.name', read_only=True)
+    player2_rank = serializers.CharField(source='player2.aga_rank', read_only=True)
+    player2_age = serializers.IntegerField(source='player2.age', read_only=True)
 
     class Meta:
         model = Game
@@ -23,6 +29,12 @@ class GameSerializer(serializers.ModelSerializer):
             'player2',
             'player1_details',
             'player2_details',
+            'player1_name',
+            'player1_rank',
+            'player1_age',
+            'player2_name',
+            'player2_rank',
+            'player2_age',
             'player1_color',
             'player2_color',
             'handicap',
@@ -32,10 +44,10 @@ class GameSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at']
 
-    def validate(self, data):
+    def validate(self, attrs):
         """Validate game data."""
-        if data['player1_color'] == data['player2_color']:
+        if attrs['player1_color'] == attrs['player2_color']:
             raise serializers.ValidationError("Players must have different colors.")
-        if data['player1'] == data['player2']:
+        if attrs['player1'] == attrs['player2']:
             raise serializers.ValidationError("Player 1 and Player 2 must be different.")
-        return data
+        return attrs
