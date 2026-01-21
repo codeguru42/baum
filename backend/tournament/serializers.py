@@ -40,6 +40,7 @@ class GameSerializer(serializers.ModelSerializer):
             'handicap',
             'rated',
             'winner',
+            'valid_for_prizes',
             'created_at'
         ]
         read_only_fields = ['id', 'created_at']

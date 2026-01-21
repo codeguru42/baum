@@ -44,6 +44,7 @@ class Game(models.Model):
     handicap = models.IntegerField(default=0)
     rated = models.BooleanField(default=True)
     winner = models.CharField(max_length=10, choices=WINNER_CHOICES)
+    valid_for_prizes = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
