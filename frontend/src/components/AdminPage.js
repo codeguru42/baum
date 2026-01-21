@@ -301,9 +301,9 @@ const AdminPage = () => {
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Games Played</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Won</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Lost</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>Games Played</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>Won</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>Lost</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Last Updated</TableCell>
           </TableRow>
         </TableHead>
@@ -317,9 +317,9 @@ const AdminPage = () => {
               <TableCell>{player.name}</TableCell>
               <TableCell>{player.aga_rank}</TableCell>
               <TableCell>{player.age}</TableCell>
-              <TableCell>{player.games_played ?? 0}</TableCell>
-              <TableCell>{player.games_won ?? 0}</TableCell>
-              <TableCell>{player.games_lost ?? 0}</TableCell>
+              <TableCell sx={{ width: '120px' }}>{player.games_played ?? 0}</TableCell>
+              <TableCell sx={{ width: '120px' }}>{player.games_won ?? 0}</TableCell>
+              <TableCell sx={{ width: '120px' }}>{player.games_lost ?? 0}</TableCell>
               <TableCell>{formatDate(player.updated_at)}</TableCell>
             </TableRow>
           ))}
