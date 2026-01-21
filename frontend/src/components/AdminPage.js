@@ -301,6 +301,9 @@ const AdminPage = () => {
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Games Played</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Won</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Lost</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Last Updated</TableCell>
           </TableRow>
         </TableHead>
@@ -314,6 +317,27 @@ const AdminPage = () => {
               <TableCell>{player.name}</TableCell>
               <TableCell>{player.aga_rank}</TableCell>
               <TableCell>{player.age}</TableCell>
+              <TableCell>
+                <Chip
+                  label={player.games_played}
+                  size="small"
+                  color="default"
+                />
+              </TableCell>
+              <TableCell>
+                <Chip
+                  label={player.games_won}
+                  size="small"
+                  color="success"
+                />
+              </TableCell>
+              <TableCell>
+                <Chip
+                  label={player.games_lost}
+                  size="small"
+                  color="error"
+                />
+              </TableCell>
               <TableCell>{formatDate(player.updated_at)}</TableCell>
             </TableRow>
           ))}
