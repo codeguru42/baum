@@ -67,7 +67,7 @@ The easiest way to run the application is using Docker. This will start both bac
 - Docker Desktop installed ([Download here](https://www.docker.com/products/docker-desktop))
 - Docker Compose (included with Docker Desktop)
 
-### Running with Docker
+### Running Development Environment
 
 1. Start the application:
 ```bash
@@ -88,6 +88,25 @@ docker compose up --build
 ```bash
 docker compose down
 ```
+
+### Running Production Environment
+
+For production deployment with optimized builds and nginx:
+
+1. Configure environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your production settings
+```
+
+2. Build and start production services:
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+3. Access the application on port 80
+
+**For detailed production deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)**
 
 ### Docker Commands
 
