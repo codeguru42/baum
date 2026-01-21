@@ -249,13 +249,7 @@ const AdminPage = ({ view = 'games' }) => {
                   <TableCell>{whitePlayer.id}</TableCell>
                   <TableCell>{whitePlayer.rank}</TableCell>
                   <TableCell>{whitePlayer.age}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={ageDiff}
-                      size="small"
-                      color={ageDiff > 20 ? 'warning' : 'default'}
-                    />
-                  </TableCell>
+                  <TableCell>{ageDiff}</TableCell>
                   <TableCell>{game.handicap}</TableCell>
                   <TableCell>
                     <Chip
