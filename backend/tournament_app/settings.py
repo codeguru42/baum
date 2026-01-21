@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-(=^y8onpq4!ciu_(-22!a-y*#&kjyg_%fe#*4nh5086m5mngy*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', '0.0.0.0']
 
 
 # Application definition
@@ -130,6 +130,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost",
+    "http://frontend:3000",
 ]
 
 # REST Framework settings

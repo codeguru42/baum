@@ -13,6 +13,7 @@ A web application for participants in a Go tournament to report their game resul
   - Game outcome (winner, rated/unrated)
 - Form validation and error handling
 - Responsive Material-UI design
+- Docker containerization for easy deployment
 
 ## Technology Stack
 
@@ -27,6 +28,10 @@ A web application for participants in a Go tournament to report their game resul
 - Material-UI (MUI) 5
 - Axios for API calls
 - React Testing Library
+
+### Deployment
+- Docker & Docker Compose
+- Multi-container architecture
 
 ## Project Structure
 
@@ -54,7 +59,67 @@ baum-vibe/
     └── package.json
 ```
 
-## Setup Instructions
+## Quick Start with Docker (Recommended)
+
+The easiest way to run the application is using Docker. This will start both backend and frontend with a single command.
+
+### Prerequisites
+- Docker Desktop installed ([Download here](https://www.docker.com/products/docker-desktop))
+- Docker Compose (included with Docker Desktop)
+
+### Running with Docker
+
+1. Start the application:
+```bash
+./docker-start.sh
+```
+
+Or manually:
+```bash
+docker compose up --build
+```
+
+2. Access the application:
+   - **Frontend**: http://localhost:3000
+   - **Backend API**: http://localhost:8000/api
+   - **Admin Interface**: http://localhost:8000/admin
+
+3. Stop the application:
+```bash
+docker compose down
+```
+
+### Docker Commands
+
+```bash
+# View logs
+docker compose logs -f
+
+# View logs for specific service
+docker compose logs -f backend
+docker compose logs -f frontend
+
+# Restart services
+docker compose restart
+
+# Rebuild containers
+docker compose up --build
+
+# Stop and remove containers, networks, and volumes
+docker compose down -v
+
+# Run Django commands in container
+docker compose exec backend python manage.py createsuperuser
+docker compose exec backend python manage.py test
+
+# Access container shell
+docker compose exec backend bash
+docker compose exec frontend sh
+```
+
+## Manual Setup Instructions
+
+If you prefer to run the application without Docker:
 
 ### Backend Setup
 
