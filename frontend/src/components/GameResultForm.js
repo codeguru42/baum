@@ -116,10 +116,13 @@ const GameResultForm = () => {
   };
 
   const validateForm = () => {
+    const blackPlayer = gameInfo.player1_color === 'black' ? 'Black' : 'White';
+    const whitePlayer = gameInfo.player2_color === 'white' ? 'White' : 'Black';
+    
     if (!player1.aga_id || !player1.name || !player1.aga_rank || !player1.age) {
       setSnackbar({
         open: true,
-        message: 'Please fill in all Player 1 information',
+        message: `Please fill in all ${blackPlayer} player information`,
         severity: 'error',
       });
       return false;
@@ -127,7 +130,7 @@ const GameResultForm = () => {
     if (!player2.aga_id || !player2.name || !player2.aga_rank || !player2.age) {
       setSnackbar({
         open: true,
-        message: 'Please fill in all Player 2 information',
+        message: `Please fill in all ${whitePlayer} player information`,
         severity: 'error',
       });
       return false;
@@ -135,7 +138,7 @@ const GameResultForm = () => {
     if (player1.aga_id === player2.aga_id) {
       setSnackbar({
         open: true,
-        message: 'Player 1 and Player 2 must be different',
+        message: 'Black and White must be different players',
         severity: 'error',
       });
       return false;
@@ -214,7 +217,7 @@ const GameResultForm = () => {
             {/* Player 1 Section */}
             <Grid item xs={12} md={6}>
               <Typography variant="h6" gutterBottom color="primary">
-                Player 1
+                {gameInfo.player1_color === 'black' ? 'Black' : 'White'}
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <TextField
@@ -267,7 +270,7 @@ const GameResultForm = () => {
             {/* Player 2 Section */}
             <Grid item xs={12} md={6}>
               <Typography variant="h6" gutterBottom color="primary">
-                Player 2
+                {gameInfo.player2_color === 'white' ? 'White' : 'Black'}
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <TextField
@@ -344,8 +347,12 @@ const GameResultForm = () => {
                   label="Winner"
                   onChange={(e) => setGameInfo({ ...gameInfo, winner: e.target.value })}
                 >
-                  <MenuItem value="player1">Player 1</MenuItem>
-                  <MenuItem value="player2">Player 2</MenuItem>
+                  <MenuItem value="player1">
+                    {gameInfo.player1_color === 'black' ? 'Black' : 'White'}
+                  </MenuItem>
+                  <MenuItem value="player2">
+                    {gameInfo.player2_color === 'white' ? 'White' : 'Black'}
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Grid>

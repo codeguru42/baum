@@ -89,16 +89,14 @@ const AdminPage = () => {
               <TableHead>
                 <TableRow sx={{ backgroundColor: 'primary.main' }}>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Game ID</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Player 1</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Black Player</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Color</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Player 2</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>White Player</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Color</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Handicap</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Winner</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rated</TableCell>
@@ -106,60 +104,51 @@ const AdminPage = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {games.map((game) => (
-                  <TableRow
-                    key={game.id}
-                    sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}
-                  >
-                    <TableCell>{game.id}</TableCell>
-                    <TableCell sx={{ fontWeight: 'medium' }}>{game.player1_name}</TableCell>
-                    <TableCell>{game.player1}</TableCell>
-                    <TableCell>{game.player1_rank}</TableCell>
-                    <TableCell>{game.player1_age}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={game.player1_color}
-                        size="small"
-                        sx={{
-                          backgroundColor: game.player1_color === 'black' ? '#000' : '#fff',
-                          color: game.player1_color === 'black' ? '#fff' : '#000',
-                          border: game.player1_color === 'white' ? '1px solid #000' : 'none',
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 'medium' }}>{game.player2_name}</TableCell>
-                    <TableCell>{game.player2}</TableCell>
-                    <TableCell>{game.player2_rank}</TableCell>
-                    <TableCell>{game.player2_age}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={game.player2_color}
-                        size="small"
-                        sx={{
-                          backgroundColor: game.player2_color === 'black' ? '#000' : '#fff',
-                          color: game.player2_color === 'black' ? '#fff' : '#000',
-                          border: game.player2_color === 'white' ? '1px solid #000' : 'none',
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>{game.handicap}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={game.winner === 'player1' ? 'Player 1' : 'Player 2'}
-                        size="small"
-                        color="success"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={game.rated ? 'Yes' : 'No'}
-                        size="small"
-                        color={game.rated ? 'primary' : 'default'}
-                      />
-                    </TableCell>
-                    <TableCell>{formatDate(game.created_at)}</TableCell>
-                  </TableRow>
-                ))}
+                {games.map((game) => {
+                  // Determine which player is black and which is white
+                  const blackPlayer = game.player1_color === 'black' 
+                    ? { name: game.player1_name, id: game.player1, rank: game.player1_rank, age: game.player1_age }
+                    : { name: game.player2_name, id: game.player2, rank: game.player2_rank, age: game.player2_age };
+                  
+                  const whitePlayer = game.player1_color === 'white'
+                    ? { name: game.player1_name, id: game.player1, rank: game.player1_rank, age: game.player1_age }
+                    : { name: game.player2_name, id: game.player2, rank: game.player2_rank, age: game.player2_age };
+                  
+                  const winnerColor = game.winner === 'player1' ? game.player1_color : game.player2_color;
+                  
+                  return (
+                    <TableRow
+                      key={game.id}
+                      sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}
+                    >
+                      <TableCell>{game.id}</TableCell>
+                      <TableCell sx={{ fontWeight: 'medium' }}>{blackPlayer.name}</TableCell>
+                      <TableCell>{blackPlayer.id}</TableCell>
+                      <TableCell>{blackPlayer.rank}</TableCell>
+                      <TableCell>{blackPlayer.age}</TableCell>
+                      <TableCell sx={{ fontWeight: 'medium' }}>{whitePlayer.name}</TableCell>
+                      <TableCell>{whitePlayer.id}</TableCell>
+                      <TableCell>{whitePlayer.rank}</TableCell>
+                      <TableCell>{whitePlayer.age}</TableCell>
+                      <TableCell>{game.handicap}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={winnerColor === 'black' ? 'Black' : 'White'}
+                          size="small"
+                          color="success"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={game.rated ? 'Yes' : 'No'}
+                          size="small"
+                          color={game.rated ? 'primary' : 'default'}
+                        />
+                      </TableCell>
+                      <TableCell>{formatDate(game.created_at)}</TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
