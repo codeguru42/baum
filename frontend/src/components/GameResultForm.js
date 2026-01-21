@@ -99,30 +99,13 @@ const GameResultForm = () => {
     }
   };
 
-  const handleColorChange = (playerNumber, color) => {
-    if (playerNumber === 1) {
-      setGameInfo({
-        ...gameInfo,
-        player1_color: color,
-        player2_color: color === 'black' ? 'white' : 'black',
-      });
-    } else {
-      setGameInfo({
-        ...gameInfo,
-        player2_color: color,
-        player1_color: color === 'black' ? 'white' : 'black',
-      });
-    }
-  };
+
 
   const validateForm = () => {
-    const blackPlayer = gameInfo.player1_color === 'black' ? 'Black' : 'White';
-    const whitePlayer = gameInfo.player2_color === 'white' ? 'White' : 'Black';
-    
     if (!player1.aga_id || !player1.name || !player1.aga_rank || !player1.age) {
       setSnackbar({
         open: true,
-        message: `Please fill in all ${blackPlayer} player information`,
+        message: 'Please fill in all Black player information',
         severity: 'error',
       });
       return false;
@@ -130,7 +113,7 @@ const GameResultForm = () => {
     if (!player2.aga_id || !player2.name || !player2.aga_rank || !player2.age) {
       setSnackbar({
         open: true,
-        message: `Please fill in all ${whitePlayer} player information`,
+        message: 'Please fill in all White player information',
         severity: 'error',
       });
       return false;
@@ -217,7 +200,7 @@ const GameResultForm = () => {
             {/* Player 1 Section */}
             <Grid item xs={12} md={6}>
               <Typography variant="h6" gutterBottom color="primary">
-                {gameInfo.player1_color === 'black' ? 'Black' : 'White'}
+                Black
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <TextField
@@ -253,24 +236,13 @@ const GameResultForm = () => {
                   value={player1.age}
                   onChange={(e) => setPlayer1({ ...player1, age: e.target.value })}
                 />
-                <FormControl fullWidth>
-                  <InputLabel>Color</InputLabel>
-                  <Select
-                    value={gameInfo.player1_color}
-                    label="Color"
-                    onChange={(e) => handleColorChange(1, e.target.value)}
-                  >
-                    <MenuItem value="black">Black</MenuItem>
-                    <MenuItem value="white">White</MenuItem>
-                  </Select>
-                </FormControl>
               </Box>
             </Grid>
 
             {/* Player 2 Section */}
             <Grid item xs={12} md={6}>
               <Typography variant="h6" gutterBottom color="primary">
-                {gameInfo.player2_color === 'white' ? 'White' : 'Black'}
+                White
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <TextField
@@ -305,17 +277,6 @@ const GameResultForm = () => {
                   value={player2.age}
                   onChange={(e) => setPlayer2({ ...player2, age: e.target.value })}
                 />
-                <FormControl fullWidth>
-                  <InputLabel>Color</InputLabel>
-                  <Select
-                    value={gameInfo.player2_color}
-                    label="Color"
-                    onChange={(e) => handleColorChange(2, e.target.value)}
-                  >
-                    <MenuItem value="black">Black</MenuItem>
-                    <MenuItem value="white">White</MenuItem>
-                  </Select>
-                </FormControl>
               </Box>
             </Grid>
 
@@ -347,12 +308,8 @@ const GameResultForm = () => {
                   label="Winner"
                   onChange={(e) => setGameInfo({ ...gameInfo, winner: e.target.value })}
                 >
-                  <MenuItem value="player1">
-                    {gameInfo.player1_color === 'black' ? 'Black' : 'White'}
-                  </MenuItem>
-                  <MenuItem value="player2">
-                    {gameInfo.player2_color === 'white' ? 'White' : 'Black'}
-                  </MenuItem>
+                  <MenuItem value="player1">Black</MenuItem>
+                  <MenuItem value="player2">White</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
