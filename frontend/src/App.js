@@ -30,14 +30,16 @@ function App() {
               <Button color="inherit" component={RouterLink} to="/">
                 Submit Result
               </Button>
-              <Button color="inherit" component={RouterLink} to="/admin">
+              <Button color="inherit" component={RouterLink} to="/admin/games">
                 Admin
               </Button>
             </Toolbar>
           </AppBar>
           <Routes>
             <Route path="/" element={<GameResultForm />} />
-            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/games" element={<AdminPage view="games" />} />
+            <Route path="/admin/players" element={<AdminPage view="players" />} />
+            <Route path="/admin" element={<AdminPage view="games" />} />
           </Routes>
         </Box>
       </Router>

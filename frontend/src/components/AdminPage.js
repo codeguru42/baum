@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Paper,
@@ -13,8 +14,7 @@ import {
   Alert,
   Box,
   Chip,
-  ToggleButton,
-  ToggleButtonGroup,
+  Button,
   IconButton,
   Tooltip,
   TableSortLabel,
@@ -22,8 +22,8 @@ import {
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import { gameService, playerService } from '../services/api';
 
-const AdminPage = () => {
-  const [view, setView] = useState('games'); // 'games' or 'players'
+const AdminPage = ({ view = 'games' }) => {
+  const navigate = useNavigate();
   const [games, setGames] = useState([]);
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -335,20 +335,21 @@ const AdminPage = () => {
           Tournament Administration
         </Typography>
         
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-          <ToggleButtonGroup
-            value={view}
-            exclusive
-            onChange={(e, newView) => newView && setView(newView)}
-            aria-label="view selection"
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3, gap: 2 }}>
+          <Button
+            variant={view === 'games' ? 'contained' : 'outlined'}
+            onClick={() => navigate('/admin/games')}
+            size="large"
           >
-            <ToggleButton value="games" aria-label="games view">
-              Games
-            </ToggleButton>
-            <ToggleButton value="players" aria-label="players view">
-              Players
-            </ToggleButton>
-          </ToggleButtonGroup>
+            Games
+          </Button>
+          <Button
+            variant={view === 'players' ? 'contained' : 'outlined'}
+            onClick={() => navigate('/admin/players')}
+            size="large"
+          >
+            Players
+          </Button>
         </Box>
 
         <Typography variant="subtitle1" gutterBottom align="center" color="text.secondary">
