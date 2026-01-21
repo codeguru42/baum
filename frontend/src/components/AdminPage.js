@@ -317,27 +317,9 @@ const AdminPage = () => {
               <TableCell>{player.name}</TableCell>
               <TableCell>{player.aga_rank}</TableCell>
               <TableCell>{player.age}</TableCell>
-              <TableCell>
-                <Chip
-                  label={player.games_played}
-                  size="small"
-                  color="default"
-                />
-              </TableCell>
-              <TableCell>
-                <Chip
-                  label={player.games_won}
-                  size="small"
-                  color="success"
-                />
-              </TableCell>
-              <TableCell>
-                <Chip
-                  label={player.games_lost}
-                  size="small"
-                  color="error"
-                />
-              </TableCell>
+              <TableCell>{player.games_played ?? 0}</TableCell>
+              <TableCell>{player.games_won ?? 0}</TableCell>
+              <TableCell>{player.games_lost ?? 0}</TableCell>
               <TableCell>{formatDate(player.updated_at)}</TableCell>
             </TableRow>
           ))}
