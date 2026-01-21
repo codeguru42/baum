@@ -261,7 +261,10 @@ const AdminPage = ({ view = 'games' }) => {
                     <Chip
                       label={winnerColor === 'black' ? 'Black' : 'White'}
                       size="small"
-                      color="success"
+                      sx={winnerColor === 'black' 
+                        ? { backgroundColor: '#000', color: '#fff' }
+                        : { backgroundColor: '#fff', color: '#000', border: '1px solid #000' }
+                      }
                     />
                   </TableCell>
                   <TableCell>
