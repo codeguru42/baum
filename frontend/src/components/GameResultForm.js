@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Container,
   Paper,
@@ -20,6 +20,9 @@ import {
 import { playerService, gameService } from '../services/api';
 
 const GameResultForm = () => {
+  const player1AgaIdRef = useRef(null);
+  const player2AgaIdRef = useRef(null);
+
   const [player1, setPlayer1] = useState({
     aga_id: '',
     name: '',
@@ -71,6 +74,8 @@ const GameResultForm = () => {
           console.log('Player not found, will create new');
         }
         setLoading({ ...loading, player1: false });
+        // Restore focus after auto-fill
+        setTimeout(() => player1AgaIdRef.current?.focus(), 0);
       }
     } else {
       setPlayer2({ ...player2, aga_id: agaId });
@@ -88,6 +93,8 @@ const GameResultForm = () => {
           console.log('Player not found, will create new');
         }
         setLoading({ ...loading, player2: false });
+        // Restore focus after auto-fill
+        setTimeout(() => player2AgaIdRef.current?.focus(), 0);
       }
     }
   };
@@ -181,6 +188,9 @@ const GameResultForm = () => {
         rated: true,
         winner: 'player1',
       });
+
+      // Restore focus to Player 1 AGA ID field
+      setTimeout(() => player1AgaIdRef.current?.focus(), 0);
     } catch (error) {
       setSnackbar({
         open: true,
@@ -214,6 +224,8 @@ const GameResultForm = () => {
                   value={player1.aga_id}
                   onChange={(e) => handleAgaIdChange(1, e.target.value)}
                   disabled={loading.player1}
+                  inputRef={player1AgaIdRef}
+                  autoFocus
                 />
                 <TextField
                   required
@@ -265,6 +277,7 @@ const GameResultForm = () => {
                   value={player2.aga_id}
                   onChange={(e) => handleAgaIdChange(2, e.target.value)}
                   disabled={loading.player2}
+                  inputRef={player2AgaIdRef}
                 />
                 <TextField
                   required
