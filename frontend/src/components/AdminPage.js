@@ -13,17 +13,25 @@ import {
   Alert,
   Box,
   Chip,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material';
-import { gameService } from '../services/api';
+import { gameService, playerService } from '../services/api';
 
 const AdminPage = () => {
+  const [view, setView] = useState('games'); // 'games' or 'players'
   const [games, setGames] = useState([]);
+  const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchGames();
-  }, []);
+    if (view === 'games') {
+      fetchGames();
+    } else {
+      fetchPlayers();
+    }
+  }, [view]);
 
   const fetchGames = async () => {
     try {
@@ -34,6 +42,20 @@ const AdminPage = () => {
     } catch (err) {
       setError('Failed to load games. Please try again later.');
       console.error('Error fetching games:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPlayers = async () => {
+    try {
+      setLoading(true);
+      const response = await playerService.getAll();
+      setPlayers(response.data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load players. Please try again later.');
+      console.error('Error fetching players:', err);
     } finally {
       setLoading(false);
     }
@@ -54,7 +76,7 @@ const AdminPage = () => {
     return (
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4, textAlign: 'center' }}>
         <CircularProgress />
-        <Typography sx={{ mt: 2 }}>Loading games...</Typography>
+        <Typography sx={{ mt: 2 }}>Loading {view}...</Typography>
       </Container>
     );
   }
@@ -67,91 +89,148 @@ const AdminPage = () => {
     );
   }
 
+  const renderGamesTable = () => (
+    <TableContainer sx={{ mt: 3 }}>
+      <Table>
+        <TableHead>
+          <TableRow sx={{ backgroundColor: 'primary.main' }}>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Game ID</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Black Player</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>White Player</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Handicap</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Winner</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rated</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {games.map((game) => {
+            // Determine which player is black and which is white
+            const blackPlayer = game.player1_color === 'black' 
+              ? { name: game.player1_name, id: game.player1, rank: game.player1_rank, age: game.player1_age }
+              : { name: game.player2_name, id: game.player2, rank: game.player2_rank, age: game.player2_age };
+            
+            const whitePlayer = game.player1_color === 'white'
+              ? { name: game.player1_name, id: game.player1, rank: game.player1_rank, age: game.player1_age }
+              : { name: game.player2_name, id: game.player2, rank: game.player2_rank, age: game.player2_age };
+            
+            const winnerColor = game.winner === 'player1' ? game.player1_color : game.player2_color;
+            
+            return (
+              <TableRow
+                key={game.id}
+                sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}
+              >
+                <TableCell>{game.id}</TableCell>
+                <TableCell sx={{ fontWeight: 'medium' }}>{blackPlayer.name}</TableCell>
+                <TableCell>{blackPlayer.id}</TableCell>
+                <TableCell>{blackPlayer.rank}</TableCell>
+                <TableCell>{blackPlayer.age}</TableCell>
+                <TableCell sx={{ fontWeight: 'medium' }}>{whitePlayer.name}</TableCell>
+                <TableCell>{whitePlayer.id}</TableCell>
+                <TableCell>{whitePlayer.rank}</TableCell>
+                <TableCell>{whitePlayer.age}</TableCell>
+                <TableCell>{game.handicap}</TableCell>
+                <TableCell>
+                  <Chip
+                    label={winnerColor === 'black' ? 'Black' : 'White'}
+                    size="small"
+                    color="success"
+                  />
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    label={game.rated ? 'Yes' : 'No'}
+                    size="small"
+                    color={game.rated ? 'primary' : 'default'}
+                  />
+                </TableCell>
+                <TableCell>{formatDate(game.created_at)}</TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+
+  const renderPlayersTable = () => (
+    <TableContainer sx={{ mt: 3 }}>
+      <Table>
+        <TableHead>
+          <TableRow sx={{ backgroundColor: 'primary.main' }}>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Last Updated</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {players.map((player) => (
+            <TableRow
+              key={player.aga_id}
+              sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}
+            >
+              <TableCell sx={{ fontWeight: 'medium' }}>{player.aga_id}</TableCell>
+              <TableCell>{player.name}</TableCell>
+              <TableCell>{player.aga_rank}</TableCell>
+              <TableCell>{player.age}</TableCell>
+              <TableCell>{formatDate(player.updated_at)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          Tournament Games Administration
+          Tournament Administration
         </Typography>
+        
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+          <ToggleButtonGroup
+            value={view}
+            exclusive
+            onChange={(e, newView) => newView && setView(newView)}
+            aria-label="view selection"
+          >
+            <ToggleButton value="games" aria-label="games view">
+              Games
+            </ToggleButton>
+            <ToggleButton value="players" aria-label="players view">
+              Players
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+
         <Typography variant="subtitle1" gutterBottom align="center" color="text.secondary">
-          Total Games: {games.length}
+          {view === 'games' ? `Total Games: ${games.length}` : `Total Players: ${players.length}`}
         </Typography>
 
-        {games.length === 0 ? (
+        {view === 'games' && games.length === 0 ? (
           <Box sx={{ textAlign: 'center', mt: 4 }}>
             <Typography variant="h6" color="text.secondary">
               No games recorded yet
             </Typography>
           </Box>
+        ) : view === 'players' && players.length === 0 ? (
+          <Box sx={{ textAlign: 'center', mt: 4 }}>
+            <Typography variant="h6" color="text.secondary">
+              No players registered yet
+            </Typography>
+          </Box>
         ) : (
-          <TableContainer sx={{ mt: 3 }}>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ backgroundColor: 'primary.main' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Game ID</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Black Player</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>White Player</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Handicap</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Winner</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rated</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {games.map((game) => {
-                  // Determine which player is black and which is white
-                  const blackPlayer = game.player1_color === 'black' 
-                    ? { name: game.player1_name, id: game.player1, rank: game.player1_rank, age: game.player1_age }
-                    : { name: game.player2_name, id: game.player2, rank: game.player2_rank, age: game.player2_age };
-                  
-                  const whitePlayer = game.player1_color === 'white'
-                    ? { name: game.player1_name, id: game.player1, rank: game.player1_rank, age: game.player1_age }
-                    : { name: game.player2_name, id: game.player2, rank: game.player2_rank, age: game.player2_age };
-                  
-                  const winnerColor = game.winner === 'player1' ? game.player1_color : game.player2_color;
-                  
-                  return (
-                    <TableRow
-                      key={game.id}
-                      sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}
-                    >
-                      <TableCell>{game.id}</TableCell>
-                      <TableCell sx={{ fontWeight: 'medium' }}>{blackPlayer.name}</TableCell>
-                      <TableCell>{blackPlayer.id}</TableCell>
-                      <TableCell>{blackPlayer.rank}</TableCell>
-                      <TableCell>{blackPlayer.age}</TableCell>
-                      <TableCell sx={{ fontWeight: 'medium' }}>{whitePlayer.name}</TableCell>
-                      <TableCell>{whitePlayer.id}</TableCell>
-                      <TableCell>{whitePlayer.rank}</TableCell>
-                      <TableCell>{whitePlayer.age}</TableCell>
-                      <TableCell>{game.handicap}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={winnerColor === 'black' ? 'Black' : 'White'}
-                          size="small"
-                          color="success"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={game.rated ? 'Yes' : 'No'}
-                          size="small"
-                          color={game.rated ? 'primary' : 'default'}
-                        />
-                      </TableCell>
-                      <TableCell>{formatDate(game.created_at)}</TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          view === 'games' ? renderGamesTable() : renderPlayersTable()
         )}
       </Paper>
     </Container>
