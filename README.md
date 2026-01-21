@@ -1,5 +1,7 @@
 # Go Tournament Result Reporting System
 
+![CI](https://github.com/YOUR_USERNAME/baum-vibe/workflows/CI/badge.svg)
+
 A web application for participants in a Go tournament to report their game results. Built with Django REST Framework backend and React with Material-UI frontend.
 
 ## Features
@@ -194,6 +196,21 @@ npm start
 
 The frontend will be available at `http://localhost:3000/`
 
+## Continuous Integration
+
+This project uses GitHub Actions for automated testing and building. On every push and pull request, the CI pipeline:
+
+1. **Backend Tests**: Runs all Django unit and API tests
+2. **Frontend Tests**: Runs React component tests with coverage
+3. **Docker Build**: Validates both development and production Docker builds
+4. **Code Quality**: Lints Python and JavaScript code
+
+### CI Status
+
+View the latest build status: ![CI](https://github.com/YOUR_USERNAME/baum-vibe/workflows/CI/badge.svg)
+
+**Note**: Replace `YOUR_USERNAME` in the badge URLs with your GitHub username.
+
 ## Running Tests
 
 ### Backend Tests
@@ -224,6 +241,16 @@ The frontend includes tests for:
 - User interactions
 - API integration
 - Error handling
+
+### Running Tests in Docker
+
+```bash
+# Backend tests
+docker compose exec backend python manage.py test
+
+# Frontend tests
+docker compose exec frontend npm test -- --watchAll=false
+```
 
 ## API Endpoints
 
