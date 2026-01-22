@@ -110,6 +110,21 @@ docker compose -f docker-compose.prod.yml up -d --build
 
 **For detailed production deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)**
 
+### Automated Deployment to DigitalOcean
+
+This project includes GitHub Actions workflow for automated deployment:
+
+- **Automatic deployment** when pushing to `main` branch
+- **Manual deployment** via GitHub Actions UI
+- **Rollback on failure** to previous version
+- **Health checks** to verify deployment success
+
+**Setup Guide**: See [DIGITALOCEAN_SETUP.md](DIGITALOCEAN_SETUP.md) for complete instructions on:
+- Creating and configuring a DigitalOcean droplet
+- Setting up GitHub secrets
+- Configuring domain and SSL
+- Monitoring and troubleshooting deployments
+
 ### Docker Commands
 
 ```bash

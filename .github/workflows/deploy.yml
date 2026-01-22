@@ -1,0 +1,117 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    # Only deploy if CI passes
+    needs: []
+    
+    environment:
+      name: production
+      url: ${{ secrets.PRODUCTION_URL }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    
+    - name: Add server to known hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+    
+    - name: Create .env file
+      run: |
+        cat > .env << EOF
+        DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
+        DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }}
+        REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}
+        DATABASE_URL=${{ secrets.DATABASE_URL }}
+        EOF
+    
+    - name: Deploy to server
+      env:
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_IP: ${{ secrets.SERVER_IP }}
+        DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      run: |
+        # Copy files to server
+        ssh $SERVER_USER@$SERVER_IP "mkdir -p $DEPLOY_PATH"
+        
+        # Sync repository (excluding .git for speed)
+        rsync -avz --delete \
+          --exclude '.git' \
+          --exclude 'node_modules' \
+          --exclude '__pycache__' \
+          --exclude '*.pyc' \
+          --exclude 'venv' \
+          --exclude '.env' \
+          ./ $SERVER_USER@$SERVER_IP:$DEPLOY_PATH/
+        
+        # Copy .env file
+        scp .env $SERVER_USER@$SERVER_IP:$DEPLOY_PATH/.env
+        
+        # Deploy on server
+        ssh $SERVER_USER@$SERVER_IP << 'ENDSSH'
+          cd $DEPLOY_PATH
+          
+          # Pull latest images (if using pre-built)
+          # docker compose -f docker-compose.prod.yml pull
+          
+          # Build and start services
+          docker compose -f docker-compose.prod.yml up -d --build
+          
+          # Run migrations
+          docker compose -f docker-compose.prod.yml exec -T backend python manage.py migrate
+          
+          # Collect static files
+          docker compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
+          
+          # Show service status
+          docker compose -f docker-compose.prod.yml ps
+        ENDSSH
+    
+    - name: Health check
+      run: |
+        # Wait for services to be ready
+        sleep 10
+        
+        # Check if application is responding
+        curl -f ${{ secrets.PRODUCTION_URL }}/api/players/ || exit 1
+        echo "✓ Application is healthy!"
+    
+    - name: Cleanup
+      if: always()
+      run: |
+        rm -f .env
+    
+    - name: Deployment notification
+      if: success()
+      run: |
+        echo "🚀 Deployment successful!"
+        echo "Application is live at: ${{ secrets.PRODUCTION_URL }}"
+    
+    - name: Rollback on failure
+      if: failure()
+      env:
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_IP: ${{ secrets.SERVER_IP }}
+        DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      run: |
+        echo "⚠️ Deployment failed, attempting rollback..."
+        ssh $SERVER_USER@$SERVER_IP << 'ENDSSH'
+          cd $DEPLOY_PATH
+          git checkout HEAD~1
+          docker compose -f docker-compose.prod.yml up -d --build
+        ENDSSH
