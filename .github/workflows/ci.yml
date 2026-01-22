@@ -32,8 +32,6 @@ jobs:
       working-directory: ./backend
       run: |
         python manage.py test
-      env:
-        DJANGO_SETTINGS_MODULE: tournament_project.settings
 
   frontend-test:
     name: Frontend Tests
