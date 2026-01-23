@@ -15,10 +15,10 @@ describe('GameResultForm', () => {
   test('renders form with all required fields', () => {
     render(<GameResultForm />);
     
-    expect(screen.getByRole('heading', { name: /Go Tournament - Report Game Result/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /^Black$/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /^White$/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /Game Information/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Go Tournament - Report Game Result/i, level: 1 })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^Black$/i, level: 6 })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^White$/i, level: 6 })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Game Information/i, level: 6 })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Submit Game Result/i })).toBeInTheDocument();
   });
 
@@ -68,8 +68,8 @@ describe('GameResultForm', () => {
     render(<GameResultForm />);
     
     // Component displays "Black" and "White" headers for player sections
-    expect(screen.getByRole('heading', { name: /^Black$/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /^White$/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^Black$/i, level: 6 })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^White$/i, level: 6 })).toBeInTheDocument();
   });
 
   test('validates form before submission', async () => {
