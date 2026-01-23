@@ -10,6 +10,8 @@ jest.mock('../services/api');
 describe('GameResultForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Default mock for player lookup - tests can override this
+    playerService.getByAgaId.mockRejectedValue(new Error('Player not found'));
   });
 
   test('renders form with all required fields', () => {
@@ -22,7 +24,7 @@ describe('GameResultForm', () => {
     expect(screen.getByRole('button', { name: /Submit Game Result/i })).toBeInTheDocument();
   });
 
-  test('allows entering player information', () => {
+  test('allows entering player information', async () => {
     render(<GameResultForm />);
     
     const agaIdInputs = screen.getAllByLabelText(/AGA ID Number/i);
@@ -34,6 +36,11 @@ describe('GameResultForm', () => {
     fireEvent.change(nameInputs[0], { target: { value: 'John Doe' } });
     fireEvent.change(rankInputs[0], { target: { value: '5d' } });
     fireEvent.change(ageInputs[0], { target: { value: '30' } });
+
+    // Wait for async operations to complete
+    await waitFor(() => {
+      expect(agaIdInputs[0].value).toBe('AGA123');
+    });
 
     expect(agaIdInputs[0].value).toBe('AGA123');
     expect(nameInputs[0].value).toBe('John Doe');
