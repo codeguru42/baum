@@ -198,7 +198,7 @@ const GameResultForm = () => {
         <form onSubmit={handleSubmit}>
           <Grid container spacing={4}>
             {/* Player 1 Section */}
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h6" gutterBottom color="primary">
                 Black
               </Typography>
@@ -240,7 +240,7 @@ const GameResultForm = () => {
             </Grid>
 
             {/* Player 2 Section */}
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h6" gutterBottom color="primary">
                 White
               </Typography>
@@ -281,14 +281,14 @@ const GameResultForm = () => {
             </Grid>
 
             {/* Game Information Section */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Divider sx={{ my: 2 }} />
               <Typography variant="h6" gutterBottom color="primary">
                 Game Information
               </Typography>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <TextField
                 required
                 fullWidth
@@ -300,7 +300,7 @@ const GameResultForm = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <FormControl fullWidth required>
                 <InputLabel>Winner</InputLabel>
                 <Select
@@ -314,7 +314,7 @@ const GameResultForm = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -327,7 +327,7 @@ const GameResultForm = () => {
             </Grid>
 
             {/* Submit Button */}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Button
                 type="submit"
                 variant="contained"
