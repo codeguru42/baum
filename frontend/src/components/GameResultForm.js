@@ -71,7 +71,7 @@ const GameResultForm = () => {
             age: response.data.age,
           });
         } catch (error) {
-          console.log('Player not found, will create new');
+          // Player not found - will be created on form submission
         }
         setLoading({ ...loading, player1: false });
         // Restore focus after auto-fill
@@ -90,7 +90,7 @@ const GameResultForm = () => {
             age: response.data.age,
           });
         } catch (error) {
-          console.log('Player not found, will create new');
+          // Player not found - will be created on form submission
         }
         setLoading({ ...loading, player2: false });
         // Restore focus after auto-fill
