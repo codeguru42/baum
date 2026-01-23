@@ -15,11 +15,11 @@ describe('GameResultForm', () => {
   test('renders form with all required fields', () => {
     render(<GameResultForm />);
     
-    expect(screen.getByText(/Go Tournament - Report Game Result/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/^Black$/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/^White$/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Game Information/i)).toBeInTheDocument();
-    expect(screen.getByText(/Submit Game Result/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Go Tournament - Report Game Result/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^Black$/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^White$/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Game Information/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Submit Game Result/i })).toBeInTheDocument();
   });
 
   test('allows entering player information', () => {
@@ -68,14 +68,14 @@ describe('GameResultForm', () => {
     render(<GameResultForm />);
     
     // Component displays "Black" and "White" headers for player sections
-    expect(screen.getAllByText(/^Black$/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/^White$/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole('heading', { name: /^Black$/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^White$/i })).toBeInTheDocument();
   });
 
   test('validates form before submission', async () => {
     render(<GameResultForm />);
     
-    const submitButton = screen.getByText(/Submit Game Result/i);
+    const submitButton = screen.getByRole('button', { name: /Submit Game Result/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -106,7 +106,7 @@ describe('GameResultForm', () => {
     fireEvent.change(rankInputs[1], { target: { value: '4d' } });
     fireEvent.change(ageInputs[1], { target: { value: '28' } });
 
-    const submitButton = screen.getByText(/Submit Game Result/i);
+    const submitButton = screen.getByRole('button', { name: /Submit Game Result/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -134,7 +134,7 @@ describe('GameResultForm', () => {
     fireEvent.change(rankInputs[1], { target: { value: '4d' } });
     fireEvent.change(ageInputs[1], { target: { value: '28' } });
 
-    const submitButton = screen.getByText(/Submit Game Result/i);
+    const submitButton = screen.getByRole('button', { name: /Submit Game Result/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
