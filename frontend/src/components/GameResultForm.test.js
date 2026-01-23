@@ -16,8 +16,8 @@ describe('GameResultForm', () => {
     render(<GameResultForm />);
     
     expect(screen.getByText(/Go Tournament - Report Game Result/i)).toBeInTheDocument();
-    expect(screen.getByText(/Player 1/i)).toBeInTheDocument();
-    expect(screen.getByText(/Player 2/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/^Black$/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^White$/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Game Information/i)).toBeInTheDocument();
     expect(screen.getByText(/Submit Game Result/i)).toBeInTheDocument();
   });
@@ -64,16 +64,12 @@ describe('GameResultForm', () => {
     });
   });
 
-  test('updates color selection correctly', () => {
+  test('displays player color headers correctly', () => {
     render(<GameResultForm />);
     
-    // Colors should be opposite by default
-    const colorSelects = screen.getAllByLabelText(/Color/i);
-    
-    // Player 1 is black by default
-    expect(colorSelects[0]).toHaveTextContent('Black');
-    // Player 2 is white by default
-    expect(colorSelects[1]).toHaveTextContent('White');
+    // Component displays "Black" and "White" headers for player sections
+    expect(screen.getAllByText(/^Black$/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^White$/i).length).toBeGreaterThan(0);
   });
 
   test('validates form before submission', async () => {
@@ -83,7 +79,7 @@ describe('GameResultForm', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Please fill in all Player 1 information/i)).toBeInTheDocument();
+      expect(screen.getByText(/Please fill in all Black player information/i)).toBeInTheDocument();
     });
   });
 
@@ -142,7 +138,7 @@ describe('GameResultForm', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Player 1 and Player 2 must be different/i)).toBeInTheDocument();
+      expect(screen.getByText(/Black and White must be different players/i)).toBeInTheDocument();
     });
   });
 });
