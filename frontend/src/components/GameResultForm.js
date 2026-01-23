@@ -61,7 +61,7 @@ const GameResultForm = () => {
     if (playerNumber === 1) {
       setPlayer1({ ...player1, aga_id: agaId });
       if (agaId.length >= 3) {
-        setLoading({ ...loading, player1: true });
+        setLoading(prev => ({ ...prev, player1: true }));
         try {
           const response = await playerService.getByAgaId(agaId);
           setPlayer1({
@@ -73,14 +73,14 @@ const GameResultForm = () => {
         } catch (error) {
           // Player not found - will be created on form submission
         }
-        setLoading({ ...loading, player1: false });
+        setLoading(prev => ({ ...prev, player1: false }));
         // Restore focus after auto-fill
         setTimeout(() => player1AgaIdRef.current?.focus(), 0);
       }
     } else {
       setPlayer2({ ...player2, aga_id: agaId });
       if (agaId.length >= 3) {
-        setLoading({ ...loading, player2: true });
+        setLoading(prev => ({ ...prev, player2: true }));
         try {
           const response = await playerService.getByAgaId(agaId);
           setPlayer2({
@@ -92,7 +92,7 @@ const GameResultForm = () => {
         } catch (error) {
           // Player not found - will be created on form submission
         }
-        setLoading({ ...loading, player2: false });
+        setLoading(prev => ({ ...prev, player2: false }));
         // Restore focus after auto-fill
         setTimeout(() => player2AgaIdRef.current?.focus(), 0);
       }
