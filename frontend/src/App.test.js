@@ -1,6 +1,8 @@
-// App component testing is skipped due to react-router-dom ESM compatibility issues with Jest
-// The App component is tested through integration tests and manual QA
+import { render, screen } from '@testing-library/react';
+import App from './App';
 
-test('placeholder test', () => {
-  expect(true).toBe(true);
+test('renders learn react link', () => {
+  render(<App />);
+  const linkElement = screen.getByText(/learn react/i);
+  expect(linkElement).toBeInTheDocument();
 });
