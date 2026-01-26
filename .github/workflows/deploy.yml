@@ -27,23 +27,108 @@ jobs:
         sed -i "s|REPO_PLACEHOLDER|${{ github.repository }}|g" .do/app.yaml
         cat .do/app.yaml
     
-    - name: Deploy to DigitalOcean App Platform
-      id: deploy
-      uses: digitalocean/app_action/deploy@v2
-      env:
-        SAMPLE_DIGEST: ${{ github.sha }}
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
       with:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-        app-spec-location: .do/app.yaml
+    
+    - name: Check if app exists
+      id: check-app
+      run: |
+        # Try to find existing app by name
+        APP_NAME="baum-tournament"
+        if APP_ID=$(doctl apps list --format ID,Spec.Name --no-header | grep -w "$APP_NAME" | awk '{print $1}'); then
+          echo "app-exists=true" >> $GITHUB_OUTPUT
+          echo "app-id=$APP_ID" >> $GITHUB_OUTPUT
+          echo "✓ Found existing app: $APP_ID"
+        else
+          echo "app-exists=false" >> $GITHUB_OUTPUT
+          echo "ℹ No existing app found. Will create new app."
+        fi
+    
+    - name: Create new app
+      id: create-app
+      if: steps.check-app.outputs.app-exists == 'false'
+      run: |
+        echo "Creating new DigitalOcean App Platform app..."
+        APP_ID=$(doctl apps create --spec .do/app.yaml --format ID --no-header)
+        echo "app-id=$APP_ID" >> $GITHUB_OUTPUT
+        echo "✓ Created new app with ID: $APP_ID"
+    
+    - name: Update existing app
+      id: update-app
+      if: steps.check-app.outputs.app-exists == 'true'
+      run: |
+        APP_ID="${{ steps.check-app.outputs.app-id }}"
+        echo "Updating existing app: $APP_ID"
+        doctl apps update $APP_ID --spec .do/app.yaml
+        echo "app-id=$APP_ID" >> $GITHUB_OUTPUT
+        echo "✓ Updated app: $APP_ID"
+    
+    - name: Wait for deployment
+      run: |
+        if [ "${{ steps.check-app.outputs.app-exists }}" == "true" ]; then
+          APP_ID="${{ steps.update-app.outputs.app-id }}"
+        else
+          APP_ID="${{ steps.create-app.outputs.app-id }}"
+        fi
+        
+        echo "Waiting for deployment to complete for app: $APP_ID"
+        
+        # Wait for deployment to complete (timeout after 15 minutes)
+        TIMEOUT=900
+        ELAPSED=0
+        INTERVAL=30
+        
+        while [ $ELAPSED -lt $TIMEOUT ]; do
+          DEPLOYMENT_STATUS=$(doctl apps list-deployments $APP_ID --format Phase --no-header | head -n 1)
+          
+          echo "Deployment status: $DEPLOYMENT_STATUS (${ELAPSED}s elapsed)"
+          
+          if [ "$DEPLOYMENT_STATUS" == "ACTIVE" ]; then
+            echo "✓ Deployment completed successfully!"
+            break
+          elif [ "$DEPLOYMENT_STATUS" == "ERROR" ] || [ "$DEPLOYMENT_STATUS" == "CANCELED" ]; then
+            echo "✗ Deployment failed with status: $DEPLOYMENT_STATUS"
+            exit 1
+          fi
+          
+          sleep $INTERVAL
+          ELAPSED=$((ELAPSED + INTERVAL))
+        done
+        
+        if [ $ELAPSED -ge $TIMEOUT ]; then
+          echo "✗ Deployment timed out after ${TIMEOUT}s"
+          exit 1
+        fi
+    
+    - name: Get app info
+      id: app-info
+      run: |
+        if [ "${{ steps.check-app.outputs.app-exists }}" == "true" ]; then
+          APP_ID="${{ steps.update-app.outputs.app-id }}"
+        else
+          APP_ID="${{ steps.create-app.outputs.app-id }}"
+        fi
+        
+        APP_URL=$(doctl apps get $APP_ID --format LiveURL --no-header)
+        echo "app-url=$APP_URL" >> $GITHUB_OUTPUT
+        echo "app-id=$APP_ID" >> $GITHUB_OUTPUT
     
     - name: Deployment notification
       if: success()
       run: |
-        echo "🚀 Deployment successful!"
-        echo "Application URL: ${{ steps.deploy.outputs.app_url }}"
+        if [ "${{ steps.check-app.outputs.app-exists }}" == "true" ]; then
+          echo "🚀 App updated successfully!"
+        else
+          echo "🚀 New app created and deployed successfully!"
+        fi
+        echo "Application URL: ${{ steps.app-info.outputs.app-url }}"
+        echo "App ID: ${{ steps.app-info.outputs.app-id }}"
     
     - name: Deployment failed notification
       if: failure()
       run: |
         echo "⚠️ Deployment failed!"
         echo "Check the logs above for details."
+
