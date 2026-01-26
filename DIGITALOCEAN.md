@@ -13,7 +13,12 @@ This is required for GitHub Actions to deploy to DigitalOcean.
 2. Go to **API** → **Tokens/Keys**
 3. Click **Generate New Token**
 4. Name: `GitHub Actions Deploy`
-5. Permissions: Check both **Read** and **Write**
+5. Permissions:
+   - **Option 1 (Full Access)**: Check both **Read** and **Write** scopes
+   - **Option 2 (Custom Scopes - More Secure)**: Select "Custom Scopes" and enable:
+     - `app:read` - Read access to App Platform
+     - `app:write` - Write access to App Platform (for deployments)
+     - `app:delete` - Delete access (optional, for cleaning up failed deployments)
 6. Click **Generate Token**
 7. **Copy the token** (you won't see it again!)
 
