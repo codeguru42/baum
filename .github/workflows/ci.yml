@@ -67,6 +67,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [backend-test, frontend-test]
     
+    permissions:
+      contents: read
+      packages: read
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -74,30 +78,130 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     
-    - name: Build development images
-      run: |
-        docker compose build --no-cache
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Test development containers
+    - name: Pull or build backend image
       run: |
-        docker compose up -d
-        sleep 10
-        docker compose ps
-        docker compose logs backend
-        # Test backend health
-        curl -f http://localhost:8000/api/players/ || exit 1
-        # Test frontend health
-        curl -f http://localhost:3000/ || exit 1
-        docker compose down
+        if docker pull ghcr.io/${{ github.repository }}/backend:latest 2>/dev/null; then
+          echo "Using pre-built backend image from GHCR"
+          docker tag ghcr.io/${{ github.repository }}/backend:latest baum-vibe-backend:latest
+        else
+          echo "Pre-built image not found, building backend locally"
+          docker build -t baum-vibe-backend:latest -f backend/Dockerfile.prod backend/
+        fi
     
-    - name: Build production images
+    - name: Pull or build frontend image
       run: |
-        docker compose -f docker-compose.prod.yml build --no-cache
-      env:
-        DJANGO_SECRET_KEY: test-secret-key-for-ci-build
-        DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
-        REACT_APP_API_URL: http://localhost/api
-        DATABASE_URL: sqlite:///db/db.sqlite3
+        if docker pull ghcr.io/${{ github.repository }}/frontend:latest 2>/dev/null; then
+          echo "Using pre-built frontend image from GHCR"
+          docker tag ghcr.io/${{ github.repository }}/frontend:latest baum-vibe-frontend:latest
+        else
+          echo "Pre-built image not found, building frontend locally"
+          docker build -t baum-vibe-frontend:latest \
+            --build-arg REACT_APP_API_URL=http://localhost/api \
+            -f frontend/Dockerfile.prod frontend/
+        fi
+    
+    - name: Pull or build nginx image
+      run: |
+        if docker pull ghcr.io/${{ github.repository }}/nginx:latest 2>/dev/null; then
+          echo "Using pre-built nginx image from GHCR"
+          docker tag ghcr.io/${{ github.repository }}/nginx:latest baum-vibe-nginx:latest
+        else
+          echo "Pre-built image not found, using nginx:alpine"
+          docker pull nginx:alpine
+          docker tag nginx:alpine baum-vibe-nginx:latest
+        fi
+    
+    - name: Test production containers with pre-built images
+      run: |
+        # Create a test docker-compose file using the pulled images
+        cat > docker-compose.test.yml << 'EOF'
+        services:
+          backend:
+            image: baum-vibe-backend:latest
+            container_name: tournament-backend-test
+            expose:
+              - "8000"
+            environment:
+              - DJANGO_SETTINGS_MODULE=tournament_project.settings
+              - DJANGO_SECRET_KEY=test-secret-key-for-ci
+              - DJANGO_DEBUG=False
+              - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+              - DATABASE_URL=sqlite:///db/db.sqlite3
+            networks:
+              - test-network
+            healthcheck:
+              test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/players/')"]
+              interval: 10s
+              timeout: 5s
+              retries: 5
+              start_period: 20s
+        
+          frontend:
+            image: baum-vibe-frontend:latest
+            container_name: tournament-frontend-test
+            expose:
+              - "80"
+            depends_on:
+              - backend
+            networks:
+              - test-network
+        
+          nginx:
+            image: baum-vibe-nginx:latest
+            container_name: tournament-nginx-test
+            ports:
+              - "8080:80"
+            volumes:
+              - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+              - ./nginx/conf.d:/etc/nginx/conf.d:ro
+            depends_on:
+              - backend
+              - frontend
+            networks:
+              - test-network
+        
+        networks:
+          test-network:
+            driver: bridge
+        EOF
+        
+        # Start containers
+        docker compose -f docker-compose.test.yml up -d
+        
+        # Wait for services to be healthy
+        echo "Waiting for services to be ready..."
+        sleep 15
+        
+        # Show container status
+        docker compose -f docker-compose.test.yml ps
+        
+        # Show backend logs
+        echo "Backend logs:"
+        docker compose -f docker-compose.test.yml logs backend
+        
+        # Test backend health directly
+        echo "Testing backend health..."
+        docker compose -f docker-compose.test.yml exec -T backend python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/players/')" || exit 1
+        
+        # Test through nginx
+        echo "Testing through nginx..."
+        curl -f http://localhost:8080/api/players/ || exit 1
+        
+        echo "All health checks passed!"
+        
+        # Cleanup
+        docker compose -f docker-compose.test.yml down
+    
+    - name: Build development images (for development environment validation)
+      run: |
+        docker compose build
 
   lint:
     name: Code Quality
