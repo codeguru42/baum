@@ -85,100 +85,52 @@ jobs:
       run: |
         echo "Pulling backend image from GHCR..."
         docker pull ghcr.io/${{ github.repository }}/backend:latest
-        docker tag ghcr.io/${{ github.repository }}/backend:latest baum-vibe-backend:latest
     
     - name: Pull frontend image from GHCR
       run: |
         echo "Pulling frontend image from GHCR..."
         docker pull ghcr.io/${{ github.repository }}/frontend:latest
-        docker tag ghcr.io/${{ github.repository }}/frontend:latest baum-vibe-frontend:latest
     
     - name: Pull nginx image from GHCR
       run: |
         echo "Pulling nginx image from GHCR..."
         docker pull ghcr.io/${{ github.repository }}/nginx:latest
-        docker tag ghcr.io/${{ github.repository }}/nginx:latest baum-vibe-nginx:latest
     
     - name: Test production stack
+      env:
+        BACKEND_IMAGE: ghcr.io/${{ github.repository }}/backend:latest
+        FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/frontend:latest
+        NGINX_IMAGE: ghcr.io/${{ github.repository }}/nginx:latest
+        DJANGO_SECRET_KEY: test-secret-key-for-ci
+        DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+        REACT_APP_API_URL: http://localhost/api
       run: |
-        # Create a test docker-compose file using the pulled images
-        cat > docker-compose.test.yml << 'EOF'
-        services:
-          backend:
-            image: baum-vibe-backend:latest
-            container_name: tournament-backend-test
-            expose:
-              - "8000"
-            environment:
-              - DJANGO_SETTINGS_MODULE=tournament_project.settings
-              - DJANGO_SECRET_KEY=test-secret-key-for-ci
-              - DJANGO_DEBUG=False
-              - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
-              - DATABASE_URL=sqlite:///db/db.sqlite3
-            networks:
-              - test-network
-            healthcheck:
-              test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/players/')"]
-              interval: 10s
-              timeout: 5s
-              retries: 5
-              start_period: 20s
-        
-          frontend:
-            image: baum-vibe-frontend:latest
-            container_name: tournament-frontend-test
-            expose:
-              - "80"
-            depends_on:
-              - backend
-            networks:
-              - test-network
-        
-          nginx:
-            image: baum-vibe-nginx:latest
-            container_name: tournament-nginx-test
-            ports:
-              - "8080:80"
-            volumes:
-              - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-              - ./nginx/conf.d:/etc/nginx/conf.d:ro
-            depends_on:
-              - backend
-              - frontend
-            networks:
-              - test-network
-        
-        networks:
-          test-network:
-            driver: bridge
-        EOF
-        
-        # Start containers
-        docker compose -f docker-compose.test.yml up -d
+        # Start containers using production docker-compose file
+        docker compose -f docker-compose.prod.yml up -d
         
         # Wait for services to be healthy
         echo "Waiting for services to be ready..."
         sleep 15
         
         # Show container status
-        docker compose -f docker-compose.test.yml ps
+        docker compose -f docker-compose.prod.yml ps
         
         # Show backend logs
         echo "Backend logs:"
-        docker compose -f docker-compose.test.yml logs backend
+        docker compose -f docker-compose.prod.yml logs backend
         
         # Test backend health directly
         echo "Testing backend health..."
-        docker compose -f docker-compose.test.yml exec -T backend python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/players/')" || exit 1
+        docker compose -f docker-compose.prod.yml exec -T backend python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/players/')" || exit 1
         
         # Test through nginx
         echo "Testing through nginx..."
-        curl -f http://localhost:8080/api/players/ || exit 1
+        curl -f http://localhost/api/players/ || exit 1
         
         echo "All health checks passed!"
         
         # Cleanup
-        docker compose -f docker-compose.test.yml down
+        docker compose -f docker-compose.prod.yml down
     
     - name: Validate development environment
       run: |

@@ -1,5 +1,6 @@
 services:
   backend:
+    image: ${BACKEND_IMAGE:-tournament-backend-prod}
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
@@ -26,6 +27,7 @@ services:
       start_period: 40s
 
   frontend:
+    image: ${FRONTEND_IMAGE:-tournament-frontend-prod}
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
@@ -41,7 +43,7 @@ services:
       - tournament-network
 
   nginx:
-    image: nginx:alpine
+    image: ${NGINX_IMAGE:-nginx:alpine}
     container_name: tournament-nginx
     restart: always
     ports:
