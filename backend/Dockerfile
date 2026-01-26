@@ -4,13 +4,17 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
 # Set work directory
 WORKDIR /app
 
-# Install dependencies
-COPY requirements.txt /app/
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+# Copy dependency files
+COPY pyproject.toml /app/
+
+# Install dependencies using uv
+RUN uv pip install --system -r pyproject.toml
 
 # Copy project
 COPY . /app/
