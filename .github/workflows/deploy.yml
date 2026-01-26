@@ -28,29 +28,22 @@ jobs:
         cat .do/app.yaml
     
     - name: Deploy to DigitalOcean App Platform
+      id: deploy
       uses: digitalocean/app_action/deploy@v2
       env:
         SAMPLE_DIGEST: ${{ github.sha }}
       with:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-    
-    - name: Get deployment info
-      id: deploy-info
-      uses: digitalocean/app_action/deploy@v2
-      with:
-        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+        app-spec-location: .do/app.yaml
     
     - name: Deployment notification
       if: success()
       run: |
         echo "🚀 Deployment successful!"
-        echo "Application URL: ${{ fromJson(steps.deploy-info.outputs.app).live_url }}"
-        echo "App ID: ${{ fromJson(steps.deploy-info.outputs.app).id }}"
+        echo "Application URL: ${{ steps.deploy.outputs.app_url }}"
     
     - name: Deployment failed notification
       if: failure()
       run: |
         echo "⚠️ Deployment failed!"
         echo "Check the logs above for details."
-        echo "Build logs: ${{ steps.deploy-info.outputs.build_logs }}"
-        echo "Deploy logs: ${{ steps.deploy-info.outputs.deploy_logs }}"
