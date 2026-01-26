@@ -10,7 +10,7 @@ services:
       tag: latest
     envs:
       - key: DJANGO_SETTINGS_MODULE
-        value: tournament_project.settings
+        value: tournament_app.settings
       - key: DJANGO_SECRET_KEY
         scope: RUN_TIME
         type: SECRET
