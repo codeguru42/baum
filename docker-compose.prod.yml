@@ -1,9 +1,7 @@
 services:
   backend:
-    image: ${BACKEND_IMAGE:-tournament-backend-prod}
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
+    image: ${BACKEND_IMAGE:-ghcr.io/codeguru42/baum/backend:latest}
+    pull_policy: always
     container_name: tournament-backend-prod
     restart: always
     expose:
@@ -27,12 +25,8 @@ services:
       start_period: 40s
 
   frontend:
-    image: ${FRONTEND_IMAGE:-tournament-frontend-prod}
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
-      args:
-        - REACT_APP_API_URL=${REACT_APP_API_URL}
+    image: ${FRONTEND_IMAGE:-ghcr.io/codeguru42/baum/frontend:latest}
+    pull_policy: always
     container_name: tournament-frontend-prod
     restart: always
     expose:
@@ -43,7 +37,8 @@ services:
       - tournament-network
 
   nginx:
-    image: ${NGINX_IMAGE:-nginx:alpine}
+    image: ${NGINX_IMAGE:-ghcr.io/codeguru42/baum/nginx:latest}
+    pull_policy: always
     container_name: tournament-nginx
     restart: always
     ports:
