@@ -18,7 +18,9 @@ This repository is configured for **DigitalOcean App Platform** deployment.
 DIGITALOCEAN_ACCESS_TOKEN
 Description: API token for DigitalOcean App Platform deployments
 How to get: DigitalOcean Console → API → Tokens/Keys → Generate New Token
-Permissions: Read and Write (or custom scopes: app:read, app:write, app:delete)
+Permissions: 
+  - Full Access: Read and Write
+  - Custom Scopes (DigitalOcean API): app:read, app:write, app:delete (optional)
 Security: Keep this token secure - it has full access to your DigitalOcean account
 ```
 

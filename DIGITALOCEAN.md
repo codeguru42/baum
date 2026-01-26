@@ -30,13 +30,13 @@ This is required for GitHub Actions to deploy to DigitalOcean.
 5. Value: Paste the token from above
 6. Click **Add secret**
 
-### 2. Configure GitHub Container Registry Authentication
+### 2. Configure Environment Variables (After First Deploy)
 
-DigitalOcean App Platform needs credentials to pull Docker images from GitHub Container Registry.
+After the first deployment creates your app, you need to configure environment variables in App Platform.
 
 **Steps:**
 
-1. **Create a GitHub Personal Access Token:**
+1. **Create a GitHub Personal Access Token** (for private registry access):
    - Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
    - Click **Generate new token**
    - Name: `DigitalOcean GHCR Access`
@@ -44,36 +44,22 @@ DigitalOcean App Platform needs credentials to pull Docker images from GitHub Co
    - Click **Generate token**
    - **Copy the token** (you won't see it again!)
 
-2. **Add credentials to App Platform:**
+2. **Add all environment variables to App Platform:**
    - Go to [DigitalOcean Apps](https://cloud.digitalocean.com/apps)
-   - After first deployment, click on your app: `baum-tournament`
+   - Click on your app: `baum-tournament`
    - Go to **Settings** → **App-Level Environment Variables**
-   - Add these two variables (both as **ENCRYPTED** type):
-     - Name: `GITHUB_USERNAME` | Value: Your GitHub username
-     - Name: `GITHUB_TOKEN` | Value: Your GitHub PAT from step 1
-   - Click **Save**
-
-3. **Configure in App Platform UI:**
-   - The `.do/app.yaml` file is already configured for GHCR
-   - App Platform will use the `GITHUB_USERNAME` and `GITHUB_TOKEN` environment variables to authenticate
-
-### 3. Configure App Environment Variables (After First Deploy)
-
-After the first deployment creates your app, you need to set environment secrets.
-
-**Steps:**
-1. Go to [DigitalOcean Apps](https://cloud.digitalocean.com/apps)
-2. Click on your app: `baum-tournament`
-3. Go to **Settings** → **App-Level Environment Variables**
-4. Add these variables as **ENCRYPTED** type:
+   - Add these variables (all as **ENCRYPTED** type):
 
 | Variable | Value | How to Generate |
 |----------|-------|-----------------|
+| `GITHUB_USERNAME` | Your GitHub username | N/A |
+| `GITHUB_TOKEN` | GitHub PAT from step 1 | Created above |
 | `DJANGO_SECRET_KEY` | Random secret key | Run: `openssl rand -base64 32` |
 | `DJANGO_ALLOWED_HOSTS` | Your app's domain | Copy from app's live URL (e.g., `baum-tournament-xxxxx.ondigitalocean.app`) |
 
-5. Click **Save**
-6. The app will automatically redeploy
+3. **Click Save**
+   - The app will automatically redeploy with the new configuration
+   - App Platform will use `GITHUB_USERNAME` and `GITHUB_TOKEN` to authenticate with GitHub Container Registry
 
 ## How to Deploy
 
