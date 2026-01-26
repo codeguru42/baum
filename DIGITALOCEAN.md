@@ -145,4 +145,3 @@ If you prefer to keep GitHub Container Registry packages private:
 ## More Information
 
 - App Platform Documentation: https://docs.digitalocean.com/products/app-platform/
-- Alternative Droplet deployment: See [DIGITALOCEAN_SETUP.md](DIGITALOCEAN_SETUP.md)
