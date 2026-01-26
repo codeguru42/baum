@@ -119,9 +119,7 @@ This project includes GitHub Actions workflow for automated deployment:
 - **Zero-downtime deployments** with App Platform
 - **Health checks** to verify deployment success
 
-**Setup Guide**: See [DIGITALOCEAN.md](DIGITALOCEAN.md) for App Platform deployment configuration.
-
-For alternative Droplet deployment: See [DIGITALOCEAN_SETUP.md](DIGITALOCEAN_SETUP.md)
+**Setup Guide**: See [DIGITALOCEAN.md](DIGITALOCEAN.md) for deployment configuration.
 
 ### Docker Commands
 
