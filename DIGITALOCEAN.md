@@ -37,7 +37,21 @@ After the first deployment creates your app, you need to configure environment v
 **Steps:**
 
 1. **Create a GitHub Personal Access Token** (for private registry access):
-   - Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+   
+   **Option 1: Fine-grained tokens (Recommended)**
+   - Go to GitHub Settings → Developer settings → Personal access tokens → **Fine-grained tokens**
+   - Click **Generate new token**
+   - Token name: `DigitalOcean GHCR Access`
+   - Expiration: Choose based on your security policy (e.g., 90 days)
+   - Repository access: Select **Only select repositories** and choose this repository
+   - Permissions:
+     - Repository permissions → **Contents**: Read-only (to access packages)
+     - Under "Account permissions" → **No additional permissions needed**
+   - Click **Generate token**
+   - **Copy the token** (you won't see it again!)
+   
+   **Option 2: Classic tokens**
+   - Go to GitHub Settings → Developer settings → Personal access tokens → **Tokens (classic)**
    - Click **Generate new token**
    - Name: `DigitalOcean GHCR Access`
    - Select scopes: Check `read:packages`
