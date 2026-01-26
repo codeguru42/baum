@@ -121,20 +121,26 @@ If you prefer to keep GitHub Container Registry packages private:
    - GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
    - Generate with `read:packages` scope
 
-2. Add to App Platform environment variables:
-   - Name: `GITHUB_TOKEN`
-   - Value: Your GitHub PAT
-   - Type: ENCRYPTED
+2. Add credentials to App Platform:
+   - Go to App Settings → App-Level Environment Variables
+   - Add two variables (both ENCRYPTED):
+     - `GITHUB_USERNAME`: Your GitHub username
+     - `GITHUB_TOKEN`: Your GitHub PAT
 
-3. Update `.do/app.yaml` for each service:
+3. Update `.do/app.yaml` for each service to use Docker Hub credentials format:
    ```yaml
    image:
      registry_type: GHCR
      registry: ghcr.io
      repository: your-username/baum/backend
      tag: latest
-     registry_credentials: GITHUB_TOKEN
    ```
+
+   Then in App Platform UI, configure registry credentials:
+   - Username: ${GITHUB_USERNAME}
+   - Password: ${GITHUB_TOKEN}
+
+   **Note**: Keeping packages public is simpler and recommended for most use cases.
 
 ## More Information
 
