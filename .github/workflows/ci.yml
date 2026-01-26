@@ -15,23 +15,25 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-        cache: 'pip'
-        cache-dependency-path: backend/requirements.txt
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
     
-    - name: Install dependencies
-      working-directory: ./backend
+    - name: Build backend development image
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        docker build -t baum-vibe-backend-dev:test -f backend/Dockerfile backend/
     
-    - name: Run Django tests
-      working-directory: ./backend
+    - name: Run Django tests in container
       run: |
-        python manage.py test
+        docker run --rm baum-vibe-backend-dev:test python manage.py test
+    
+    - name: Run flake8 linting in container
+      run: |
+        docker run --rm baum-vibe-backend-dev:test sh -c "
+          pip install flake8 && \
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics && \
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        "
+      continue-on-error: true
 
   frontend-test:
     name: Frontend Tests
@@ -41,29 +43,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
     
-    - name: Install dependencies
-      working-directory: ./frontend
-      run: npm ci
+    - name: Build frontend development image
+      run: |
+        docker build -t baum-vibe-frontend-dev:test -f frontend/Dockerfile frontend/
     
-    - name: Run tests
-      working-directory: ./frontend
-      run: npm test -- --watchAll=false --coverage
-      env:
-        CI: true
+    - name: Run tests in container
+      run: |
+        docker run --rm -e CI=true baum-vibe-frontend-dev:test npm test -- --watchAll=false --coverage
     
-    - name: Build frontend
-      working-directory: ./frontend
-      run: npm run build
+    - name: Build frontend in container
+      run: |
+        docker run --rm baum-vibe-frontend-dev:test npm run build
 
-  docker-build:
-    name: Docker Build Tests
+  docker-integration:
+    name: Integration Tests
     runs-on: ubuntu-latest
     needs: [backend-test, frontend-test]
     
@@ -118,7 +114,7 @@ jobs:
           docker tag nginx:alpine baum-vibe-nginx:latest
         fi
     
-    - name: Test production containers with pre-built images
+    - name: Test production stack
       run: |
         # Create a test docker-compose file using the pulled images
         cat > docker-compose.test.yml << 'EOF'
@@ -199,49 +195,17 @@ jobs:
         # Cleanup
         docker compose -f docker-compose.test.yml down
     
-    - name: Build development images (for development environment validation)
+    - name: Validate development environment
       run: |
         docker compose build
+        docker compose up -d
+        sleep 10
+        
+        # Test dev backend
+        curl -f http://localhost:8000/api/players/ || exit 1
+        
+        # Test dev frontend
+        curl -f http://localhost:3000/ || exit 1
+        
+        docker compose down
 
-  lint:
-    name: Code Quality
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-    
-    - name: Install flake8
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8
-    
-    - name: Lint Python code
-      working-directory: ./backend
-      run: |
-        # Stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # Exit-zero treats all errors as warnings
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      continue-on-error: true
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
-    
-    - name: Install frontend dependencies
-      working-directory: ./frontend
-      run: npm ci
-    
-    - name: Lint JavaScript code
-      working-directory: ./frontend
-      run: npm run build
-      continue-on-error: true
