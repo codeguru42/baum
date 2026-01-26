@@ -119,21 +119,9 @@ This project includes GitHub Actions workflow for automated deployment:
 - **Zero-downtime deployments** with App Platform
 - **Health checks** to verify deployment success
 
-**Deployment Options**:
+**Setup Guide**: See [DIGITALOCEAN.md](DIGITALOCEAN.md) for App Platform deployment configuration.
 
-1. **DigitalOcean App Platform** (Recommended - Fully Managed)
-   - See [DIGITALOCEAN_APP_PLATFORM.md](DIGITALOCEAN_APP_PLATFORM.md) for setup instructions
-   - Managed container hosting with automatic scaling
-   - Built-in SSL, monitoring, and zero-downtime deploys
-   - Cost: ~$10/month
-   - **Currently configured in this repository**
-
-2. **DigitalOcean Droplet** (Manual VM Setup)
-   - See [DIGITALOCEAN_SETUP.md](DIGITALOCEAN_SETUP.md) for complete instructions
-   - Full control over server configuration
-   - Manual setup of Docker, SSL, and monitoring
-   - Cost: ~$6-12/month
-
+For alternative Droplet deployment: See [DIGITALOCEAN_SETUP.md](DIGITALOCEAN_SETUP.md)
 
 ### Docker Commands
 

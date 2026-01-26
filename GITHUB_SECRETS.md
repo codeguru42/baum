@@ -6,69 +6,29 @@ This file contains a quick reference for setting up GitHub secrets required for 
 
 This repository is configured for **DigitalOcean App Platform** deployment.
 
-- For **App Platform** setup: See [DIGITALOCEAN_APP_PLATFORM.md](DIGITALOCEAN_APP_PLATFORM.md)
-- For **Droplet** setup: See [DIGITALOCEAN_SETUP.md](DIGITALOCEAN_SETUP.md)
+**See [DIGITALOCEAN.md](DIGITALOCEAN.md) for complete App Platform setup instructions.**
+
+For alternative Droplet deployment, see the Droplet Deployment Secrets section below.
 
 ## Where to Add Secrets
 
 **GitHub Repository → Settings → Secrets and variables → Actions → New repository secret**
 
-## Required Secrets for App Platform Deployment
-
-### DigitalOcean Access
+## Required Secrets for App Platform
 
 ```
 DIGITALOCEAN_ACCESS_TOKEN
 Description: API token for DigitalOcean App Platform deployments
 How to get: DigitalOcean Console → API → Tokens/Keys → Generate New Token
 Permissions: Read and Write
-Example: dop_v1_abc123def456...
-Security: This token has full access to your DigitalOcean account - keep it secure!
+Security: Keep this token secure - it has full access to your DigitalOcean account
 ```
 
-### Optional Build-Time Secrets
+See [DIGITALOCEAN.md](DIGITALOCEAN.md) for environment variables configured in App Platform.
 
-```
-REACT_APP_API_URL
-Description: API URL for the React frontend (optional, can be set in App Platform)
-Example: https://baum-tournament-xxxxx.ondigitalocean.app/api
-Note: If not set, will use the default from .env.example
-```
+---
 
-## App Platform Environment Variables
-
-These are configured in **DigitalOcean App Platform** (not GitHub):
-
-```
-DJANGO_SECRET_KEY
-Description: Secret key for Django application security
-How to generate: openssl rand -base64 32
-Example: vH8fK2pL9mN4qR7sT1uW6xY0zA3bC5dE8fG1hJ4kL7mN9pQ2rS5tU8vW0xY3zA6b
-Security: NEVER commit this to git or share publicly
-Where to set: DigitalOcean Console → Your App → Settings → App-Level Environment Variables
-```
-
-```
-DJANGO_ALLOWED_HOSTS
-Description: Comma-separated list of hosts/domains allowed to serve the app
-Example: baum-tournament-xxxxx.ondigitalocean.app,tournament.yourdomain.com
-Where to set: DigitalOcean Console → Your App → Settings → App-Level Environment Variables
-```
-
-## Setup Checklist for App Platform
-
-- [ ] Create DigitalOcean account
-- [ ] Generate DigitalOcean access token (read + write permissions)
-- [ ] Add `DIGITALOCEAN_ACCESS_TOKEN` to GitHub repository secrets
-- [ ] Make GitHub Container Registry packages public (or configure private auth)
-- [ ] Push to main branch to trigger first deployment
-- [ ] After first deployment, configure environment variables in App Platform:
-  - [ ] `DJANGO_SECRET_KEY`
-  - [ ] `DJANGO_ALLOWED_HOSTS`
-- [ ] Optional: Set up custom domain in App Platform
-- [ ] Optional: Configure database backups or switch to PostgreSQL
-
-## Alternative: Droplet Deployment Secrets
+## Droplet Deployment Secrets (Alternative)
 
 If you prefer to deploy to a DigitalOcean Droplet instead of App Platform, you'll need these secrets:
 
