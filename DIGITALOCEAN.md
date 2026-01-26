@@ -45,10 +45,11 @@ After the first deployment creates your app, you need to configure environment v
    - Expiration: Choose based on your security policy (e.g., 90 days)
    - Repository access: Select **Only select repositories** and choose this repository
    - Permissions:
-     - Repository permissions → **Contents**: Read-only (to access packages)
-     - Under "Account permissions" → **No additional permissions needed**
+     - Repository permissions → **Metadata**: Read-only (required for packages)
    - Click **Generate token**
    - **Copy the token** (you won't see it again!)
+   
+   **Note**: If packages are at the account level, you may need to grant account-level read access.
    
    **Option 2: Classic tokens**
    - Go to GitHub Settings → Developer settings → Personal access tokens → **Tokens (classic)**
