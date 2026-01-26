@@ -30,21 +30,32 @@ This is required for GitHub Actions to deploy to DigitalOcean.
 5. Value: Paste the token from above
 6. Click **Add secret**
 
-### 2. Make GitHub Container Registry Packages Public
+### 2. Configure GitHub Container Registry Authentication
 
-DigitalOcean needs to pull Docker images from GitHub Container Registry.
+DigitalOcean App Platform needs credentials to pull Docker images from GitHub Container Registry.
 
 **Steps:**
-1. Go to your GitHub repository
-2. Click **Packages** (right sidebar)
-3. For each package (`backend`, `frontend`, `nginx`):
-   - Click the package name
-   - Click **Package settings**
-   - Scroll to **Danger Zone**
-   - Click **Change visibility** → **Public**
-   - Confirm the change
 
-**Alternative:** Configure private registry authentication in `.do/app.yaml` (see Advanced section below)
+1. **Create a GitHub Personal Access Token:**
+   - Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Click **Generate new token**
+   - Name: `DigitalOcean GHCR Access`
+   - Select scopes: Check `read:packages`
+   - Click **Generate token**
+   - **Copy the token** (you won't see it again!)
+
+2. **Add credentials to App Platform:**
+   - Go to [DigitalOcean Apps](https://cloud.digitalocean.com/apps)
+   - After first deployment, click on your app: `baum-tournament`
+   - Go to **Settings** → **App-Level Environment Variables**
+   - Add these two variables (both as **ENCRYPTED** type):
+     - Name: `GITHUB_USERNAME` | Value: Your GitHub username
+     - Name: `GITHUB_TOKEN` | Value: Your GitHub PAT from step 1
+   - Click **Save**
+
+3. **Configure in App Platform UI:**
+   - The `.do/app.yaml` file is already configured for GHCR
+   - App Platform will use the `GITHUB_USERNAME` and `GITHUB_TOKEN` environment variables to authenticate
 
 ### 3. Configure App Environment Variables (After First Deploy)
 
@@ -109,7 +120,9 @@ To use your own domain:
 ## Troubleshooting
 
 **Deployment fails with "cannot pull image"**
-- Make sure GitHub Container Registry packages are public (Step 2)
+- Verify `GITHUB_USERNAME` and `GITHUB_TOKEN` are set correctly in App Platform
+- Ensure GitHub Personal Access Token has `read:packages` scope
+- Check that images are being built and pushed to GHCR by GitHub Actions
 
 **App shows 500 error after deployment**
 - Configure environment variables in App Platform (Step 3)
@@ -117,35 +130,6 @@ To use your own domain:
 
 **"Invalid token" error**
 - Regenerate DigitalOcean access token and update GitHub secret
-
-## Advanced: Private Registry Authentication
-
-If you prefer to keep GitHub Container Registry packages private:
-
-1. Create a GitHub Personal Access Token:
-   - GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
-   - Generate with `read:packages` scope
-
-2. Add credentials to App Platform:
-   - Go to App Settings → App-Level Environment Variables
-   - Add two variables (both ENCRYPTED):
-     - `GITHUB_USERNAME`: Your GitHub username
-     - `GITHUB_TOKEN`: Your GitHub PAT
-
-3. Update `.do/app.yaml` for each service to use Docker Hub credentials format:
-   ```yaml
-   image:
-     registry_type: GHCR
-     registry: ghcr.io
-     repository: your-username/baum/backend
-     tag: latest
-   ```
-
-   Then in App Platform UI, configure registry credentials:
-   - Username: ${GITHUB_USERNAME}
-   - Password: ${GITHUB_TOKEN}
-
-   **Note**: Keeping packages public is simpler and recommended for most use cases.
 
 ## More Information
 
