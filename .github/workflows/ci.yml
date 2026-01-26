@@ -81,38 +81,23 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Pull or build backend image
+    - name: Pull backend image from GHCR
       run: |
-        if docker pull ghcr.io/${{ github.repository }}/backend:latest 2>/dev/null; then
-          echo "Using pre-built backend image from GHCR"
-          docker tag ghcr.io/${{ github.repository }}/backend:latest baum-vibe-backend:latest
-        else
-          echo "Pre-built image not found, building backend locally"
-          docker build -t baum-vibe-backend:latest -f backend/Dockerfile.prod backend/
-        fi
+        echo "Pulling backend image from GHCR..."
+        docker pull ghcr.io/${{ github.repository }}/backend:latest
+        docker tag ghcr.io/${{ github.repository }}/backend:latest baum-vibe-backend:latest
     
-    - name: Pull or build frontend image
+    - name: Pull frontend image from GHCR
       run: |
-        if docker pull ghcr.io/${{ github.repository }}/frontend:latest 2>/dev/null; then
-          echo "Using pre-built frontend image from GHCR"
-          docker tag ghcr.io/${{ github.repository }}/frontend:latest baum-vibe-frontend:latest
-        else
-          echo "Pre-built image not found, building frontend locally"
-          docker build -t baum-vibe-frontend:latest \
-            --build-arg REACT_APP_API_URL=http://localhost/api \
-            -f frontend/Dockerfile.prod frontend/
-        fi
+        echo "Pulling frontend image from GHCR..."
+        docker pull ghcr.io/${{ github.repository }}/frontend:latest
+        docker tag ghcr.io/${{ github.repository }}/frontend:latest baum-vibe-frontend:latest
     
-    - name: Pull or build nginx image
+    - name: Pull nginx image from GHCR
       run: |
-        if docker pull ghcr.io/${{ github.repository }}/nginx:latest 2>/dev/null; then
-          echo "Using pre-built nginx image from GHCR"
-          docker tag ghcr.io/${{ github.repository }}/nginx:latest baum-vibe-nginx:latest
-        else
-          echo "Pre-built image not found, using nginx:alpine"
-          docker pull nginx:alpine
-          docker tag nginx:alpine baum-vibe-nginx:latest
-        fi
+        echo "Pulling nginx image from GHCR..."
+        docker pull ghcr.io/${{ github.repository }}/nginx:latest
+        docker tag ghcr.io/${{ github.repository }}/nginx:latest baum-vibe-nginx:latest
     
     - name: Test production stack
       run: |
