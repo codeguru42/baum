@@ -44,22 +44,35 @@ The deploy workflow automatically injects environment variables from GitHub Secr
 |-------------|-------|-----------------|
 | `DIGITALOCEAN_ACCESS_TOKEN` | Your DigitalOcean API token | See step 1 above |
 | `DJANGO_SECRET_KEY` | Random secret key | Run: `openssl rand -base64 32` |
-| `DJANGO_ALLOWED_HOSTS` | Your app's domain | Get from DigitalOcean after first deploy (e.g., `baum-tournament-xxxxx.ondigitalocean.app`) |
+| `DJANGO_ALLOWED_HOSTS` | Your app's domain | Set to `*` initially, update after first deploy |
 
-**Note:** For `DJANGO_ALLOWED_HOSTS`, you can:
-- Initially set it to `*` (wildcard) for the first deploy
-- After deployment, update it to your actual DigitalOcean app URL
-- The workflow uses `${{ github.actor }}` for `GITHUB_USERNAME` and the built-in `${{ secrets.GITHUB_TOKEN }}` for GHCR access automatically
+**Note about DJANGO_ALLOWED_HOSTS:**
+- For the **first deployment**, set this to `*` (wildcard) to allow all hosts
+- After deployment, DigitalOcean will assign a URL like `baum-tournament-xxxxx.ondigitalocean.app`
+- You can then update `DJANGO_ALLOWED_HOSTS` directly in the DigitalOcean App Platform UI with the actual domain
+- Future code deployments will preserve your manually-set allowed hosts
 
-### 3. Deploy
+### 3. Make Container Images Public (Recommended)
+
+To avoid authentication issues, make your GHCR packages public:
+
+1. Go to your GitHub repository
+2. Navigate to **Packages** on the right sidebar
+3. Click on each package (`backend`, `frontend`, `nginx`)
+4. **Package settings** → **Change visibility** → **Public**
+
+Alternatively, if you keep packages private, DigitalOcean will need read access, which requires additional configuration.
+
+### 4. Deploy
 
 Once GitHub Secrets are configured, deployment is fully automated:
 
 1. Push code to the `main` branch
-2. GitHub Actions builds Docker images
+2. GitHub Actions builds and pushes Docker images to GHCR
 3. GitHub Actions runs tests
 4. GitHub Actions deploys to DigitalOcean App Platform
-5. Your app is live at the provided URL
+5. DigitalOcean pulls images from GHCR and starts your app
+6. Your app is live at the provided URL
 
 ## What DigitalOcean Provides Automatically
 
@@ -96,13 +109,14 @@ To use your own domain:
 ## Troubleshooting
 
 **Deployment fails with "cannot pull image"**
+- Ensure GHCR packages are public (see step 3 above)
 - Check that images are being built and pushed to GHCR by GitHub Actions
-- Verify the GHCR images are public or that GITHUB_TOKEN has access
+- Verify the Build and Push workflow completed successfully
 - Check workflow logs for any image build failures
 
 **App shows 500 error after deployment**
 - Verify `DJANGO_SECRET_KEY` is set in GitHub Secrets
-- Check that `DJANGO_ALLOWED_HOSTS` includes your app's domain
+- Check that `DJANGO_ALLOWED_HOSTS` includes your app's domain (or is set to `*`)
 - View logs in DigitalOcean App Platform console
 
 **"Invalid token" error**
@@ -110,8 +124,9 @@ To use your own domain:
 
 **Need to update DJANGO_ALLOWED_HOSTS after first deploy**
 1. Get your app URL from DigitalOcean (e.g., `baum-tournament-xxxxx.ondigitalocean.app`)
-2. Update the `DJANGO_ALLOWED_HOSTS` secret in GitHub
-3. Push a commit to trigger redeployment (or manually trigger the workflow)
+2. Go to DigitalOcean Apps → Your app → Settings → Environment Variables
+3. Update `DJANGO_ALLOWED_HOSTS` to include your actual domain
+4. App will automatically redeploy with the new configuration
 
 ## More Information
 

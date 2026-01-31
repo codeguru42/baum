@@ -12,7 +12,9 @@ This repository is configured for **DigitalOcean App Platform** deployment.
 
 **GitHub Repository → Settings → Secrets and variables → Actions → New repository secret**
 
-## Required Secrets for App Platform
+## Required GitHub Secrets
+
+These are configured in **GitHub Repository Settings** for automated deployment:
 
 ```
 DIGITALOCEAN_ACCESS_TOKEN
@@ -22,37 +24,33 @@ Permissions:
   - Full Access: Read and Write
   - Custom Scopes (DigitalOcean API): app:read, app:write, app:delete (optional)
 Security: Keep this token secure - it has full access to your DigitalOcean account
+Where to set: GitHub Repository → Settings → Secrets and variables → Actions
 ```
-
-## App Platform Environment Variables
-
-These are configured in **DigitalOcean App Platform** (not GitHub):
 
 ```
 DJANGO_SECRET_KEY
 Description: Secret key for Django application security
 How to generate: openssl rand -base64 32
-Where to set: DigitalOcean Console → Your App → Settings → App-Level Environment Variables
+Where to set: GitHub Repository → Settings → Secrets and variables → Actions
+Note: Automatically injected into DigitalOcean on first deployment
 ```
 
 ```
 DJANGO_ALLOWED_HOSTS
 Description: Comma-separated list of hosts/domains allowed to serve the app
-Example: baum-tournament-xxxxx.ondigitalocean.app,tournament.yourdomain.com
-Where to set: DigitalOcean Console → Your App → Settings → App-Level Environment Variables
+Example: * (for initial setup), then baum-tournament-xxxxx.ondigitalocean.app
+Where to set: GitHub Repository → Settings → Secrets and variables → Actions
+Note: Set to * initially, then update in DigitalOcean UI after first deploy
 ```
 
-```
-GITHUB_USERNAME
-Description: Your GitHub username for private registry access
-Where to set: DigitalOcean Console → Your App → Settings → App-Level Environment Variables
-```
+## Container Registry Access
 
-```
-GITHUB_TOKEN
-Description: GitHub Personal Access Token with read:packages scope
-How to generate: GitHub Settings → Developer settings → Personal access tokens
-Where to set: DigitalOcean Console → Your App → Settings → App-Level Environment Variables
-```
+Docker images are pushed to GitHub Container Registry (GHCR) and pulled by DigitalOcean.
+
+**Recommended approach:** Make GHCR packages public
+- Go to GitHub repository → Packages → Click package → Settings → Change visibility → Public
+- This eliminates the need for authentication tokens
+
+**Alternative:** If packages must remain private, configure DigitalOcean with GitHub credentials separately.
 
 See [DIGITALOCEAN.md](DIGITALOCEAN.md) for complete setup instructions.

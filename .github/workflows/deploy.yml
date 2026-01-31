@@ -90,10 +90,6 @@ jobs:
                 value: "False"
               - key: DJANGO_ALLOWED_HOSTS
                 value: ${{ secrets.DJANGO_ALLOWED_HOSTS }}
-              - key: GITHUB_USERNAME
-                value: ${{ github.actor }}
-              - key: GITHUB_TOKEN
-                value: ${{ secrets.GITHUB_TOKEN }}
             health_check:
               http_path: /api/players/
               initial_delay_seconds: 40
