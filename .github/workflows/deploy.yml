@@ -66,96 +66,61 @@ jobs:
           fi
         fi
     
-    - name: Install PyYAML for YAML generation
-      if: steps.check-app.outputs.app-exists == 'false'
-      run: pip install pyyaml==6.0.3
-    
     - name: Inject secrets into app spec for new app creation
       if: steps.check-app.outputs.app-exists == 'false'
       run: |
         # Create a temporary file with secrets injected (only for new app creation)
-        # Use Python to properly escape YAML values to avoid parsing errors with special characters
-        python3 << 'PYTHON_EOF'
-        import yaml
-        import os
-        import sys
+        # Quote secret values to handle special characters properly in YAML
+        cat > .do/app-with-secrets.yaml << 'EOF'
+        name: baum-tournament
+        region: nyc
         
-        # Validate required secrets are present
-        django_secret_key = os.environ.get('DJANGO_SECRET_KEY')
-        django_allowed_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS')
-        github_repository = os.environ.get('GITHUB_REPOSITORY')
+        services:
+          - name: backend
+            image:
+              registry_type: GHCR
+              registry: ghcr.io
+              repository: ${{ github.repository }}/backend
+              tag: latest
+            envs:
+              - key: DJANGO_SETTINGS_MODULE
+                value: tournament_app.settings
+              - key: DJANGO_SECRET_KEY
+                value: "${{ secrets.DJANGO_SECRET_KEY }}"
+              - key: DJANGO_DEBUG
+                value: "False"
+              - key: DJANGO_ALLOWED_HOSTS
+                value: "${{ secrets.DJANGO_ALLOWED_HOSTS }}"
+            health_check:
+              http_path: /api/players/
+              initial_delay_seconds: 40
+              period_seconds: 30
+              timeout_seconds: 10
+              success_threshold: 1
+              failure_threshold: 3
+            http_port: 8000
+            instance_count: 1
+            instance_size_slug: basic-xxs
+            routes:
+              - path: /api
         
-        if not django_secret_key:
-            print("Error: DJANGO_SECRET_KEY secret is not set", file=sys.stderr)
-            sys.exit(1)
-        
-        if not django_allowed_hosts:
-            print("Error: DJANGO_ALLOWED_HOSTS secret is not set", file=sys.stderr)
-            sys.exit(1)
-        
-        if not github_repository:
-            print("Error: GITHUB_REPOSITORY is not set", file=sys.stderr)
-            sys.exit(1)
-        
-        spec = {
-            'name': 'baum-tournament',
-            'region': 'nyc',
-            'services': [
-                {
-                    'name': 'backend',
-                    'image': {
-                        'registry_type': 'GHCR',
-                        'registry': 'ghcr.io',
-                        'repository': f'{github_repository}/backend',
-                        'tag': 'latest'
-                    },
-                    'envs': [
-                        {'key': 'DJANGO_SETTINGS_MODULE', 'value': 'tournament_app.settings'},
-                        {'key': 'DJANGO_SECRET_KEY', 'value': django_secret_key},
-                        {'key': 'DJANGO_DEBUG', 'value': 'False'},
-                        {'key': 'DJANGO_ALLOWED_HOSTS', 'value': django_allowed_hosts}
-                    ],
-                    'health_check': {
-                        'http_path': '/api/players/',
-                        'initial_delay_seconds': 40,
-                        'period_seconds': 30,
-                        'timeout_seconds': 10,
-                        'success_threshold': 1,
-                        'failure_threshold': 3
-                    },
-                    'http_port': 8000,
-                    'instance_count': 1,
-                    'instance_size_slug': 'basic-xxs',
-                    'routes': [{'path': '/api'}]
-                },
-                {
-                    'name': 'web',
-                    'image': {
-                        'registry_type': 'GHCR',
-                        'registry': 'ghcr.io',
-                        'repository': f'{github_repository}/nginx',
-                        'tag': 'latest'
-                    },
-                    'envs': [
-                        {'key': 'BACKEND_URL', 'value': 'http://backend:8000'}
-                    ],
-                    'http_port': 80,
-                    'instance_count': 1,
-                    'instance_size_slug': 'basic-xxs',
-                    'routes': [{'path': '/'}]
-                }
-            ]
-        }
-        
-        with open('.do/app-with-secrets.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(spec, f, default_flow_style=False, sort_keys=False)
-        PYTHON_EOF
+          - name: web
+            image:
+              registry_type: GHCR
+              registry: ghcr.io
+              repository: ${{ github.repository }}/nginx
+              tag: latest
+            envs:
+              - key: BACKEND_URL
+                value: http://backend:8000
+            http_port: 80
+            instance_count: 1
+            instance_size_slug: basic-xxs
+            routes:
+              - path: /
+        EOF
         
         echo "✓ Generated app spec with secrets injected for new app creation"
-      env:
-        DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-        DJANGO_ALLOWED_HOSTS: ${{ secrets.DJANGO_ALLOWED_HOSTS }}
-        GITHUB_REPOSITORY: ${{ github.repository }}
     
     - name: Create new app
       id: create-app
