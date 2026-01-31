@@ -27,9 +27,49 @@ jobs:
         sed -i "s|REPO_PLACEHOLDER|${{ github.repository }}|g" .do/app.yaml
         cat .do/app.yaml
     
-    - name: Inject secrets into app spec
+    - name: Extract app name from spec
+      id: app-name
       run: |
-        # Create a temporary file with secrets injected
+        APP_NAME=$(grep "^name:" .do/app.yaml | head -n 1 | awk '{print $2}')
+        echo "app-name=$APP_NAME" >> $GITHUB_OUTPUT
+        echo "App name from spec: $APP_NAME"
+    
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    
+    - name: Check if app exists
+      id: check-app
+      run: |
+        # Try to find existing app by name
+        APP_NAME="${{ steps.app-name.outputs.app-name }}"
+        echo "Checking for existing app: $APP_NAME"
+        
+        # Get list of apps and search for exact name match
+        APP_LIST=$(doctl apps list --format ID,Spec.Name --no-header)
+        
+        if [ -z "$APP_LIST" ]; then
+          echo "No apps found in account"
+          echo "app-exists=false" >> $GITHUB_OUTPUT
+        else
+          # Look for exact match in the second column (name)
+          APP_ID=$(echo "$APP_LIST" | awk -v name="$APP_NAME" '$2 == name {print $1}')
+          
+          if [ -n "$APP_ID" ]; then
+            echo "app-exists=true" >> $GITHUB_OUTPUT
+            echo "app-id=$APP_ID" >> $GITHUB_OUTPUT
+            echo "✓ Found existing app: $APP_ID (name: $APP_NAME)"
+          else
+            echo "app-exists=false" >> $GITHUB_OUTPUT
+            echo "ℹ No existing app found with name: $APP_NAME"
+          fi
+        fi
+    
+    - name: Inject secrets into app spec for new app creation
+      if: steps.check-app.outputs.app-exists == 'false'
+      run: |
+        # Create a temporary file with secrets injected (only for new app creation)
         cat > .do/app-with-secrets.yaml << 'EOF'
         name: baum-tournament
         region: nyc
@@ -83,46 +123,7 @@ jobs:
               - path: /
         EOF
         
-        echo "Generated app spec with secrets injected"
-    
-    - name: Extract app name from spec
-      id: app-name
-      run: |
-        APP_NAME=$(grep "^name:" .do/app.yaml | head -n 1 | awk '{print $2}')
-        echo "app-name=$APP_NAME" >> $GITHUB_OUTPUT
-        echo "App name from spec: $APP_NAME"
-    
-    - name: Install doctl
-      uses: digitalocean/action-doctl@v2
-      with:
-        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-    
-    - name: Check if app exists
-      id: check-app
-      run: |
-        # Try to find existing app by name
-        APP_NAME="${{ steps.app-name.outputs.app-name }}"
-        echo "Checking for existing app: $APP_NAME"
-        
-        # Get list of apps and search for exact name match
-        APP_LIST=$(doctl apps list --format ID,Spec.Name --no-header)
-        
-        if [ -z "$APP_LIST" ]; then
-          echo "No apps found in account"
-          echo "app-exists=false" >> $GITHUB_OUTPUT
-        else
-          # Look for exact match in the second column (name)
-          APP_ID=$(echo "$APP_LIST" | awk -v name="$APP_NAME" '$2 == name {print $1}')
-          
-          if [ -n "$APP_ID" ]; then
-            echo "app-exists=true" >> $GITHUB_OUTPUT
-            echo "app-id=$APP_ID" >> $GITHUB_OUTPUT
-            echo "✓ Found existing app: $APP_ID (name: $APP_NAME)"
-          else
-            echo "app-exists=false" >> $GITHUB_OUTPUT
-            echo "ℹ No existing app found with name: $APP_NAME"
-          fi
-        fi
+        echo "✓ Generated app spec with secrets injected for new app creation"
     
     - name: Create new app
       id: create-app
@@ -139,9 +140,10 @@ jobs:
       run: |
         APP_ID="${{ steps.check-app.outputs.app-id }}"
         echo "Updating existing app: $APP_ID"
-        doctl apps update $APP_ID --spec .do/app-with-secrets.yaml
+        echo "Note: Using regular app.yaml to preserve existing environment variables"
+        doctl apps update $APP_ID --spec .do/app.yaml
         echo "app-id=$APP_ID" >> $GITHUB_OUTPUT
-        echo "✓ Updated app: $APP_ID"
+        echo "✓ Updated app: $APP_ID (environment variables unchanged)"
     
     - name: Set app ID for subsequent steps
       id: set-app-id
