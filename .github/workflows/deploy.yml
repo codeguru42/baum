@@ -70,6 +70,7 @@ jobs:
       if: steps.check-app.outputs.app-exists == 'false'
       run: |
         # Create a temporary file with secrets injected (only for new app creation)
+        # Quote secret values to handle special characters properly in YAML
         cat > .do/app-with-secrets.yaml << 'EOF'
         name: baum-tournament
         region: nyc
@@ -85,11 +86,11 @@ jobs:
               - key: DJANGO_SETTINGS_MODULE
                 value: tournament_app.settings
               - key: DJANGO_SECRET_KEY
-                value: ${{ secrets.DJANGO_SECRET_KEY }}
+                value: "${{ secrets.DJANGO_SECRET_KEY }}"
               - key: DJANGO_DEBUG
                 value: "False"
               - key: DJANGO_ALLOWED_HOSTS
-                value: ${{ secrets.DJANGO_ALLOWED_HOSTS }}
+                value: "${{ secrets.DJANGO_ALLOWED_HOSTS }}"
             health_check:
               http_path: /api/players/
               initial_delay_seconds: 40
