@@ -30,55 +30,30 @@ This is required for GitHub Actions to deploy to DigitalOcean.
 5. Value: Paste the token from above
 6. Click **Add secret**
 
-### 2. Configure Environment Variables (After First Deploy)
+### 2. Configure GitHub Secrets
 
-After the first deployment creates your app, you need to configure environment variables in App Platform.
+The deploy workflow automatically injects environment variables from GitHub Secrets into DigitalOcean. You need to add these secrets to your GitHub repository:
 
 **Steps:**
 
-1. **Create a GitHub Personal Access Token** (for private registry access):
-   
-   **Option 1: Fine-grained tokens (Recommended)**
-   - Go to GitHub Settings → Developer settings → Personal access tokens → **Fine-grained tokens**
-   - Click **Generate new token**
-   - Token name: `DigitalOcean GHCR Access`
-   - Expiration: Choose based on your security policy (e.g., 90 days)
-   - Repository access: Select **Only select repositories** and choose this repository
-   - Permissions:
-     - Repository permissions → **Metadata**: Read-only (allows access to packages associated with the repository)
-   - Click **Generate token**
-   - **Copy the token** (you won't see it again!)
-   
-   **Note**: Packages created by GitHub Actions are typically associated with the repository. If your packages are at the account/organization level, you may need to use a classic token with `read:packages` scope instead.
-   
-   **Option 2: Classic tokens**
-   - Go to GitHub Settings → Developer settings → Personal access tokens → **Tokens (classic)**
-   - Click **Generate new token**
-   - Name: `DigitalOcean GHCR Access`
-   - Select scopes: Check `read:packages`
-   - Click **Generate token**
-   - **Copy the token** (you won't see it again!)
+1. Go to your GitHub repository
+2. **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret** and add each of these:
 
-2. **Add all environment variables to App Platform:**
-   - Go to [DigitalOcean Apps](https://cloud.digitalocean.com/apps)
-   - Click on your app: `baum-tournament`
-   - Go to **Settings** → **App-Level Environment Variables**
-   - Add these variables (all as **ENCRYPTED** type):
-
-| Variable | Value | How to Generate |
-|----------|-------|-----------------|
-| `GITHUB_USERNAME` | Your GitHub username | N/A |
-| `GITHUB_TOKEN` | GitHub PAT from step 1 | Created above |
+| Secret Name | Value | How to Generate |
+|-------------|-------|-----------------|
+| `DIGITALOCEAN_ACCESS_TOKEN` | Your DigitalOcean API token | See step 1 above |
 | `DJANGO_SECRET_KEY` | Random secret key | Run: `openssl rand -base64 32` |
-| `DJANGO_ALLOWED_HOSTS` | Your app's domain | Copy from app's live URL (e.g., `baum-tournament-xxxxx.ondigitalocean.app`) |
+| `DJANGO_ALLOWED_HOSTS` | Your app's domain | Get from DigitalOcean after first deploy (e.g., `baum-tournament-xxxxx.ondigitalocean.app`) |
 
-3. **Click Save**
-   - The app will automatically redeploy with the new configuration
-   - App Platform will use `GITHUB_USERNAME` and `GITHUB_TOKEN` to authenticate with GitHub Container Registry
+**Note:** For `DJANGO_ALLOWED_HOSTS`, you can:
+- Initially set it to `*` (wildcard) for the first deploy
+- After deployment, update it to your actual DigitalOcean app URL
+- The workflow uses `${{ github.actor }}` for `GITHUB_USERNAME` and the built-in `${{ secrets.GITHUB_TOKEN }}` for GHCR access automatically
 
-## How to Deploy
+### 3. Deploy
 
-Once configured, deployment is automatic:
+Once GitHub Secrets are configured, deployment is fully automated:
 
 1. Push code to the `main` branch
 2. GitHub Actions builds Docker images
@@ -121,16 +96,22 @@ To use your own domain:
 ## Troubleshooting
 
 **Deployment fails with "cannot pull image"**
-- Verify `GITHUB_USERNAME` and `GITHUB_TOKEN` are set correctly in App Platform
-- Ensure GitHub Personal Access Token has `read:packages` scope
 - Check that images are being built and pushed to GHCR by GitHub Actions
+- Verify the GHCR images are public or that GITHUB_TOKEN has access
+- Check workflow logs for any image build failures
 
 **App shows 500 error after deployment**
-- Configure environment variables in App Platform (Step 3)
-- Check that `DJANGO_SECRET_KEY` and `DJANGO_ALLOWED_HOSTS` are set
+- Verify `DJANGO_SECRET_KEY` is set in GitHub Secrets
+- Check that `DJANGO_ALLOWED_HOSTS` includes your app's domain
+- View logs in DigitalOcean App Platform console
 
 **"Invalid token" error**
-- Regenerate DigitalOcean access token and update GitHub secret
+- Regenerate DigitalOcean access token and update `DIGITALOCEAN_ACCESS_TOKEN` GitHub secret
+
+**Need to update DJANGO_ALLOWED_HOSTS after first deploy**
+1. Get your app URL from DigitalOcean (e.g., `baum-tournament-xxxxx.ondigitalocean.app`)
+2. Update the `DJANGO_ALLOWED_HOSTS` secret in GitHub
+3. Push a commit to trigger redeployment (or manually trigger the workflow)
 
 ## More Information
 

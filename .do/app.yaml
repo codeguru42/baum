@@ -19,6 +19,12 @@ services:
       - key: DJANGO_ALLOWED_HOSTS
         scope: RUN_TIME
         type: SECRET
+      - key: GITHUB_USERNAME
+        scope: RUN_TIME
+        type: SECRET
+      - key: GITHUB_TOKEN
+        scope: RUN_TIME
+        type: SECRET
     health_check:
       http_path: /api/players/
       initial_delay_seconds: 40
