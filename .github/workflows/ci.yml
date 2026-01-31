@@ -27,7 +27,7 @@ jobs:
     
     - name: Run Django tests in container
       run: |
-        docker run --rm baum-vibe-backend-dev:test python manage.py test
+        docker run --rm baum-vibe-backend-dev:test uv run python manage.py test
     
     - name: Run flake8 linting in container
       run: |
