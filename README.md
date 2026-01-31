@@ -49,7 +49,7 @@ baum-vibe/
 │   │   └── tests.py         # Backend tests (15 tests)
 │   ├── tournament_app/       # Django project settings
 │   ├── manage.py
-│   └── requirements.txt
+│   └── pyproject.toml        # Python dependencies (managed with uv)
 └── frontend/
     ├── src/
     │   ├── components/
@@ -166,24 +166,29 @@ python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-3. Install dependencies:
+3. Install uv (Python package installer):
 ```bash
-pip install -r requirements.txt
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-4. Run migrations:
+4. Install dependencies:
+```bash
+uv sync
+```
+
+5. Run migrations:
 ```bash
 python manage.py migrate
 ```
 
-5. (Optional) Create a superuser for admin access:
+6. (Optional) Create a superuser for admin access:
 ```bash
-python manage.py createsuperuser
+uv run python manage.py createsuperuser
 ```
 
-6. Start the Django development server:
+7. Start the Django development server:
 ```bash
-python manage.py runserver
+uv run python manage.py runserver
 ```
 
 The backend API will be available at `http://localhost:8000/api/`
@@ -228,8 +233,7 @@ View the latest build status: ![CI](https://github.com/YOUR_USERNAME/baum-vibe/w
 
 ```bash
 cd backend
-source venv/bin/activate
-python manage.py test
+uv run python manage.py test
 ```
 
 The backend includes 15 comprehensive tests covering:

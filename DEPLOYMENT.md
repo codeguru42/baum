@@ -136,7 +136,7 @@ The default setup uses SQLite, which is suitable for small to medium deployments
    ```
    DATABASE_URL=postgresql://user:password@postgres:5432/tournament_db
    ```
-3. Install `psycopg2` in `backend/requirements.txt`
+3. Add `psycopg2` to `backend/pyproject.toml`
 
 **Option 2: Use external managed database**
 

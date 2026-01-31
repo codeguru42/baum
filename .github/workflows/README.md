@@ -99,10 +99,8 @@ Replace `YOUR_USERNAME` with your GitHub username.
 ### Backend Tests
 ```bash
 cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python manage.py test
+uv sync
+uv run python manage.py test
 ```
 
 ### Frontend Tests
@@ -138,7 +136,7 @@ The following environment variables are used in CI builds:
 
 To speed up CI builds, the following caches are used:
 
-1. **Python dependencies**: `pip` cache based on `requirements.txt`
+1. **Python dependencies**: `uv` cache based on `pyproject.toml` and `uv.lock`
 2. **Node.js dependencies**: `npm` cache based on `package-lock.json`
 3. **Docker layers**: Docker Buildx cache for faster image builds
 
@@ -146,7 +144,7 @@ To speed up CI builds, the following caches are used:
 
 ### Backend Test Failures
 - Check Python version compatibility (3.11)
-- Verify all dependencies are in `requirements.txt`
+- Verify all dependencies are in `pyproject.toml`
 - Ensure database migrations are applied
 - Check for Django settings issues
 
