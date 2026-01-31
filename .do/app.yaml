@@ -19,8 +19,6 @@ services:
       - key: DJANGO_ALLOWED_HOSTS
         scope: RUN_TIME
         type: SECRET
-      - key: DATABASE_URL
-        value: sqlite:///db/db.sqlite3
     health_check:
       http_path: /api/players/
       initial_delay_seconds: 40
