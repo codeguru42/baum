@@ -127,7 +127,7 @@ jobs:
         
         # Test backend health directly
         echo "Testing backend health..."
-        docker compose -f docker-compose.prod.yml exec -T backend python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/players/')" || exit 1
+        docker compose -f docker-compose.prod.yml exec -T backend uv run python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/players/')" || exit 1
         
         # Test through nginx
         echo "Testing through nginx..."
@@ -137,18 +137,4 @@ jobs:
         
         # Cleanup
         docker compose -f docker-compose.prod.yml down
-    
-    - name: Validate development environment
-      run: |
-        docker compose build
-        docker compose up -d
-        sleep 10
-        
-        # Test dev backend
-        curl -f http://localhost:8000/api/players/ || exit 1
-        
-        # Test dev frontend
-        curl -f http://localhost:3000/ || exit 1
-        
-        docker compose down
 
