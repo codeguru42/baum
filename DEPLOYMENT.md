@@ -127,20 +127,7 @@ Internet → Nginx (Port 80/443)
 
 ### Database
 
-The default setup uses SQLite, which is suitable for small to medium deployments. For larger deployments or multiple servers:
-
-**Option 1: Use PostgreSQL**
-
-1. Add PostgreSQL service to `docker-compose.prod.yml`
-2. Update `DATABASE_URL` in `.env`:
-   ```
-   DATABASE_URL=postgresql://user:password@postgres:5432/tournament_db
-   ```
-3. Add `psycopg2` to `backend/pyproject.toml`
-
-**Option 2: Use external managed database**
-
-Point `DATABASE_URL` to your cloud database service (AWS RDS, Google Cloud SQL, etc.)
+This project uses SQLite, which is suitable for small to medium deployments.
 
 ### Backups
 
