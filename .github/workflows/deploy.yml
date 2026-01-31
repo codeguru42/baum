@@ -74,6 +74,19 @@ jobs:
         python3 << 'PYTHON_EOF'
         import yaml
         import os
+        import sys
+        
+        # Validate required secrets are present
+        django_secret_key = os.environ.get('DJANGO_SECRET_KEY')
+        django_allowed_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS')
+        
+        if not django_secret_key:
+            print("Error: DJANGO_SECRET_KEY secret is not set", file=sys.stderr)
+            sys.exit(1)
+        
+        if not django_allowed_hosts:
+            print("Error: DJANGO_ALLOWED_HOSTS secret is not set", file=sys.stderr)
+            sys.exit(1)
         
         spec = {
             'name': 'baum-tournament',
@@ -89,9 +102,9 @@ jobs:
                     },
                     'envs': [
                         {'key': 'DJANGO_SETTINGS_MODULE', 'value': 'tournament_app.settings'},
-                        {'key': 'DJANGO_SECRET_KEY', 'value': os.environ.get('DJANGO_SECRET_KEY', '')},
+                        {'key': 'DJANGO_SECRET_KEY', 'value': django_secret_key},
                         {'key': 'DJANGO_DEBUG', 'value': 'False'},
-                        {'key': 'DJANGO_ALLOWED_HOSTS', 'value': os.environ.get('DJANGO_ALLOWED_HOSTS', '')}
+                        {'key': 'DJANGO_ALLOWED_HOSTS', 'value': django_allowed_hosts}
                     ],
                     'health_check': {
                         'http_path': '/api/players/',
@@ -125,7 +138,7 @@ jobs:
             ]
         }
         
-        with open('.do/app-with-secrets.yaml', 'w') as f:
+        with open('.do/app-with-secrets.yaml', 'w', encoding='utf-8') as f:
             yaml.dump(spec, f, default_flow_style=False, sort_keys=False)
         PYTHON_EOF
         
