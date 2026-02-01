@@ -1,40 +1,18 @@
-import { useState, useEffect } from 'react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
+import { useTournamentData } from '../components/TournamentDataContext';
 import PlayersTable from '../components/tables/PlayersTable';
-import { playerService } from '../services/api';
 
 /**
  * Admin view for managing players
  * Displays all players with their statistics
  */
 const AdminPlayersView = () => {
-  const [players, setPlayers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { players, loadingPlayers, playersError } = useTournamentData();
 
-  useEffect(() => {
-    fetchPlayers();
-  }, []);
-
-  const fetchPlayers = async () => {
-    try {
-      setLoading(true);
-      const response = await playerService.getAll();
-      setPlayers(response.data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load players. Please try again later.');
-      // eslint-disable-next-line no-console
-      console.error('Error fetching players:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (loadingPlayers) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
         <CircularProgress />
@@ -43,8 +21,8 @@ const AdminPlayersView = () => {
     );
   }
 
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
+  if (playersError) {
+    return <Alert severity="error">{playersError}</Alert>;
   }
 
   if (players.length === 0) {
