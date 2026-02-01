@@ -12,7 +12,7 @@ yarn-error.log*
 
 coverage/
 
-# Linter and formatter configs (keep for consistency)
+# Linter and formatter configs
 .eslintrc.json
 .eslintignore
 .prettierrc.json

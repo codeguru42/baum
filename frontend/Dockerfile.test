@@ -7,7 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (including dev dependencies for testing)
-# Using npm install instead of npm ci for better compatibility
+# Note: Using npm install instead of npm ci due to timeout issues in some environments
+# npm ci would be preferred for deterministic builds but has been unreliable
 RUN npm install
 
 # Copy ALL project files including tests
