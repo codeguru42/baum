@@ -55,9 +55,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     
-    - name: Build frontend development image
+    - name: Build frontend test image
       run: |
-        docker build -t baum-vibe-frontend-dev:test -f frontend/Dockerfile frontend/
+        docker build -t baum-vibe-frontend-dev:test -f frontend/Dockerfile.test frontend/
     
     - name: Run tests in container
       run: |

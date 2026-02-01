@@ -10,15 +10,9 @@ yarn-debug.log*
 yarn-error.log*
 .DS_Store
 
-# Test files
-src/**/*.test.js
-src/**/*.test.jsx
-src/**/*.spec.js
-src/**/*.spec.jsx
-src/setupTests.js
 coverage/
 
-# Linter and formatter configs
+# Linter and formatter configs (keep for consistency)
 .eslintrc.json
 .eslintignore
 .prettierrc.json

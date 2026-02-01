@@ -1,0 +1,18 @@
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files first for better layer caching
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies for testing)
+# Using npm install instead of npm ci for better compatibility
+RUN npm install
+
+# Copy ALL project files including tests
+# Test files are now included (removed from .dockerignore)
+COPY . .
+
+# Default command runs tests
+CMD ["npm", "test", "--", "--run"]
