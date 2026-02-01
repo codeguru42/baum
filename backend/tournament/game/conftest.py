@@ -3,7 +3,7 @@
 import pytest
 
 # Import player fixtures that game tests depend on
-from tournament.player.tests.conftest import player_data, player  # noqa: F401
+from tournament.player.conftest import player_data, player  # noqa: F401
 
 from tournament.game.models import Game
 from tournament.player.models import Player
