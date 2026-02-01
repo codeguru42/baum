@@ -9,3 +9,36 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .DS_Store
+
+# Test files
+src/**/*.test.js
+src/**/*.test.jsx
+src/**/*.spec.js
+src/**/*.spec.jsx
+src/setupTests.js
+coverage/
+
+# Linter and formatter configs
+.eslintrc.json
+.eslintignore
+.prettierrc.json
+.prettierignore
+
+# Documentation
+*.md
+README.md
+
+# Configuration files
+.env.example
+.gitignore
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*~
+
+# CI/CD
+.github/
