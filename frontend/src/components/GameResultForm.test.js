@@ -118,8 +118,8 @@ describe('GameResultForm', () => {
 
     await waitFor(() => {
       expect(gameService.create).toHaveBeenCalled();
-      expect(screen.getByText(/Game result submitted successfully!/i)).toBeInTheDocument();
     });
+    expect(screen.getByText(/Game result submitted successfully!/i)).toBeInTheDocument();
   });
 
   test('shows error when players have same AGA ID', async () => {
