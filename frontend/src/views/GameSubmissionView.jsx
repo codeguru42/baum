@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -13,14 +13,15 @@ import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import NotificationSnackbar from '../components/ui/NotificationSnackbar';
-import { playerService, gameService } from '../services/api';
+import { useNotification } from '../components/NotificationContext';
+import { gameService, playerService } from '../services/api';
 
 /**
  * Game submission view for reporting game results
  * Includes player lookup and game details entry
  */
 const GameSubmissionView = () => {
+  const { showSuccess, showError } = useNotification();
   const player1AgaIdRef = useRef(null);
   const player2AgaIdRef = useRef(null);
 
@@ -44,12 +45,6 @@ const GameSubmissionView = () => {
     player2_color: 'white',
     rated: true,
     winner: 'player1',
-  });
-
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'success',
   });
 
   const [loading, setLoading] = useState({
@@ -102,27 +97,15 @@ const GameSubmissionView = () => {
 
   const validateForm = () => {
     if (!player1.aga_id || !player1.name || !player1.aga_rank || !player1.age) {
-      setSnackbar({
-        open: true,
-        message: 'Please fill in all Black player information',
-        severity: 'error',
-      });
+      showError('Please fill in all Black player information');
       return false;
     }
     if (!player2.aga_id || !player2.name || !player2.aga_rank || !player2.age) {
-      setSnackbar({
-        open: true,
-        message: 'Please fill in all White player information',
-        severity: 'error',
-      });
+      showError('Please fill in all White player information');
       return false;
     }
     if (player1.aga_id === player2.aga_id) {
-      setSnackbar({
-        open: true,
-        message: 'Black and White must be different players',
-        severity: 'error',
-      });
+      showError('Black and White must be different players');
       return false;
     }
     return true;
@@ -157,11 +140,7 @@ const GameSubmissionView = () => {
 
       await gameService.create(gameData);
 
-      setSnackbar({
-        open: true,
-        message: 'Game result submitted successfully!',
-        severity: 'success',
-      });
+      showSuccess('Game result submitted successfully!');
 
       // Reset form
       setPlayer1({ aga_id: '', name: '', aga_rank: '', age: '' });
@@ -177,11 +156,7 @@ const GameSubmissionView = () => {
       // Restore focus to Player 1 AGA ID field
       setTimeout(() => player1AgaIdRef.current?.focus(), 0);
     } catch (error) {
-      setSnackbar({
-        open: true,
-        message: error.response?.data?.detail || 'Error submitting game result',
-        severity: 'error',
-      });
+      showError(error.response?.data?.detail || 'Error submitting game result');
     }
 
     setLoading({ ...loading, submit: false });
@@ -339,13 +314,6 @@ const GameSubmissionView = () => {
           </Grid>
         </form>
       </Paper>
-
-      <NotificationSnackbar
-        open={snackbar.open}
-        message={snackbar.message}
-        severity={snackbar.severity}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      />
     </Container>
   );
 };
