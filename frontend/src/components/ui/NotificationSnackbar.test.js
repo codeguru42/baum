@@ -1,13 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import NotificationSnackbar from './NotificationSnackbar';
 
 describe('NotificationSnackbar', () => {
-  const mockOnClose = jest.fn();
-
-  beforeEach(() => {
-    mockOnClose.mockClear();
-  });
+  const mockOnClose = vi.fn();
 
   it('renders when open is true', () => {
     render(

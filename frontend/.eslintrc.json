@@ -81,7 +81,7 @@
   },
   "overrides": [
     {
-      "files": ["setupTests.js"],
+      "files": ["setupTests.js", "**/*.test.js", "**/__mocks__/**"],
       "rules": {
         "import/named": "off"
       }

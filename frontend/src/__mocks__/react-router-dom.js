@@ -1,5 +1,6 @@
 const React = require('react');
-const mockNavigate = jest.fn();
+const { vi } = require('vitest');
+const mockNavigate = vi.fn();
 
 module.exports = {
   useNavigate: () => mockNavigate,

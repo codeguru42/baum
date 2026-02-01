@@ -1,10 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import GamesTable from './GamesTable';
 
 describe('GamesTable', () => {
-  const mockOnToggleValid = jest.fn();
-  const mockOnSort = jest.fn();
+  const mockOnToggleValid = vi.fn();
+  const mockOnSort = vi.fn();
 
   const mockGames = [
     {
@@ -52,11 +53,6 @@ describe('GamesTable', () => {
       created_at: '2024-01-16T14:30:00Z',
     },
   ];
-
-  beforeEach(() => {
-    mockOnToggleValid.mockClear();
-    mockOnSort.mockClear();
-  });
 
   it('renders table with game data', () => {
     render(
