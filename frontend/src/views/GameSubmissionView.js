@@ -210,7 +210,6 @@ const GameSubmissionView = () => {
                   onChange={(e) => handleAgaIdChange(1, e.target.value)}
                   disabled={loading.player1}
                   inputRef={player1AgaIdRef}
-                  autoFocus
                 />
                 <TextField
                   required

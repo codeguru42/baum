@@ -78,5 +78,13 @@
     "es2021": true,
     "jest": true,
     "node": true
-  }
+  },
+  "overrides": [
+    {
+      "files": ["setupTests.js"],
+      "rules": {
+        "import/named": "off"
+      }
+    }
+  ]
 }
