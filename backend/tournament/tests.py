@@ -1,5 +1,6 @@
 import pytest
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -36,7 +37,7 @@ class PlayerModelTests(TestCase):
     def test_unique_aga_id(self):
         """Test that AGA ID must be unique."""
         Player.objects.create(**self.player_data)
-        with self.assertRaises(Exception):
+        with self.assertRaises(IntegrityError):
             Player.objects.create(**self.player_data)
 
 
