@@ -14,11 +14,8 @@ dependencies = [
 prod = [
     "gunicorn>=21.2.0",
 ]
-dev = [
-    "flake8>=6.0.0",
-]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "flake8>=6.0.0",
 ]

@@ -18,12 +18,10 @@ dependencies = [
     { name = "django" },
     { name = "django-cors-headers" },
     { name = "djangorestframework" },
+    { name = "envparse" },
 ]
 
 [package.optional-dependencies]
-dev = [
-    { name = "flake8" },
-]
 prod = [
     { name = "gunicorn" },
 ]
@@ -38,7 +36,7 @@ requires-dist = [
     { name = "django", specifier = "==4.2.9" },
     { name = "django-cors-headers", specifier = "==4.3.1" },
     { name = "djangorestframework", specifier = "==3.14.0" },
-    { name = "flake8", marker = "extra == 'dev'", specifier = ">=6.0.0" },
+    { name = "envparse", specifier = "==0.2.0" },
     { name = "gunicorn", marker = "extra == 'prod'", specifier = ">=21.2.0" },
 ]
 
@@ -84,6 +82,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/8e/53/5b2a002c5ebafd60d
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ff/4b/3b46c0914ba4b7546a758c35fdfa8e7f017fcbe7f23c878239e93623337a/djangorestframework-3.14.0-py3-none-any.whl", hash = "sha256:eb63f58c9f218e1a7d064d17a70751f528ed4e1d35547fdade9aaf4cd103fd08", size = 1062761 },
 ]
+
+[[package]]
+name = "envparse"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2f/8d/bee8a59732c169a455627ff1557d0db180f7c352b0274480267ad3e46875/envparse-0.2.0.tar.gz", hash = "sha256:4f3b9a27bb55d27f124eb4adf006fec05e4588891c9a054a183a112645056eb7", size = 7576 }
 
 [[package]]
 name = "flake8"
