@@ -25,7 +25,9 @@ describe('ThemeContext', () => {
 
   it('throws error when useTheme is used outside provider', () => {
     // Suppress console.error for this test
+    // eslint-disable-next-line no-console
     const originalError = console.error;
+    // eslint-disable-next-line no-console
     console.error = () => {};
 
     const TestComponent = () => {
@@ -37,6 +39,7 @@ describe('ThemeContext', () => {
       render(<TestComponent />);
     }).toThrow('useTheme must be used within a ThemeProvider');
 
+    // eslint-disable-next-line no-console
     console.error = originalError;
   });
 

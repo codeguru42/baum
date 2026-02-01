@@ -4,8 +4,8 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { useNotification } from '../components/NotificationContext';
-import { useTournamentData } from '../components/TournamentDataContext';
 import GamesTable from '../components/tables/GamesTable';
+import { useTournamentData } from '../components/TournamentDataContext';
 
 /**
  * Admin view for managing games
@@ -20,7 +20,7 @@ const AdminGamesView = () => {
   const handleToggleValidity = async (gameId, _currentValidity) => {
     try {
       await toggleGameValidity(gameId);
-    } catch (err) {
+    } catch (_err) {
       showError('Failed to update game validity. Please try again.');
     }
   };

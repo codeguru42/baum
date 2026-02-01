@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest';
 import { NotificationProvider, useNotification } from './NotificationContext';
 
 describe('NotificationContext', () => {
-
   it('renders children correctly', () => {
     render(
       <NotificationProvider>
@@ -17,7 +16,9 @@ describe('NotificationContext', () => {
 
   it('throws error when useNotification is used outside provider', () => {
     // Suppress console.error for this test
+    // eslint-disable-next-line no-console
     const originalError = console.error;
+    // eslint-disable-next-line no-console
     console.error = () => {};
 
     const TestComponent = () => {
@@ -29,6 +30,8 @@ describe('NotificationContext', () => {
       render(<TestComponent />);
     }).toThrow('useNotification must be used within a NotificationProvider');
 
+    // Restore console.error
+    // eslint-disable-next-line no-console
     console.error = originalError;
   });
 

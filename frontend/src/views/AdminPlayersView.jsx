@@ -2,8 +2,8 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
-import { useTournamentData } from '../components/TournamentDataContext';
 import PlayersTable from '../components/tables/PlayersTable';
+import { useTournamentData } from '../components/TournamentDataContext';
 
 /**
  * Admin view for managing players

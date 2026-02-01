@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
-import Titlebar from './Titlebar';
 import { ThemeProvider } from '../ThemeContext';
+import Titlebar from './Titlebar';
 
 describe('Titlebar', () => {
   const renderTitlebar = () => {

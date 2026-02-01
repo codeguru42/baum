@@ -45,7 +45,9 @@ describe('TournamentDataContext', () => {
 
   it('throws error when useTournamentData is used outside provider', () => {
     // Suppress console.error for this test
+    // eslint-disable-next-line no-console
     const originalError = console.error;
+    // eslint-disable-next-line no-console
     console.error = () => {};
 
     const TestComponent = () => {
@@ -57,6 +59,7 @@ describe('TournamentDataContext', () => {
       render(<TestComponent />);
     }).toThrow('useTournamentData must be used within a TournamentDataProvider');
 
+    // eslint-disable-next-line no-console
     console.error = originalError;
   });
 
@@ -140,9 +143,7 @@ describe('TournamentDataContext', () => {
     );
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Failed to load games. Please try again later.')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Failed to load games. Please try again later.')).toBeInTheDocument();
     });
   });
 
@@ -218,7 +219,7 @@ describe('TournamentDataContext', () => {
       const handleToggle = async () => {
         try {
           await toggleGameValidity(1);
-        } catch (err) {
+        } catch (_err) {
           setError('Failed');
         }
       };
