@@ -1,5 +1,9 @@
-import { Container, Paper, Typography, Box, Button } from '@mui/material';
-import { Outlet, Link as RouterLink, useLocation } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
 
 /**
  * Layout wrapper for admin routes with shared UI and navigation

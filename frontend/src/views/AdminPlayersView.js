@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Typography, CircularProgress, Alert, Box } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import PlayersTable from '../components/tables/PlayersTable';
 import { playerService } from '../services/api';
 
