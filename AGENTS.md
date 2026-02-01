@@ -243,6 +243,7 @@ Based on recent commits, use conventional commit format:
 - Make granular commits when developing a plan
 - Each commit should represent a single logical change
 - Commit frequently as you complete discrete steps
+- Commit after making a change to ensure progress is saved
 
 Examples:
 - `refactor: rename Navigation to Titlebar and remove navigation buttons`
