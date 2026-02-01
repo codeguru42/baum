@@ -89,7 +89,7 @@ describe('GameResultForm', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Please fill in all Black player information/i)).toBeInTheDocument();
+      expect(screen.getByText(/Please fill in all Black player information/i)).toBeVisible();
     });
   });
 
@@ -122,7 +122,7 @@ describe('GameResultForm', () => {
     await waitFor(() => {
       expect(gameService.create).toHaveBeenCalled();
     });
-    expect(screen.getByText(/Game result submitted successfully!/i)).toBeInTheDocument();
+    expect(screen.getByText(/Game result submitted successfully!/i)).toBeVisible();
   });
 
   test('shows error when players have same AGA ID', async () => {
@@ -148,7 +148,7 @@ describe('GameResultForm', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Black and White must be different players/i)).toBeInTheDocument();
+      expect(screen.getByText(/Black and White must be different players/i)).toBeVisible();
     });
   });
 });
