@@ -70,8 +70,8 @@ const AdminGamesView = () => {
         let comparison = 0;
 
         if (sortBy === 'ageDiff') {
-          const ageDiffA = Math.abs(a.player1_age - a.player2_age);
-          const ageDiffB = Math.abs(b.player1_age - b.player2_age);
+          const ageDiffA = Math.abs(a.player1.age - a.player2.age);
+          const ageDiffB = Math.abs(b.player1.age - b.player2.age);
           comparison = ageDiffB - ageDiffA;
         } else if (sortBy === 'rated') {
           if (a.rated === b.rated) {
