@@ -10,11 +10,12 @@ class PlayerViewSet(viewsets.ModelViewSet):
     ViewSet for Player model.
     Provides CRUD operations and lookup by AGA ID.
     """
+
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
-    lookup_field = 'aga_id'
+    lookup_field = "aga_id"
 
-    @action(detail=True, methods=['get'], url_path='lookup')
+    @action(detail=True, methods=["get"], url_path="lookup")
     def lookup_player(self, request, aga_id=None):
         """
         Lookup a player by AGA ID.
@@ -26,8 +27,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         except Player.DoesNotExist:
             return Response(
-                {'detail': 'Player not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {"detail": "Player not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
 
@@ -36,6 +36,7 @@ class GameViewSet(viewsets.ModelViewSet):
     ViewSet for Game model.
     Provides CRUD operations for game results.
     """
+
     queryset = Game.objects.all()
     serializer_class = GameSerializer
 
@@ -46,7 +47,5 @@ class GameViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(
-            serializer.data,
-            status=status.HTTP_201_CREATED,
-            headers=headers
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
