@@ -45,16 +45,19 @@ class PlayerSerializer(serializers.ModelSerializer):
 
 
 class GameSerializer(serializers.ModelSerializer):
-    """Serializer for Game model."""
+    """Serializer for Game model with nested player objects."""
 
-    player1_details = PlayerSerializer(source="player1", read_only=True)
-    player2_details = PlayerSerializer(source="player2", read_only=True)
-    player1_name = serializers.CharField(source="player1.name", read_only=True)
-    player1_rank = serializers.CharField(source="player1.aga_rank", read_only=True)
-    player1_age = serializers.IntegerField(source="player1.age", read_only=True)
-    player2_name = serializers.CharField(source="player2.name", read_only=True)
-    player2_rank = serializers.CharField(source="player2.aga_rank", read_only=True)
-    player2_age = serializers.IntegerField(source="player2.age", read_only=True)
+    # For write operations, accept player IDs and colors
+    player1_id = serializers.PrimaryKeyRelatedField(
+        queryset=Player.objects.all(), write_only=True, source="player1"
+    )
+    player2_id = serializers.PrimaryKeyRelatedField(
+        queryset=Player.objects.all(), write_only=True, source="player2"
+    )
+
+    # For read operations, return nested player objects
+    player1 = serializers.SerializerMethodField(read_only=True)
+    player2 = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Game
@@ -62,14 +65,8 @@ class GameSerializer(serializers.ModelSerializer):
             "id",
             "player1",
             "player2",
-            "player1_details",
-            "player2_details",
-            "player1_name",
-            "player1_rank",
-            "player1_age",
-            "player2_name",
-            "player2_rank",
-            "player2_age",
+            "player1_id",
+            "player2_id",
             "player1_color",
             "player2_color",
             "handicap",
@@ -79,6 +76,30 @@ class GameSerializer(serializers.ModelSerializer):
             "created_at",
         ]
         read_only_fields = ["id", "created_at"]
+        extra_kwargs = {
+            "player1_color": {"write_only": True},
+            "player2_color": {"write_only": True},
+        }
+
+    def get_player1(self, obj):
+        """Return player1 data with color."""
+        return {
+            "id": obj.player1.aga_id,
+            "name": obj.player1.name,
+            "rank": obj.player1.aga_rank,
+            "age": obj.player1.age,
+            "color": obj.player1_color,
+        }
+
+    def get_player2(self, obj):
+        """Return player2 data with color."""
+        return {
+            "id": obj.player2.aga_id,
+            "name": obj.player2.name,
+            "rank": obj.player2.aga_rank,
+            "age": obj.player2.age,
+            "color": obj.player2_color,
+        }
 
     def validate(self, attrs):
         """Validate game data."""

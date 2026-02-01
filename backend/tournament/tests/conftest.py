@@ -63,8 +63,8 @@ def valid_game_data(two_players) -> dict:
     """Return valid game data for API requests."""
     player1, player2 = two_players
     return {
-        "player1": player1.aga_id,
-        "player2": player2.aga_id,
+        "player1_id": player1.aga_id,
+        "player2_id": player2.aga_id,
         "player1_color": "black",
         "player2_color": "white",
         "handicap": 0,
