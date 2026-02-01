@@ -1,8 +1,9 @@
-import { AppBar, Toolbar, Typography, Button, CssBaseline, Box } from '@mui/material';
+import { CssBaseline, Box } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { BrowserRouter as Router, Routes, Route, Link as RouterLink } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AdminPage from './components/AdminPage';
 import GameResultForm from './components/GameResultForm';
+import Navigation from './components/layout/Navigation';
 
 const theme = createTheme({
   palette: {
@@ -21,19 +22,7 @@ function App() {
       <CssBaseline />
       <Router>
         <Box sx={{ flexGrow: 1 }}>
-          <AppBar position="static">
-            <Toolbar>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                Go Tournament Manager
-              </Typography>
-              <Button color="inherit" component={RouterLink} to="/">
-                Submit Result
-              </Button>
-              <Button color="inherit" component={RouterLink} to="/admin/games">
-                Admin
-              </Button>
-            </Toolbar>
-          </AppBar>
+          <Navigation />
           <Routes>
             <Route path="/" element={<GameResultForm />} />
             <Route path="/admin/games" element={<AdminPage view="games" />} />
