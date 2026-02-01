@@ -1,9 +1,8 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link as RouterLink } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { AppBar, Toolbar, Typography, Button, CssBaseline, Box } from '@mui/material';
-import GameResultForm from './components/GameResultForm';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { BrowserRouter as Router, Routes, Route, Link as RouterLink } from 'react-router-dom';
 import AdminPage from './components/AdminPage';
+import GameResultForm from './components/GameResultForm';
 
 const theme = createTheme({
   palette: {

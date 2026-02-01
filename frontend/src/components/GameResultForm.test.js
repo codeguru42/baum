@@ -1,8 +1,7 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import GameResultForm from './GameResultForm';
 import { playerService, gameService } from '../services/api';
+import GameResultForm from './GameResultForm';
 
 // Mock the API services
 jest.mock('../services/api');
@@ -16,17 +15,21 @@ describe('GameResultForm', () => {
 
   test('renders form with all required fields', () => {
     render(<GameResultForm />);
-    
-    expect(screen.getByRole('heading', { name: /Go Tournament - Report Game Result/i, level: 1 })).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('heading', { name: /Go Tournament - Report Game Result/i, level: 1 })
+    ).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /^Black$/i, level: 6 })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /^White$/i, level: 6 })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /Game Information/i, level: 6 })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /Game Information/i, level: 6 })
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Submit Game Result/i })).toBeInTheDocument();
   });
 
   test('allows entering player information', async () => {
     render(<GameResultForm />);
-    
+
     const agaIdInputs = screen.getAllByLabelText(/AGA ID Number/i);
     const nameInputs = screen.getAllByLabelText(/Name/i);
     const rankInputs = screen.getAllByLabelText(/AGA Rank/i);
@@ -61,7 +64,7 @@ describe('GameResultForm', () => {
     playerService.getByAgaId.mockResolvedValueOnce(mockPlayerData);
 
     render(<GameResultForm />);
-    
+
     const agaIdInputs = screen.getAllByLabelText(/AGA ID Number/i);
     fireEvent.change(agaIdInputs[0], { target: { value: 'AGA999' } });
 
@@ -73,7 +76,7 @@ describe('GameResultForm', () => {
 
   test('displays player color headers correctly', () => {
     render(<GameResultForm />);
-    
+
     // Component displays "Black" and "White" headers for player sections
     expect(screen.getByRole('heading', { name: /^Black$/i, level: 6 })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /^White$/i, level: 6 })).toBeInTheDocument();
@@ -81,7 +84,7 @@ describe('GameResultForm', () => {
 
   test('validates form before submission', async () => {
     render(<GameResultForm />);
-    
+
     const submitButton = screen.getByRole('button', { name: /Submit Game Result/i });
     fireEvent.click(submitButton);
 
@@ -95,7 +98,7 @@ describe('GameResultForm', () => {
     gameService.create.mockResolvedValue({});
 
     render(<GameResultForm />);
-    
+
     // Fill in Player 1
     const agaIdInputs = screen.getAllByLabelText(/AGA ID Number/i);
     const nameInputs = screen.getAllByLabelText(/Name/i);
@@ -124,7 +127,7 @@ describe('GameResultForm', () => {
 
   test('shows error when players have same AGA ID', async () => {
     render(<GameResultForm />);
-    
+
     const agaIdInputs = screen.getAllByLabelText(/AGA ID Number/i);
     const nameInputs = screen.getAllByLabelText(/Name/i);
     const rankInputs = screen.getAllByLabelText(/AGA Rank/i);

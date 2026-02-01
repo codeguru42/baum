@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { CheckCircle, Cancel } from '@mui/icons-material';
 import {
   Container,
   Paper,
@@ -19,7 +19,7 @@ import {
   Tooltip,
   TableSortLabel,
 } from '@mui/material';
-import { CheckCircle, Cancel } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { gameService, playerService } from '../services/api';
 
 const AdminPage = ({ view = 'games' }) => {
@@ -47,6 +47,7 @@ const AdminPage = ({ view = 'games' }) => {
       setError(null);
     } catch (err) {
       setError('Failed to load games. Please try again later.');
+      // eslint-disable-next-line no-console
       console.error('Error fetching games:', err);
     } finally {
       setLoading(false);
@@ -61,6 +62,7 @@ const AdminPage = ({ view = 'games' }) => {
       setError(null);
     } catch (err) {
       setError('Failed to load players. Please try again later.');
+      // eslint-disable-next-line no-console
       console.error('Error fetching players:', err);
     } finally {
       setLoading(false);
@@ -71,13 +73,14 @@ const AdminPage = ({ view = 'games' }) => {
     try {
       await gameService.update(gameId, { valid_for_prizes: !currentValidity });
       // Update local state
-      setGames(games.map(game => 
-        game.id === gameId 
-          ? { ...game, valid_for_prizes: !currentValidity }
-          : game
-      ));
+      setGames(
+        games.map((game) =>
+          game.id === gameId ? { ...game, valid_for_prizes: !currentValidity } : game
+        )
+      );
     } catch (err) {
       setError('Failed to update game validity. Please try again.');
+      // eslint-disable-next-line no-console
       console.error('Error updating game:', err);
     }
   };
@@ -106,15 +109,15 @@ const AdminPage = ({ view = 'games' }) => {
 
   const getSortedGames = () => {
     const gamesCopy = [...games];
-    
+
     // First, separate valid and invalid games
-    const validGames = gamesCopy.filter(game => game.valid_for_prizes);
-    const invalidGames = gamesCopy.filter(game => !game.valid_for_prizes);
-    
+    const validGames = gamesCopy.filter((game) => game.valid_for_prizes);
+    const invalidGames = gamesCopy.filter((game) => !game.valid_for_prizes);
+
     // Sort valid games based on selected column
     const sortedValidGames = validGames.sort((a, b) => {
       let comparison = 0;
-      
+
       if (sortBy === 'ageDiff') {
         const ageDiffA = Math.abs(a.player1_age - a.player2_age);
         const ageDiffB = Math.abs(b.player1_age - b.player2_age);
@@ -127,15 +130,15 @@ const AdminPage = ({ view = 'games' }) => {
           comparison = a.rated ? -1 : 1;
         }
       }
-      
+
       // Apply sort order
       return sortOrder === 'asc' ? -comparison : comparison;
     });
-    
+
     // Sort invalid games the same way
     const sortedInvalidGames = invalidGames.sort((a, b) => {
       let comparison = 0;
-      
+
       if (sortBy === 'ageDiff') {
         const ageDiffA = Math.abs(a.player1_age - a.player2_age);
         const ageDiffB = Math.abs(b.player1_age - b.player2_age);
@@ -147,10 +150,10 @@ const AdminPage = ({ view = 'games' }) => {
           comparison = a.rated ? -1 : 1;
         }
       }
-      
+
       return sortOrder === 'asc' ? -comparison : comparison;
     });
-    
+
     // Return valid games first, then invalid games
     return [...sortedValidGames, ...sortedInvalidGames];
   };
@@ -174,7 +177,7 @@ const AdminPage = ({ view = 'games' }) => {
 
   const renderGamesTable = () => {
     const sortedGames = getSortedGames();
-    
+
     return (
       <TableContainer sx={{ mt: 3 }}>
         <Table>
@@ -189,7 +192,10 @@ const AdminPage = ({ view = 'games' }) => {
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold', cursor: 'pointer' }} onClick={() => handleSort('ageDiff')}>
+              <TableCell
+                sx={{ color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
+                onClick={() => handleSort('ageDiff')}
+              >
                 <TableSortLabel
                   active={sortBy === 'ageDiff'}
                   direction={sortBy === 'ageDiff' ? sortOrder : 'desc'}
@@ -204,7 +210,10 @@ const AdminPage = ({ view = 'games' }) => {
               </TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Handicap</TableCell>
               <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Winner</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold', cursor: 'pointer' }} onClick={() => handleSort('rated')}>
+              <TableCell
+                sx={{ color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
+                onClick={() => handleSort('rated')}
+              >
                 <TableSortLabel
                   active={sortBy === 'rated'}
                   direction={sortBy === 'rated' ? sortOrder : 'asc'}
@@ -224,17 +233,40 @@ const AdminPage = ({ view = 'games' }) => {
           <TableBody>
             {sortedGames.map((game) => {
               // Determine which player is black and which is white
-              const blackPlayer = game.player1_color === 'black' 
-                ? { name: game.player1_name, id: game.player1, rank: game.player1_rank, age: game.player1_age }
-                : { name: game.player2_name, id: game.player2, rank: game.player2_rank, age: game.player2_age };
-              
-              const whitePlayer = game.player1_color === 'white'
-                ? { name: game.player1_name, id: game.player1, rank: game.player1_rank, age: game.player1_age }
-                : { name: game.player2_name, id: game.player2, rank: game.player2_rank, age: game.player2_age };
-              
-              const winnerColor = game.winner === 'player1' ? game.player1_color : game.player2_color;
+              const blackPlayer =
+                game.player1_color === 'black'
+                  ? {
+                      name: game.player1_name,
+                      id: game.player1,
+                      rank: game.player1_rank,
+                      age: game.player1_age,
+                    }
+                  : {
+                      name: game.player2_name,
+                      id: game.player2,
+                      rank: game.player2_rank,
+                      age: game.player2_age,
+                    };
+
+              const whitePlayer =
+                game.player1_color === 'white'
+                  ? {
+                      name: game.player1_name,
+                      id: game.player1,
+                      rank: game.player1_rank,
+                      age: game.player1_age,
+                    }
+                  : {
+                      name: game.player2_name,
+                      id: game.player2,
+                      rank: game.player2_rank,
+                      age: game.player2_age,
+                    };
+
+              const winnerColor =
+                game.winner === 'player1' ? game.player1_color : game.player2_color;
               const ageDiff = Math.abs(game.player1_age - game.player2_age);
-              
+
               return (
                 <TableRow
                   key={game.id}
@@ -261,9 +293,10 @@ const AdminPage = ({ view = 'games' }) => {
                     <Chip
                       label={winnerColor === 'black' ? 'Black' : 'White'}
                       size="small"
-                      sx={winnerColor === 'black' 
-                        ? { backgroundColor: '#000', color: '#fff' }
-                        : { backgroundColor: '#fff', color: '#000', border: '1px solid #000' }
+                      sx={
+                        winnerColor === 'black'
+                          ? { backgroundColor: '#000', color: '#fff' }
+                          : { backgroundColor: '#fff', color: '#000', border: '1px solid #000' }
                       }
                     />
                   </TableCell>
@@ -275,7 +308,13 @@ const AdminPage = ({ view = 'games' }) => {
                     />
                   </TableCell>
                   <TableCell>
-                    <Tooltip title={game.valid_for_prizes ? 'Mark as invalid for prizes' : 'Mark as valid for prizes'}>
+                    <Tooltip
+                      title={
+                        game.valid_for_prizes
+                          ? 'Mark as invalid for prizes'
+                          : 'Mark as valid for prizes'
+                      }
+                    >
                       <IconButton
                         onClick={() => toggleGameValidity(game.id, game.valid_for_prizes)}
                         color={game.valid_for_prizes ? 'success' : 'error'}
@@ -304,7 +343,9 @@ const AdminPage = ({ view = 'games' }) => {
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>Games Played</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>
+              Games Played
+            </TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>Won</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>Lost</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Last Updated</TableCell>
@@ -337,7 +378,7 @@ const AdminPage = ({ view = 'games' }) => {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Tournament Administration
         </Typography>
-        
+
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3, gap: 2 }}>
           <Button
             variant={view === 'games' ? 'contained' : 'outlined'}
@@ -371,8 +412,10 @@ const AdminPage = ({ view = 'games' }) => {
               No players registered yet
             </Typography>
           </Box>
+        ) : view === 'games' ? (
+          renderGamesTable()
         ) : (
-          view === 'games' ? renderGamesTable() : renderPlayersTable()
+          renderPlayersTable()
         )}
       </Paper>
     </Container>
