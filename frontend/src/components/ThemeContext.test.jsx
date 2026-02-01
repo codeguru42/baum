@@ -7,14 +7,10 @@ describe('ThemeContext', () => {
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
-    // Clean up DOM
-    document.body.innerHTML = '';
   });
 
   afterEach(() => {
-    // Clean up
     localStorage.clear();
-    document.body.innerHTML = '';
   });
 
   it('renders children correctly', () => {

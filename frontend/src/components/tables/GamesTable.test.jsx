@@ -1,10 +1,14 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import GamesTable from './GamesTable';
 
 describe('GamesTable', () => {
   const mockOnToggleValid = vi.fn();
   const mockOnSort = vi.fn();
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
   const mockGames = [
     {

@@ -23,7 +23,6 @@ describe('TournamentDataContext', () => {
   beforeEach(() => {
     // Clear all mocks before each test
     vi.clearAllMocks();
-    document.body.innerHTML = '';
 
     // Setup default mock responses
     playerService.getAll.mockResolvedValue({ data: [] });
@@ -32,7 +31,6 @@ describe('TournamentDataContext', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-    document.body.innerHTML = '';
   });
 
   it('renders children correctly', async () => {

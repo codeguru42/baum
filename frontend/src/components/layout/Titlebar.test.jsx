@@ -2,13 +2,16 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import Titlebar from './Titlebar';
+import { ThemeProvider } from '../ThemeContext';
 
 describe('Titlebar', () => {
   const renderTitlebar = () => {
     return render(
-      <BrowserRouter>
-        <Titlebar />
-      </BrowserRouter>
+      <ThemeProvider>
+        <BrowserRouter>
+          <Titlebar />
+        </BrowserRouter>
+      </ThemeProvider>
     );
   };
 

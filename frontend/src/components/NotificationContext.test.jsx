@@ -1,13 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { NotificationProvider, useNotification } from './NotificationContext';
 
 describe('NotificationContext', () => {
-  afterEach(() => {
-    // Clean up any open notifications
-    document.body.innerHTML = '';
-  });
 
   it('renders children correctly', () => {
     render(
