@@ -1,3 +1,4 @@
+import pytest
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -5,6 +6,7 @@ from django.core.exceptions import ValidationError
 from .models import Player, Game
 
 
+@pytest.mark.django_db
 class PlayerModelTests(TestCase):
     """Test cases for Player model."""
 
@@ -37,6 +39,7 @@ class PlayerModelTests(TestCase):
             Player.objects.create(**self.player_data)
 
 
+@pytest.mark.django_db
 class GameModelTests(TestCase):
     """Test cases for Game model."""
 
@@ -94,6 +97,7 @@ class GameModelTests(TestCase):
             game.clean()
 
 
+@pytest.mark.django_db
 class PlayerAPITests(APITestCase):
     """Test cases for Player API endpoints."""
 
@@ -153,6 +157,7 @@ class PlayerAPITests(APITestCase):
         self.assertEqual(Player.objects.count(), 0)
 
 
+@pytest.mark.django_db
 class GameAPITests(APITestCase):
     """Test cases for Game API endpoints."""
 
