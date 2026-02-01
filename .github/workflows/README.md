@@ -129,7 +129,7 @@ The following environment variables are used in CI builds:
 
 - `DJANGO_SECRET_KEY`: Test secret key (production requires real secret)
 - `DJANGO_ALLOWED_HOSTS`: Comma-separated list of allowed hosts
-- `REACT_APP_API_URL`: API endpoint URL for frontend
+- `VITE_API_URL`: API endpoint URL for frontend
 
 ## Caching Strategy
 
@@ -255,7 +255,7 @@ Deploys application to DigitalOcean production server.
 | `DEPLOY_PATH` | Deployment directory path on server |
 | `DJANGO_SECRET_KEY` | Django secret key (generate with `openssl rand -base64 32`) |
 | `DJANGO_ALLOWED_HOSTS` | Comma-separated list of allowed hosts |
-| `REACT_APP_API_URL` | Frontend API endpoint URL |
+| `VITE_API_URL` | Frontend API endpoint URL |
 | `PRODUCTION_URL` | Application URL for health checks |
 
 #### Deployment Process

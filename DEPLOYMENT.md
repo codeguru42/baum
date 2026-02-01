@@ -31,14 +31,14 @@ nano .env
 - `DJANGO_SECRET_KEY`: Generate a random secret key (use `openssl rand -base64 32`)
 - `DJANGO_DEBUG`: Set to `False` for production (can be omitted, defaults to False)
 - `DJANGO_ALLOWED_HOSTS`: Add your domain name(s), e.g., `yourdomain.com,www.yourdomain.com`
-- `REACT_APP_API_URL`: Set to your API URL, e.g., `https://yourdomain.com/api`
+- `VITE_API_URL`: Set to your API URL, e.g., `https://yourdomain.com/api`
 
 Example production `.env`:
 ```env
 DJANGO_SECRET_KEY=your-random-secret-key-here
 DJANGO_DEBUG=False
 DJANGO_ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
-REACT_APP_API_URL=https://yourdomain.com/api
+VITE_API_URL=https://yourdomain.com/api
 ```
 
 ### 3. Build and Start Services

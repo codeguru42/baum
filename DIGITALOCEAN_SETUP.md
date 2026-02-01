@@ -80,7 +80,7 @@ Add these secrets to your GitHub repository:
 | `DEPLOY_PATH` | Path on server to deploy to | `/root/baum-vibe` |
 | `DJANGO_SECRET_KEY` | Django secret key | Generate with `openssl rand -base64 32` |
 | `DJANGO_ALLOWED_HOSTS` | Allowed hosts for Django | `yourdomain.com,www.yourdomain.com` |
-| `REACT_APP_API_URL` | API URL for frontend | `https://yourdomain.com/api` |
+| `VITE_API_URL` | API URL for frontend | `https://yourdomain.com/api` |
 | `PRODUCTION_URL` | Your application URL | `https://yourdomain.com` |
 
 ### How to Get SSH Private Key
@@ -193,7 +193,7 @@ cat > .env << EOF
 DJANGO_SECRET_KEY=your-secret-key
 DJANGO_DEBUG=False
 DJANGO_ALLOWED_HOSTS=your-domain.com
-REACT_APP_API_URL=https://your-domain.com/api
+VITE_API_URL=https://your-domain.com/api
 EOF
 
 # Deploy to server

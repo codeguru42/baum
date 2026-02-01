@@ -115,7 +115,7 @@ jobs:
         NGINX_IMAGE: ghcr.io/${{ github.repository }}/nginx:latest
         DJANGO_SECRET_KEY: test-secret-key-for-ci
         DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
-        REACT_APP_API_URL: http://localhost/api
+        VITE_API_URL: http://localhost/api
       run: |
         # Start containers using production docker-compose file
         docker compose -f docker-compose.prod.yml up -d
