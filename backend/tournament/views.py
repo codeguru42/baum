@@ -1,52 +1,15 @@
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
+"""
+Re-export viewsets from subdirectories for backwards compatibility.
 
-from .models import Game, Player
-from .serializers import GameSerializer, PlayerSerializer
+This allows existing code to continue using:
+    from tournament.views import PlayerViewSet, GameViewSet
 
+Instead of:
+    from tournament.player.views import PlayerViewSet
+    from tournament.game.views import GameViewSet
+"""
 
-class PlayerViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for Player model.
-    Provides CRUD operations and lookup by AGA ID.
-    """
+from tournament.game.views import GameViewSet
+from tournament.player.views import PlayerViewSet
 
-    queryset = Player.objects.all()
-    serializer_class = PlayerSerializer
-    lookup_field = "aga_id"
-
-    @action(detail=True, methods=["get"], url_path="lookup")
-    def lookup_player(self, request, aga_id=None):
-        """
-        Lookup a player by AGA ID.
-        Returns player information if found, 404 otherwise.
-        """
-        try:
-            player = Player.objects.get(aga_id=aga_id)
-            serializer = self.get_serializer(player)
-            return Response(serializer.data)
-        except Player.DoesNotExist:
-            return Response(
-                {"detail": "Player not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-
-class GameViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for Game model.
-    Provides CRUD operations for game results.
-    """
-
-    queryset = Game.objects.all()
-    serializer_class = GameSerializer
-
-    def create(self, request, *args, **kwargs):
-        """Create a new game result."""
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )
+__all__ = ["PlayerViewSet", "GameViewSet"]

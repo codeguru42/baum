@@ -3,7 +3,7 @@
 import pytest
 from django.core.exceptions import ValidationError
 
-from tournament.models import Game
+from tournament.game.models import Game
 
 
 @pytest.mark.django_db

@@ -3,7 +3,7 @@
 import pytest
 from django.db import IntegrityError
 
-from tournament.models import Player
+from tournament.player.models import Player
 
 
 @pytest.mark.django_db

@@ -1,30 +1,10 @@
-from django.contrib import admin
+"""
+Import admin modules to ensure Django registers them.
 
-from .models import Game, Player
+Django's admin auto-discovery requires admin modules to be imported.
+By importing them here, we ensure the @admin.register decorators are executed.
+"""
 
-
-@admin.register(Player)
-class PlayerAdmin(admin.ModelAdmin):
-    """Admin configuration for Player model."""
-
-    list_display = ["aga_id", "name", "aga_rank", "age", "created_at"]
-    search_fields = ["aga_id", "name"]
-    list_filter = ["aga_rank"]
-
-
-@admin.register(Game)
-class GameAdmin(admin.ModelAdmin):
-    """Admin configuration for Game model."""
-
-    list_display = [
-        "id",
-        "player1",
-        "player2",
-        "winner",
-        "handicap",
-        "rated",
-        "created_at",
-    ]
-    list_filter = ["rated", "winner", "created_at"]
-    search_fields = ["player1__name", "player2__name"]
-    date_hierarchy = "created_at"
+# Import admin modules to register them with Django admin
+import tournament.game.admin  # noqa: F401
+import tournament.player.admin  # noqa: F401

@@ -4,7 +4,7 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from tournament.models import Game
+from tournament.game.models import Game
 
 
 @pytest.fixture
