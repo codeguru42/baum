@@ -136,7 +136,7 @@ export default [
   // and Vite/Rollup chunked outputs. The override is necessary to avoid
   // linting errors on valid imports like `import { vi } from 'vitest'`.
   {
-    files: ['setupTests.js', '**/*.test.{js,jsx}', '**/__mocks__/**'],
+    files: ['src/setupTests.js', '**/*.test.{js,jsx}', '**/__mocks__/**'],
     rules: {
       'import/named': 'off',
     },
