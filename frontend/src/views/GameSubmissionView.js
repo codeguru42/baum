@@ -71,7 +71,7 @@ const GameSubmissionView = () => {
             aga_rank: response.data.aga_rank,
             age: response.data.age,
           });
-        } catch (error) {
+        } catch (_error) {
           // Player not found - will be created on form submission
         }
         setLoading((prev) => ({ ...prev, player1: false }));
@@ -90,7 +90,7 @@ const GameSubmissionView = () => {
             aga_rank: response.data.aga_rank,
             age: response.data.age,
           });
-        } catch (error) {
+        } catch (_error) {
           // Player not found - will be created on form submission
         }
         setLoading((prev) => ({ ...prev, player2: false }));

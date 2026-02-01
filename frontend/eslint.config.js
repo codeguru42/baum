@@ -75,10 +75,8 @@ export default [
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
-          // Ignore JSX component imports (React automatic JSX transform)
-          // Components used in JSX like <Component /> are not detected as used
-          ignoreRestSiblings: true,
-          caughtErrors: 'none',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
         },
       ],
       'no-var': 'error',
