@@ -1,4 +1,5 @@
 """Shared fixtures for tournament tests."""
+
 import pytest
 
 from tournament.models import Game, Player
@@ -38,9 +39,7 @@ def two_players(db) -> tuple[Player, Player]:
     player1 = Player.objects.create(
         aga_id="AGA001", name="Alice", aga_rank="3d", age=30
     )
-    player2 = Player.objects.create(
-        aga_id="AGA002", name="Bob", aga_rank="2d", age=28
-    )
+    player2 = Player.objects.create(aga_id="AGA002", name="Bob", aga_rank="2d", age=28)
     return player1, player2
 
 

@@ -1,4 +1,5 @@
 """Tests for Player model."""
+
 import pytest
 from django.db import IntegrityError
 
@@ -41,7 +42,5 @@ def test_unique_aga_id_constraint(player_data):
 )
 def test_player_string_representations(aga_id, name, aga_rank, age, expected_str):
     """Test player string representation with various data."""
-    player = Player.objects.create(
-        aga_id=aga_id, name=name, aga_rank=aga_rank, age=age
-    )
+    player = Player.objects.create(aga_id=aga_id, name=name, aga_rank=aga_rank, age=age)
     assert str(player) == expected_str
