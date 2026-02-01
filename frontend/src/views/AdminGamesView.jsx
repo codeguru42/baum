@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { useNotification } from '../components/NotificationContext';
+import { useTournamentData } from '../components/TournamentDataContext';
 import GamesTable from '../components/tables/GamesTable';
-import { gameService } from '../services/api';
 
 /**
  * Admin view for managing games
@@ -13,43 +13,15 @@ import { gameService } from '../services/api';
  */
 const AdminGamesView = () => {
   const { showError } = useNotification();
-  const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { games, loadingGames, gamesError, toggleGameValidity } = useTournamentData();
   const [sortBy, setSortBy] = useState('ageDiff');
   const [sortOrder, setSortOrder] = useState('desc');
 
-  useEffect(() => {
-    fetchGames();
-  }, []);
-
-  const fetchGames = async () => {
+  const handleToggleValidity = async (gameId, _currentValidity) => {
     try {
-      setLoading(true);
-      const response = await gameService.getAll();
-      setGames(response.data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load games. Please try again later.');
-      // eslint-disable-next-line no-console
-      console.error('Error fetching games:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleGameValidity = async (gameId, currentValidity) => {
-    try {
-      await gameService.update(gameId, { valid_for_prizes: !currentValidity });
-      setGames(
-        games.map((game) =>
-          game.id === gameId ? { ...game, valid_for_prizes: !currentValidity } : game
-        )
-      );
+      await toggleGameValidity(gameId);
     } catch (err) {
       showError('Failed to update game validity. Please try again.');
-      // eslint-disable-next-line no-console
-      console.error('Error updating game:', err);
     }
   };
 
@@ -90,7 +62,7 @@ const AdminGamesView = () => {
     return [...sortGames(validGames), ...sortGames(invalidGames)];
   };
 
-  if (loading) {
+  if (loadingGames) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
         <CircularProgress />
@@ -99,8 +71,8 @@ const AdminGamesView = () => {
     );
   }
 
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
+  if (gamesError) {
+    return <Alert severity="error">{gamesError}</Alert>;
   }
 
   if (games.length === 0) {
@@ -120,7 +92,7 @@ const AdminGamesView = () => {
       </Typography>
       <GamesTable
         games={getSortedGames()}
-        onToggleValid={toggleGameValidity}
+        onToggleValid={handleToggleValidity}
         sortBy={sortBy}
         sortOrder={sortOrder}
         onSort={handleSort}
