@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Player, Game
+
+from .models import Game, Player
 
 
 @admin.register(Player)

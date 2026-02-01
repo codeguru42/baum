@@ -1,9 +1,10 @@
 import pytest
-from django.test import TestCase
-from rest_framework.test import APITestCase
-from rest_framework import status
 from django.core.exceptions import ValidationError
-from .models import Player, Game
+from django.test import TestCase
+from rest_framework import status
+from rest_framework.test import APITestCase
+
+from .models import Game, Player
 
 
 @pytest.mark.django_db
