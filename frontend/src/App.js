@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Navigation from './components/layout/Navigation';
+import Titlebar from './components/layout/Titlebar';
 import AdminGamesView from './views/AdminGamesView';
 import AdminLayout from './views/AdminLayout';
 import AdminPlayersView from './views/AdminPlayersView';
@@ -25,7 +25,7 @@ function App() {
       <CssBaseline />
       <Router>
         <Box sx={{ flexGrow: 1 }}>
-          <Navigation />
+          <Titlebar />
           <Routes>
             <Route path="/" element={<GameSubmissionView />} />
             <Route path="/admin" element={<AdminLayout />}>
