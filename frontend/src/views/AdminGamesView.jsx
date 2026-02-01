@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
+import { useNotification } from '../components/NotificationContext';
 import GamesTable from '../components/tables/GamesTable';
 import { gameService } from '../services/api';
 
@@ -11,6 +12,7 @@ import { gameService } from '../services/api';
  * Displays all games with sorting and validity toggling
  */
 const AdminGamesView = () => {
+  const { showError } = useNotification();
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,7 +47,7 @@ const AdminGamesView = () => {
         )
       );
     } catch (err) {
-      setError('Failed to update game validity. Please try again.');
+      showError('Failed to update game validity. Please try again.');
       // eslint-disable-next-line no-console
       console.error('Error updating game:', err);
     }
