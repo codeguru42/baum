@@ -1,12 +1,5 @@
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import PropTypes from 'prop-types';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
 
 /**
  * Reusable table component for displaying player information
@@ -37,9 +30,7 @@ const PlayersTable = ({ players }) => {
               Games Played
             </TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>Won</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>
-              Lost
-            </TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>Lost</TableCell>
             <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Last Updated</TableCell>
           </TableRow>
         </TableHead>
