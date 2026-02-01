@@ -25,18 +25,24 @@ jobs:
       run: |
         docker build -t baum-vibe-backend-dev:test -f backend/Dockerfile backend/
     
-    - name: Run Django tests in container
+    - name: Run Django tests with pytest
       run: |
-        docker run --rm baum-vibe-backend-dev:test uv run python manage.py test
+        docker run --rm baum-vibe-backend-dev:test uv run pytest -v --cov --cov-report=term-missing
     
-    - name: Run flake8 linting in container
+    - name: Run ruff linting
       run: |
-        docker run --rm baum-vibe-backend-dev:test sh -c "
-          pip install flake8 && \
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics && \
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        "
-      continue-on-error: true
+        docker run --rm baum-vibe-backend-dev:test uv run ruff check .
+      continue-on-error: true  # Advisory
+    
+    - name: Check black formatting
+      run: |
+        docker run --rm baum-vibe-backend-dev:test uv run black --check .
+      continue-on-error: true  # Advisory
+    
+    - name: Run mypy type checking
+      run: |
+        docker run --rm baum-vibe-backend-dev:test uv run mypy .
+      continue-on-error: true  # Advisory
 
   frontend-test:
     name: Frontend Tests
