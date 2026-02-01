@@ -9,3 +9,53 @@ db.sqlite3
 *.sqlite3
 .env
 *.log
+
+# Test files and directories
+tournament/tests/
+**/tests/
+**/test_*.py
+**/*_test.py
+**/conftest.py
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+.coverage.*
+
+# Development tool caches
+.mypy_cache/
+.ruff_cache/
+
+# Documentation
+*.md
+README.md
+DEPLOYMENT.md
+DIGITALOCEAN.md
+DOCKER.md
+
+# Configuration files
+.env.example
+.gitignore
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*~
+
+# CI/CD
+.github/
+
+# Local virtual environments
+.venv/
+env/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
