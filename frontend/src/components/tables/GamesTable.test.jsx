@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import GamesTable from './GamesTable';
 
 describe('GamesTable', () => {
