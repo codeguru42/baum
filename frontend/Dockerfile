@@ -3,10 +3,10 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files first for better layer caching
 COPY package*.json ./
 
-# Install dependencies
+# Install all dependencies (including dev dependencies)
 RUN npm install
 
 # Copy project files
@@ -15,5 +15,5 @@ COPY . .
 # Expose port
 EXPOSE 3000
 
-# Start app
+# Start development server with hot reload
 CMD ["npm", "start"]
