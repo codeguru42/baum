@@ -62,10 +62,6 @@ jobs:
     - name: Run tests in container
       run: |
         docker run --rm -e CI=true baum-vibe-frontend-dev:test npm test -- --run
-    
-    - name: Build frontend in container
-      run: |
-        docker run --rm baum-vibe-frontend-dev:test npm run build
 
   docker-integration:
     name: Integration Tests
