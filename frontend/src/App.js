@@ -1,9 +1,11 @@
 import { CssBaseline, Box } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import AdminPage from './components/AdminPage';
-import GameResultForm from './components/GameResultForm';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navigation from './components/layout/Navigation';
+import AdminGamesView from './views/AdminGamesView';
+import AdminLayout from './views/AdminLayout';
+import AdminPlayersView from './views/AdminPlayersView';
+import GameSubmissionView from './views/GameSubmissionView';
 
 const theme = createTheme({
   palette: {
@@ -24,10 +26,12 @@ function App() {
         <Box sx={{ flexGrow: 1 }}>
           <Navigation />
           <Routes>
-            <Route path="/" element={<GameResultForm />} />
-            <Route path="/admin/games" element={<AdminPage view="games" />} />
-            <Route path="/admin/players" element={<AdminPage view="players" />} />
-            <Route path="/admin" element={<AdminPage view="games" />} />
+            <Route path="/" element={<GameSubmissionView />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="games" replace />} />
+              <Route path="games" element={<AdminGamesView />} />
+              <Route path="players" element={<AdminPlayersView />} />
+            </Route>
           </Routes>
         </Box>
       </Router>
