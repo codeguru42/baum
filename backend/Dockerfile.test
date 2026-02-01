@@ -1,0 +1,24 @@
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Set work directory
+WORKDIR /app
+
+# Copy dependency files first for better layer caching
+COPY pyproject.toml uv.lock /app/
+
+# Install dependencies including dev dependencies for testing
+RUN uv sync --frozen
+
+# Copy ALL project files including tests
+# Test files are now included (removed from .dockerignore)
+COPY . /app/
+
+# Default command runs tests
+CMD ["uv", "run", "pytest", "-v"]
