@@ -30,7 +30,7 @@ export default defineConfig({
     sourcemap: true,
   },
   test: {
-    globals: true,
+    globals: false,
     environment: 'jsdom',
     setupFiles: './src/setupTests.js',
     css: true,
