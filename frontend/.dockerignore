@@ -10,6 +10,12 @@ yarn-debug.log*
 yarn-error.log*
 .DS_Store
 
+# Test files
+src/**/*.test.js
+src/**/*.test.jsx
+src/**/*.spec.js
+src/**/*.spec.jsx
+src/setupTests.js
 coverage/
 
 # Linter and formatter configs

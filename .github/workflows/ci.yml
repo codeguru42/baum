@@ -21,9 +21,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     
-    - name: Build backend test image
+    - name: Build backend development image
       run: |
-        docker build -t baum-vibe-backend-dev:test -f backend/Dockerfile.test backend/
+        docker build -t baum-vibe-backend-dev:test -f backend/Dockerfile backend/
     
     - name: Run Django tests with pytest
       run: |
@@ -55,9 +55,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     
-    - name: Build frontend test image
+    - name: Build frontend development image
       run: |
-        docker build -t baum-vibe-frontend-dev:test -f frontend/Dockerfile.test frontend/
+        docker build -t baum-vibe-frontend-dev:test -f frontend/Dockerfile frontend/
     
     - name: Run tests in container
       run: |
