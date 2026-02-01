@@ -1,6 +1,19 @@
 {
-  "extends": ["react-app", "react-app/jest", "plugin:prettier/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:prettier/recommended"
+  ],
   "plugins": ["react", "react-hooks", "jsx-a11y", "import", "prettier"],
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
   "rules": {
     "prettier/prettier": "error",
     "no-console": "warn",
@@ -47,16 +60,9 @@
     "jsx-a11y/aria-proptypes": "error",
     "jsx-a11y/aria-unsupported-elements": "error",
     "jsx-a11y/role-has-required-aria-props": "error",
-    "jsx-a11y/role-supports-aria-props": "error"
+    "jsx-a11y/role-supports-aria-props": "error",
+    "jsx-a11y/no-autofocus": "warn"
   },
-  "overrides": [
-    {
-      "files": ["**/*.test.js", "**/*.test.jsx", "**/*.spec.js", "**/*.spec.jsx"],
-      "rules": {
-        "testing-library/no-wait-for-multiple-assertions": "error"
-      }
-    }
-  ],
   "settings": {
     "react": {
       "version": "detect"
