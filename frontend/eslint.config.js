@@ -130,6 +130,12 @@ export default [
   },
 
   // Override for test files and mocks
+  // Note: 'import/named' produces false positives for vitest imports.
+  // The 'vi' export exists (verified in vitest's dist/index.js) but ESLint's
+  // resolver can't detect it through vitest's chunk-based build structure
+  // (vi.2VT5v0um.js). This is a known limitation with eslint-plugin-import
+  // and Vite/Rollup chunked outputs. The override is necessary to avoid
+  // linting errors on valid imports like `import { vi } from 'vitest'`.
   {
     files: ['setupTests.js', '**/*.test.js', '**/__mocks__/**'],
     rules: {
