@@ -103,7 +103,6 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
 ]
-testpaths = ["tournament/tests"]
 
 # Mypy - Type checker
 [tool.mypy]
