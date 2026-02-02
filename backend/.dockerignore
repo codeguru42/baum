@@ -10,14 +10,6 @@ db.sqlite3
 .env
 *.log
 
-# Test files and directories
-tournament/tests/
-**/tests/
-**/test_*.py
-**/*_test.py
-**/conftest.py
-.pytest_cache/
-
 # Coverage reports
 htmlcov/
 .coverage
