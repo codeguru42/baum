@@ -27,18 +27,18 @@ class PlayerSerializer(serializers.ModelSerializer):
 
     def get_games_played(self, obj):
         """Return total number of games played by this player."""
-        games_as_player1 = obj.games_as_player1.count()
-        games_as_player2 = obj.games_as_player2.count()
-        return games_as_player1 + games_as_player2
+        games_as_black = obj.games_as_player_black.count()
+        games_as_white = obj.games_as_player_white.count()
+        return games_as_black + games_as_white
 
     def get_games_won(self, obj):
         """Return number of games won by this player."""
-        won_as_player1 = obj.games_as_player1.filter(winner="player1").count()
-        won_as_player2 = obj.games_as_player2.filter(winner="player2").count()
-        return won_as_player1 + won_as_player2
+        won_as_black = obj.games_as_player_black.filter(winner="black").count()
+        won_as_white = obj.games_as_player_white.filter(winner="white").count()
+        return won_as_black + won_as_white
 
     def get_games_lost(self, obj):
         """Return number of games lost by this player."""
-        lost_as_player1 = obj.games_as_player1.filter(winner="player2").count()
-        lost_as_player2 = obj.games_as_player2.filter(winner="player1").count()
-        return lost_as_player1 + lost_as_player2
+        lost_as_black = obj.games_as_player_black.filter(winner="white").count()
+        lost_as_white = obj.games_as_player_white.filter(winner="black").count()
+        return lost_as_black + lost_as_white

@@ -22,17 +22,17 @@ import { gameService, playerService } from '../services/api';
  */
 const GameSubmissionView = () => {
   const { showSuccess, showError } = useNotification();
-  const player1AgaIdRef = useRef(null);
-  const player2AgaIdRef = useRef(null);
+  const playerBlackAgaIdRef = useRef(null);
+  const playerWhiteAgaIdRef = useRef(null);
 
-  const [player1, setPlayer1] = useState({
+  const [playerBlack, setPlayerBlack] = useState({
     aga_id: '',
     name: '',
     aga_rank: '',
     age: '',
   });
 
-  const [player2, setPlayer2] = useState({
+  const [playerWhite, setPlayerWhite] = useState({
     aga_id: '',
     name: '',
     aga_rank: '',
@@ -41,26 +41,24 @@ const GameSubmissionView = () => {
 
   const [gameInfo, setGameInfo] = useState({
     handicap: 0,
-    player1_color: 'black',
-    player2_color: 'white',
     rated: true,
-    winner: 'player1',
+    winner: 'black',
   });
 
   const [loading, setLoading] = useState({
-    player1: false,
-    player2: false,
+    playerBlack: false,
+    playerWhite: false,
     submit: false,
   });
 
-  const handleAgaIdChange = async (playerNumber, agaId) => {
-    if (playerNumber === 1) {
-      setPlayer1({ ...player1, aga_id: agaId });
+  const handleAgaIdChange = async (playerColor, agaId) => {
+    if (playerColor === 'black') {
+      setPlayerBlack({ ...playerBlack, aga_id: agaId });
       if (agaId.length >= 3) {
-        setLoading((prev) => ({ ...prev, player1: true }));
+        setLoading((prev) => ({ ...prev, playerBlack: true }));
         try {
           const response = await playerService.getByAgaId(agaId);
-          setPlayer1({
+          setPlayerBlack({
             aga_id: response.data.aga_id,
             name: response.data.name,
             aga_rank: response.data.aga_rank,
@@ -69,17 +67,17 @@ const GameSubmissionView = () => {
         } catch (_error) {
           // Player not found - will be created on form submission
         }
-        setLoading((prev) => ({ ...prev, player1: false }));
+        setLoading((prev) => ({ ...prev, playerBlack: false }));
         // Restore focus after auto-fill
-        setTimeout(() => player1AgaIdRef.current?.focus(), 0);
+        setTimeout(() => playerBlackAgaIdRef.current?.focus(), 0);
       }
     } else {
-      setPlayer2({ ...player2, aga_id: agaId });
+      setPlayerWhite({ ...playerWhite, aga_id: agaId });
       if (agaId.length >= 3) {
-        setLoading((prev) => ({ ...prev, player2: true }));
+        setLoading((prev) => ({ ...prev, playerWhite: true }));
         try {
           const response = await playerService.getByAgaId(agaId);
-          setPlayer2({
+          setPlayerWhite({
             aga_id: response.data.aga_id,
             name: response.data.name,
             aga_rank: response.data.aga_rank,
@@ -88,23 +86,23 @@ const GameSubmissionView = () => {
         } catch (_error) {
           // Player not found - will be created on form submission
         }
-        setLoading((prev) => ({ ...prev, player2: false }));
+        setLoading((prev) => ({ ...prev, playerWhite: false }));
         // Restore focus after auto-fill
-        setTimeout(() => player2AgaIdRef.current?.focus(), 0);
+        setTimeout(() => playerWhiteAgaIdRef.current?.focus(), 0);
       }
     }
   };
 
   const validateForm = () => {
-    if (!player1.aga_id || !player1.name || !player1.aga_rank || !player1.age) {
+    if (!playerBlack.aga_id || !playerBlack.name || !playerBlack.aga_rank || !playerBlack.age) {
       showError('Please fill in all Black player information');
       return false;
     }
-    if (!player2.aga_id || !player2.name || !player2.aga_rank || !player2.age) {
+    if (!playerWhite.aga_id || !playerWhite.name || !playerWhite.aga_rank || !playerWhite.age) {
       showError('Please fill in all White player information');
       return false;
     }
-    if (player1.aga_id === player2.aga_id) {
+    if (playerBlack.aga_id === playerWhite.aga_id) {
       showError('Black and White must be different players');
       return false;
     }
@@ -123,16 +121,18 @@ const GameSubmissionView = () => {
     try {
       // Create or update players
       await Promise.all([
-        playerService.create(player1).catch(() => playerService.update(player1.aga_id, player1)),
-        playerService.create(player2).catch(() => playerService.update(player2.aga_id, player2)),
+        playerService
+          .create(playerBlack)
+          .catch(() => playerService.update(playerBlack.aga_id, playerBlack)),
+        playerService
+          .create(playerWhite)
+          .catch(() => playerService.update(playerWhite.aga_id, playerWhite)),
       ]);
 
       // Create game result
       const gameData = {
-        player1: player1.aga_id,
-        player2: player2.aga_id,
-        player1_color: gameInfo.player1_color,
-        player2_color: gameInfo.player2_color,
+        player_black_id: playerBlack.aga_id,
+        player_white_id: playerWhite.aga_id,
         handicap: parseInt(gameInfo.handicap),
         rated: gameInfo.rated,
         winner: gameInfo.winner,
@@ -143,18 +143,16 @@ const GameSubmissionView = () => {
       showSuccess('Game result submitted successfully!');
 
       // Reset form
-      setPlayer1({ aga_id: '', name: '', aga_rank: '', age: '' });
-      setPlayer2({ aga_id: '', name: '', aga_rank: '', age: '' });
+      setPlayerBlack({ aga_id: '', name: '', aga_rank: '', age: '' });
+      setPlayerWhite({ aga_id: '', name: '', aga_rank: '', age: '' });
       setGameInfo({
         handicap: 0,
-        player1_color: 'black',
-        player2_color: 'white',
         rated: true,
-        winner: 'player1',
+        winner: 'black',
       });
 
-      // Restore focus to Player 1 AGA ID field
-      setTimeout(() => player1AgaIdRef.current?.focus(), 0);
+      // Restore focus to Black player AGA ID field
+      setTimeout(() => playerBlackAgaIdRef.current?.focus(), 0);
     } catch (error) {
       showError(error.response?.data?.detail || 'Error submitting game result');
     }
@@ -171,7 +169,7 @@ const GameSubmissionView = () => {
 
         <form onSubmit={handleSubmit}>
           <Grid container spacing={4}>
-            {/* Player 1 Section */}
+            {/* Black Player Section */}
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h6" gutterBottom color="primary">
                 Black
@@ -181,24 +179,24 @@ const GameSubmissionView = () => {
                   required
                   fullWidth
                   label="AGA ID Number"
-                  value={player1.aga_id}
-                  onChange={(e) => handleAgaIdChange(1, e.target.value)}
-                  disabled={loading.player1}
-                  inputRef={player1AgaIdRef}
+                  value={playerBlack.aga_id}
+                  onChange={(e) => handleAgaIdChange('black', e.target.value)}
+                  disabled={loading.playerBlack}
+                  inputRef={playerBlackAgaIdRef}
                 />
                 <TextField
                   required
                   fullWidth
                   label="Name"
-                  value={player1.name}
-                  onChange={(e) => setPlayer1({ ...player1, name: e.target.value })}
+                  value={playerBlack.name}
+                  onChange={(e) => setPlayerBlack({ ...playerBlack, name: e.target.value })}
                 />
                 <TextField
                   required
                   fullWidth
                   label="AGA Rank"
-                  value={player1.aga_rank}
-                  onChange={(e) => setPlayer1({ ...player1, aga_rank: e.target.value })}
+                  value={playerBlack.aga_rank}
+                  onChange={(e) => setPlayerBlack({ ...playerBlack, aga_rank: e.target.value })}
                   placeholder="e.g., 5d, 3k"
                 />
                 <TextField
@@ -206,13 +204,13 @@ const GameSubmissionView = () => {
                   fullWidth
                   type="number"
                   label="Age"
-                  value={player1.age}
-                  onChange={(e) => setPlayer1({ ...player1, age: e.target.value })}
+                  value={playerBlack.age}
+                  onChange={(e) => setPlayerBlack({ ...playerBlack, age: e.target.value })}
                 />
               </Box>
             </Grid>
 
-            {/* Player 2 Section */}
+            {/* White Player Section */}
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h6" gutterBottom color="primary">
                 White
@@ -222,24 +220,24 @@ const GameSubmissionView = () => {
                   required
                   fullWidth
                   label="AGA ID Number"
-                  value={player2.aga_id}
-                  onChange={(e) => handleAgaIdChange(2, e.target.value)}
-                  disabled={loading.player2}
-                  inputRef={player2AgaIdRef}
+                  value={playerWhite.aga_id}
+                  onChange={(e) => handleAgaIdChange('white', e.target.value)}
+                  disabled={loading.playerWhite}
+                  inputRef={playerWhiteAgaIdRef}
                 />
                 <TextField
                   required
                   fullWidth
                   label="Name"
-                  value={player2.name}
-                  onChange={(e) => setPlayer2({ ...player2, name: e.target.value })}
+                  value={playerWhite.name}
+                  onChange={(e) => setPlayerWhite({ ...playerWhite, name: e.target.value })}
                 />
                 <TextField
                   required
                   fullWidth
                   label="AGA Rank"
-                  value={player2.aga_rank}
-                  onChange={(e) => setPlayer2({ ...player2, aga_rank: e.target.value })}
+                  value={playerWhite.aga_rank}
+                  onChange={(e) => setPlayerWhite({ ...playerWhite, aga_rank: e.target.value })}
                   placeholder="e.g., 5d, 3k"
                 />
                 <TextField
@@ -247,8 +245,8 @@ const GameSubmissionView = () => {
                   fullWidth
                   type="number"
                   label="Age"
-                  value={player2.age}
-                  onChange={(e) => setPlayer2({ ...player2, age: e.target.value })}
+                  value={playerWhite.age}
+                  onChange={(e) => setPlayerWhite({ ...playerWhite, age: e.target.value })}
                 />
               </Box>
             </Grid>
@@ -281,8 +279,8 @@ const GameSubmissionView = () => {
                   label="Winner"
                   onChange={(e) => setGameInfo({ ...gameInfo, winner: e.target.value })}
                 >
-                  <MenuItem value="player1">Black</MenuItem>
-                  <MenuItem value="player2">White</MenuItem>
+                  <MenuItem value="black">Black</MenuItem>
+                  <MenuItem value="white">White</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

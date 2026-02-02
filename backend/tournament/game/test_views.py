@@ -21,23 +21,20 @@ def test_create_game(api_client, valid_game_data):
         print(f"Response data: {response.json()}")
     assert response.status_code == status.HTTP_201_CREATED
     assert Game.objects.count() == 1
-    created_game = Game.objects.first()
-    assert created_game.player1_color == "black"
-    assert created_game.player2_color == "white"
 
     # Verify nested player structure in response
     data = response.json()
-    assert "player1" in data
-    assert "player2" in data
-    assert isinstance(data["player1"], dict)
-    assert isinstance(data["player2"], dict)
-    assert "id" in data["player1"]
-    assert "name" in data["player1"]
-    assert "rank" in data["player1"]
-    assert "age" in data["player1"]
-    assert "color" in data["player1"]
-    assert data["player1"]["color"] == "black"
-    assert data["player2"]["color"] == "white"
+    assert "player_black" in data
+    assert "player_white" in data
+    assert isinstance(data["player_black"], dict)
+    assert isinstance(data["player_white"], dict)
+    assert "id" in data["player_black"]
+    assert "name" in data["player_black"]
+    assert "rank" in data["player_black"]
+    assert "age" in data["player_black"]
+    assert "color" in data["player_black"]
+    assert data["player_black"]["color"] == "black"
+    assert data["player_white"]["color"] == "white"
 
 
 @pytest.mark.django_db
@@ -57,41 +54,15 @@ def test_list_games_empty(api_client):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize(
-    "player1_color,player2_color",
-    [("black", "black"), ("white", "white")],
-    ids=["both-black", "both-white"],
-)
-def test_create_game_same_color_validation(
-    api_client, two_players, player1_color, player2_color
-):
-    """Test that API rejects games where players have same color."""
-    player1, player2 = two_players
-    game_data = {
-        "player1_id": player1.aga_id,
-        "player2_id": player2.aga_id,
-        "player1_color": player1_color,
-        "player2_color": player2_color,
-        "handicap": 0,
-        "rated": True,
-        "winner": "player1",
-    }
-    response = api_client.post("/api/games/", game_data, format="json")
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-
-@pytest.mark.django_db
 def test_create_game_same_player_validation(api_client, two_players):
     """Test that API rejects games where both players are the same."""
-    player1, _ = two_players
+    player_black, _ = two_players
     game_data = {
-        "player1_id": player1.aga_id,
-        "player2_id": player1.aga_id,  # Same player for both
-        "player1_color": "black",
-        "player2_color": "white",
+        "player_black_id": player_black.aga_id,
+        "player_white_id": player_black.aga_id,  # Same player for both
         "handicap": 0,
         "rated": True,
-        "winner": "player1",
+        "winner": "black",
     }
     response = api_client.post("/api/games/", game_data, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -100,17 +71,15 @@ def test_create_game_same_player_validation(api_client, two_players):
 @pytest.mark.django_db
 @pytest.mark.parametrize(
     "winner,handicap",
-    [("player1", 0), ("player2", 2)],
-    ids=["player1-wins-even", "player2-wins-with-handicap"],
+    [("black", 0), ("white", 2)],
+    ids=["black-wins-even", "white-wins-with-handicap"],
 )
 def test_create_game_different_winners(api_client, two_players, winner, handicap):
     """Test creating games with different winner values and handicaps."""
-    player1, player2 = two_players
+    player_black, player_white = two_players
     game_data = {
-        "player1_id": player1.aga_id,
-        "player2_id": player2.aga_id,
-        "player1_color": "black",
-        "player2_color": "white",
+        "player_black_id": player_black.aga_id,
+        "player_white_id": player_white.aga_id,
         "handicap": handicap,
         "rated": True,
         "winner": winner,

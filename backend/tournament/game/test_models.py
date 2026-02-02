@@ -9,52 +9,31 @@ from tournament.game.models import Game
 @pytest.mark.django_db
 def test_create_game(two_players):
     """Test creating a game with valid data."""
-    player1, player2 = two_players
+    player_black, player_white = two_players
     game = Game.objects.create(
-        player1=player1,
-        player2=player2,
-        player1_color="black",
-        player2_color="white",
+        player_black=player_black,
+        player_white=player_white,
         handicap=2,
         rated=True,
-        winner="player1",
+        winner="black",
     )
-    assert game.player1 == player1
-    assert game.player2 == player2
+    assert game.player_black == player_black
+    assert game.player_white == player_white
     assert game.handicap == 2
     assert game.rated is True
-    assert game.winner == "player1"
-
-
-@pytest.mark.django_db
-def test_game_validation_same_color(two_players):
-    """Test that validation rejects players with same color."""
-    player1, player2 = two_players
-    game = Game(
-        player1=player1,
-        player2=player2,
-        player1_color="black",
-        player2_color="black",  # Invalid: same color
-        handicap=0,
-        rated=True,
-        winner="player1",
-    )
-    with pytest.raises(ValidationError):
-        game.clean()
+    assert game.winner == "black"
 
 
 @pytest.mark.django_db
 def test_game_validation_same_player(two_players):
     """Test that validation rejects when both players are the same."""
-    player1, _ = two_players
+    player_black, _ = two_players
     game = Game(
-        player1=player1,
-        player2=player1,  # Invalid: same player
-        player1_color="black",
-        player2_color="white",
+        player_black=player_black,
+        player_white=player_black,  # Invalid: same player
         handicap=0,
         rated=True,
-        winner="player1",
+        winner="black",
     )
     with pytest.raises(ValidationError):
         game.clean()
@@ -80,14 +59,12 @@ def test_game_string_representation(game):
 )
 def test_game_handicap_values(two_players, handicap, expected):
     """Test games can be created with various handicap values."""
-    player1, player2 = two_players
+    player_black, player_white = two_players
     game = Game.objects.create(
-        player1=player1,
-        player2=player2,
-        player1_color="black",
-        player2_color="white",
+        player_black=player_black,
+        player_white=player_white,
         handicap=handicap,
         rated=True,
-        winner="player1",
+        winner="black",
     )
     assert game.handicap == expected

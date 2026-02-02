@@ -12,38 +12,34 @@ from tournament.player.models import Player
 @pytest.fixture
 def two_players(db) -> tuple[Player, Player]:
     """Create and return two player instances."""
-    player1 = Player.objects.create(
+    player_black = Player.objects.create(
         aga_id="AGA001", name="Alice", aga_rank="3d", age=30
     )
-    player2 = Player.objects.create(aga_id="AGA002", name="Bob", aga_rank="2d", age=28)
-    return player1, player2
+    player_white = Player.objects.create(aga_id="AGA002", name="Bob", aga_rank="2d", age=28)
+    return player_black, player_white
 
 
 @pytest.fixture
 def game(db, two_players) -> Game:
     """Create and return a game instance."""
-    player1, player2 = two_players
+    player_black, player_white = two_players
     return Game.objects.create(
-        player1=player1,
-        player2=player2,
-        player1_color="black",
-        player2_color="white",
+        player_black=player_black,
+        player_white=player_white,
         handicap=2,
         rated=True,
-        winner="player1",
+        winner="black",
     )
 
 
 @pytest.fixture
 def valid_game_data(two_players) -> dict:
     """Return valid game data for API requests."""
-    player1, player2 = two_players
+    player_black, player_white = two_players
     return {
-        "player1_id": player1.aga_id,
-        "player2_id": player2.aga_id,
-        "player1_color": "black",
-        "player2_color": "white",
+        "player_black_id": player_black.aga_id,
+        "player_white_id": player_white.aga_id,
         "handicap": 0,
         "rated": True,
-        "winner": "player1",
+        "winner": "black",
     }

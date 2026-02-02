@@ -69,7 +69,7 @@ describe('TournamentDataContext', () => {
       { aga_id: '456', name: 'Player 2', aga_rank: '3k', age: 30 },
     ];
     const mockGames = [
-      { id: 1, player1: mockPlayers[0], player2: mockPlayers[1], winner: 'player1' },
+      { id: 1, player_black: mockPlayers[0], player_white: mockPlayers[1], winner: 'black' },
     ];
 
     playerService.getAll.mockResolvedValue({ data: mockPlayers });
@@ -151,8 +151,8 @@ describe('TournamentDataContext', () => {
     const mockGames = [
       {
         id: 1,
-        player1: { aga_id: '123', name: 'Player 1' },
-        player2: { aga_id: '456', name: 'Player 2' },
+        player_black: { aga_id: '123', name: 'Player 1' },
+        player_white: { aga_id: '456', name: 'Player 2' },
         valid_for_prizes: true,
       },
     ];
@@ -202,8 +202,8 @@ describe('TournamentDataContext', () => {
     const mockGames = [
       {
         id: 1,
-        player1: { aga_id: '123', name: 'Player 1' },
-        player2: { aga_id: '456', name: 'Player 2' },
+        player_black: { aga_id: '123', name: 'Player 1' },
+        player_white: { aga_id: '456', name: 'Player 2' },
         valid_for_prizes: true,
       },
     ];

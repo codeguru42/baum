@@ -89,15 +89,15 @@ const GamesTableRow = ({ game, onToggleValid }) => {
     });
   };
 
-  // Determine which player is black and which is white
-  const blackPlayer = game.player1.color === 'black' ? game.player1 : game.player2;
-  const whitePlayer = game.player1.color === 'white' ? game.player1 : game.player2;
+  // Players are now directly accessible as player_black and player_white
+  const blackPlayer = game.player_black;
+  const whitePlayer = game.player_white;
 
-  // Determine winner color
-  const winnerColor = game.winner === 'player1' ? game.player1.color : game.player2.color;
+  // Winner is now 'black' or 'white'
+  const winnerColor = game.winner;
 
   // Calculate age difference
-  const ageDiff = Math.abs(game.player1.age - game.player2.age);
+  const ageDiff = Math.abs(game.player_black.age - game.player_white.age);
 
   return (
     <TableRow key={game.id} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
@@ -153,22 +153,22 @@ const GamesTableRow = ({ game, onToggleValid }) => {
 GamesTableRow.propTypes = {
   game: PropTypes.shape({
     id: PropTypes.number.isRequired,
-    player1: PropTypes.shape({
+    player_black: PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       rank: PropTypes.string.isRequired,
       age: PropTypes.number.isRequired,
-      color: PropTypes.oneOf(['black', 'white']).isRequired,
+      color: PropTypes.oneOf(['black']).isRequired,
     }).isRequired,
-    player2: PropTypes.shape({
+    player_white: PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       rank: PropTypes.string.isRequired,
       age: PropTypes.number.isRequired,
-      color: PropTypes.oneOf(['black', 'white']).isRequired,
+      color: PropTypes.oneOf(['white']).isRequired,
     }).isRequired,
     handicap: PropTypes.number.isRequired,
-    winner: PropTypes.oneOf(['player1', 'player2']).isRequired,
+    winner: PropTypes.oneOf(['black', 'white']).isRequired,
     rated: PropTypes.bool.isRequired,
     valid_for_prizes: PropTypes.bool.isRequired,
     created_at: PropTypes.string.isRequired,
@@ -203,22 +203,22 @@ GamesTable.propTypes = {
   games: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
-      player1: PropTypes.shape({
+      player_black: PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         rank: PropTypes.string.isRequired,
         age: PropTypes.number.isRequired,
-        color: PropTypes.oneOf(['black', 'white']).isRequired,
+        color: PropTypes.oneOf(['black']).isRequired,
       }).isRequired,
-      player2: PropTypes.shape({
+      player_white: PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         rank: PropTypes.string.isRequired,
         age: PropTypes.number.isRequired,
-        color: PropTypes.oneOf(['black', 'white']).isRequired,
+        color: PropTypes.oneOf(['white']).isRequired,
       }).isRequired,
       handicap: PropTypes.number.isRequired,
-      winner: PropTypes.oneOf(['player1', 'player2']).isRequired,
+      winner: PropTypes.oneOf(['black', 'white']).isRequired,
       rated: PropTypes.bool.isRequired,
       valid_for_prizes: PropTypes.bool.isRequired,
       created_at: PropTypes.string.isRequired,

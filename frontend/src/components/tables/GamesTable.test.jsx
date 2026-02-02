@@ -13,14 +13,14 @@ describe('GamesTable', () => {
   const mockGames = [
     {
       id: 1,
-      player1: {
+      player_black: {
         id: 'AGA001',
         name: 'John Doe',
         rank: '5d',
         age: 30,
         color: 'black',
       },
-      player2: {
+      player_white: {
         id: 'AGA002',
         name: 'Jane Smith',
         rank: '3k',
@@ -28,29 +28,29 @@ describe('GamesTable', () => {
         color: 'white',
       },
       handicap: 0,
-      winner: 'player1',
+      winner: 'black',
       rated: true,
       valid_for_prizes: true,
       created_at: '2024-01-15T10:00:00Z',
     },
     {
       id: 2,
-      player1: {
-        id: 'AGA003',
-        name: 'Bob Wilson',
-        rank: '1k',
-        age: 65,
-        color: 'white',
-      },
-      player2: {
+      player_black: {
         id: 'AGA004',
         name: 'Alice Brown',
         rank: '2d',
         age: 20,
         color: 'black',
       },
+      player_white: {
+        id: 'AGA003',
+        name: 'Bob Wilson',
+        rank: '1k',
+        age: 65,
+        color: 'white',
+      },
       handicap: 2,
-      winner: 'player2',
+      winner: 'white',
       rated: false,
       valid_for_prizes: false,
       created_at: '2024-01-16T14:30:00Z',

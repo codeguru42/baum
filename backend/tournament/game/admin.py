@@ -9,13 +9,13 @@ class GameAdmin(admin.ModelAdmin):
 
     list_display = [
         "id",
-        "player1",
-        "player2",
+        "player_black",
+        "player_white",
         "winner",
         "handicap",
         "rated",
         "created_at",
     ]
     list_filter = ["rated", "winner", "created_at"]
-    search_fields = ["player1__name", "player2__name"]
+    search_fields = ["player_black__name", "player_white__name"]
     date_hierarchy = "created_at"
