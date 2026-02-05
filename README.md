@@ -1,6 +1,6 @@
 # Go Tournament Result Reporting System
 
-![CI](https://github.com/YOUR_USERNAME/baum-vibe/workflows/CI/badge.svg)
+![CI](https://github.com/codeguru42/baum/workflows/CI/badge.svg)
 
 A web application for participants in a Go tournament to report their game results. Built with Django REST Framework backend and React with Material-UI frontend.
 
@@ -223,9 +223,9 @@ This project uses GitHub Actions for automated testing and building. On every pu
 
 ### CI Status
 
-View the latest build status: ![CI](https://github.com/YOUR_USERNAME/baum-vibe/workflows/CI/badge.svg)
+View the latest build status: ![CI](https://github.com/codeguru42/baum/workflows/CI/badge.svg)
 
-**Note**: Replace `YOUR_USERNAME` in the badge URLs with your GitHub username.
+
 
 ## Running Tests
 
