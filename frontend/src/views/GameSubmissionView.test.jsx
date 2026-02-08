@@ -51,7 +51,7 @@ describe('GameSubmissionView', () => {
   describe('Rendering', () => {
     it('renders the form title', () => {
       renderComponent();
-      expect(screen.getByText('Go Tournament - Report Game Result')).toBeVisible();
+      expect(screen.getByRole('heading', { name: 'Go Tournament - Report Game Result', level: 1 })).toBeVisible();
     });
 
     it('renders black player section', () => {
@@ -61,12 +61,12 @@ describe('GameSubmissionView', () => {
 
     it('renders white player section', () => {
       renderComponent();
-      expect(screen.getByText('White')).toBeVisible();
+      expect(screen.getByRole('heading', { name: 'White', level: 6 })).toBeVisible();
     });
 
     it('renders game information section', () => {
       renderComponent();
-      expect(screen.getByText('Game Information')).toBeVisible();
+      expect(screen.getByRole('heading', { name: 'Game Information', level: 6 })).toBeVisible();
     });
 
     it('renders all required input fields for both players', () => {
@@ -385,6 +385,7 @@ describe('GameSubmissionView', () => {
 
       // Check for success message
       await waitFor(() => {
+        expect(screen.getByRole('alert')).toBeVisible();
         expect(screen.getByText('Game result submitted successfully!')).toBeVisible();
       });
     });
@@ -468,6 +469,7 @@ describe('GameSubmissionView', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
+        expect(screen.getByRole('alert')).toBeVisible();
         expect(screen.getByText('Server error')).toBeVisible();
       });
     });
@@ -535,6 +537,7 @@ describe('GameSubmissionView', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
+        expect(screen.getByRole('alert')).toBeVisible();
         expect(screen.getByText('Game result submitted successfully!')).toBeVisible();
       });
 
