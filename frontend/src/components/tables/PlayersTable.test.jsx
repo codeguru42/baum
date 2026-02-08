@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import PlayersTable from './PlayersTable';
@@ -34,29 +34,37 @@ describe('PlayersTable', () => {
   it('renders table with player data', () => {
     render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
-    expect(screen.getByText('John Doe')).toBeVisible();
-    expect(screen.getByText('Jane Smith')).toBeVisible();
-    expect(screen.getByText('AGA001')).toBeVisible();
-    expect(screen.getByText('AGA002')).toBeVisible();
+    const rows = screen.getAllByRole('row');
+    const row1Cells = within(rows[1]).getAllByRole('cell');
+    const row2Cells = within(rows[2]).getAllByRole('cell');
+    
+    expect(row1Cells[0]).toHaveTextContent('AGA001');
+    expect(row1Cells[1]).toHaveTextContent('John Doe');
+    expect(row2Cells[0]).toHaveTextContent('AGA002');
+    expect(row2Cells[1]).toHaveTextContent('Jane Smith');
   });
 
   it('renders table headers correctly', () => {
     render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
-    expect(screen.getByText('AGA ID')).toBeVisible();
-    expect(screen.getByText('Name')).toBeVisible();
-    expect(screen.getByText('Rank')).toBeVisible();
-    expect(screen.getByText('Age')).toBeVisible();
-    expect(screen.getByText('Games Played')).toBeVisible();
-    expect(screen.getByText('Won')).toBeVisible();
-    expect(screen.getByText('Lost')).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'AGA ID' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Name' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Rank' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Age' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Games Played' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Won' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Lost' })).toBeVisible();
   });
 
   it('displays player ranks', () => {
     render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
-    expect(screen.getByText('5d')).toBeVisible();
-    expect(screen.getByText('3k')).toBeVisible();
+    const rows = screen.getAllByRole('row');
+    const row1Cells = within(rows[1]).getAllByRole('cell');
+    const row2Cells = within(rows[2]).getAllByRole('cell');
+    
+    expect(row1Cells[2]).toHaveTextContent('5d');
+    expect(row2Cells[2]).toHaveTextContent('3k');
   });
 
   it('displays player ages', () => {
@@ -96,7 +104,7 @@ describe('PlayersTable', () => {
     render(<PlayersTable players={[]} {...mockSortProps} />);
 
     // Headers should still be present
-    expect(screen.getByText('AGA ID')).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'AGA ID' })).toBeVisible();
     // But no data rows
     expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
   });
@@ -116,7 +124,7 @@ describe('PlayersTable', () => {
     render(<PlayersTable players={mockPlayers} sortBy="name" sortOrder="asc" onSort={onSort} />);
 
     // Click on the "AGA ID" header
-    const agaIdHeader = screen.getByText('AGA ID').closest('th');
+    const agaIdHeader = screen.getByRole('columnheader', { name: 'AGA ID' });
     await user.click(agaIdHeader);
 
     expect(onSort).toHaveBeenCalledWith('agaId');
@@ -129,17 +137,17 @@ describe('PlayersTable', () => {
     render(<PlayersTable players={mockPlayers} sortBy="name" sortOrder="asc" onSort={onSort} />);
 
     // Test Name column
-    const nameHeader = screen.getByText('Name').closest('th');
+    const nameHeader = screen.getByRole('columnheader', { name: 'Name' });
     await user.click(nameHeader);
     expect(onSort).toHaveBeenCalledWith('name');
 
     // Test Age column
-    const ageHeader = screen.getByText('Age').closest('th');
+    const ageHeader = screen.getByRole('columnheader', { name: 'Age' });
     await user.click(ageHeader);
     expect(onSort).toHaveBeenCalledWith('age');
 
     // Test Games Played column
-    const gamesPlayedHeader = screen.getByText('Games Played').closest('th');
+    const gamesPlayedHeader = screen.getByRole('columnheader', { name: 'Games Played' });
     await user.click(gamesPlayedHeader);
     expect(onSort).toHaveBeenCalledWith('gamesPlayed');
   });
@@ -148,7 +156,7 @@ describe('PlayersTable', () => {
     render(<PlayersTable players={mockPlayers} sortBy="age" sortOrder="desc" onSort={vi.fn()} />);
 
     // The Age column should have the active sort indicator
-    const ageHeader = screen.getByText('Age').closest('th');
+    const ageHeader = screen.getByRole('columnheader', { name: 'Age' });
     const sortLabel = ageHeader.querySelector('.MuiTableSortLabel-root');
     expect(sortLabel).toHaveClass('Mui-active');
   });
@@ -159,7 +167,7 @@ describe('PlayersTable', () => {
     );
 
     // Check ascending sort - verify the icon direction class
-    const nameHeader = screen.getByText('Name').closest('th');
+    const nameHeader = screen.getByRole('columnheader', { name: 'Name' });
     let sortLabel = nameHeader.querySelector('.MuiTableSortLabel-root');
     expect(sortLabel).toHaveClass('Mui-active');
     // Check direction using the icon - ascending should not have the descending class
