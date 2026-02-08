@@ -17,9 +17,14 @@ const agaRankValidation = yup
 /**
  * Player Schema
  * Validates individual player data
+ * AGA ID: numeric only, no leading zeros (except "0" alone)
  */
 const playerSchema = yup.object({
-  aga_id: yup.string().required('AGA ID is required').trim(),
+  aga_id: yup
+    .string()
+    .required('AGA ID is required')
+    .matches(/^(0|[1-9]\d*)$/, 'AGA ID must contain only digits (0-9)')
+    .trim(),
   name: yup
     .string()
     .required('Name is required')
