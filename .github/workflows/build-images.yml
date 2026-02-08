@@ -113,7 +113,30 @@ jobs:
       - name: Create Dockerfile for nginx
         run: |
           cat > nginx/Dockerfile << 'EOF'
+          # Stage 1: Build React frontend
+          FROM node:20-alpine AS frontend-build
+          
+          WORKDIR /app
+          
+          # Copy package files and install dependencies
+          COPY frontend/package*.json ./
+          RUN npm ci --ignore-scripts
+          
+          # Copy frontend source
+          COPY frontend/ ./
+          
+          # Build argument for API URL (full URL with /api path)
+          ARG VITE_API_URL
+          ENV VITE_API_URL=${VITE_API_URL}
+          
+          # Build the React app (outputs to /app/build)
+          RUN npm run build
+          
+          # Stage 2: Nginx with frontend static files
           FROM nginx:alpine
+          
+          # Copy built frontend files from build stage
+          COPY --from=frontend-build /app/build /usr/share/nginx/html
           
           # Copy nginx configuration
           COPY nginx.conf /etc/nginx/nginx.conf
@@ -139,11 +162,13 @@ jobs:
       - name: Build and push nginx image
         uses: docker/build-push-action@v5
         with:
-          context: ./nginx
+          context: .
           file: ./nginx/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
   
