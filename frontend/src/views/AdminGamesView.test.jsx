@@ -142,6 +142,7 @@ describe('AdminGamesView', () => {
       });
 
       renderComponent();
+      expect(screen.getByRole('alert')).toBeVisible();
       expect(screen.getByText('Failed to load games')).toBeVisible();
     });
 
@@ -166,7 +167,7 @@ describe('AdminGamesView', () => {
       });
 
       // Click on Black Player header
-      const blackPlayerHeader = screen.getByText('Black Player');
+      const blackPlayerHeader = screen.getByRole('columnheader', { name: 'Black Player' });
       fireEvent.click(blackPlayerHeader);
 
       await waitFor(() => {
@@ -183,7 +184,7 @@ describe('AdminGamesView', () => {
       });
 
       // Click on Black Player header twice (once for asc, once for desc)
-      const blackPlayerHeader = screen.getByText('Black Player');
+      const blackPlayerHeader = screen.getByRole('columnheader', { name: 'Black Player' });
       fireEvent.click(blackPlayerHeader);
       fireEvent.click(blackPlayerHeader);
 
@@ -200,7 +201,7 @@ describe('AdminGamesView', () => {
         expect(screen.getByText('Bob Wilson')).toBeVisible();
       });
 
-      const whitePlayerHeader = screen.getByText('White Player');
+      const whitePlayerHeader = screen.getByRole('columnheader', { name: 'White Player' });
       fireEvent.click(whitePlayerHeader);
 
       await waitFor(() => {
@@ -217,7 +218,7 @@ describe('AdminGamesView', () => {
       });
 
       // Find the first Age header (black player age)
-      const ageHeaders = screen.getAllByText('Age');
+      const ageHeaders = screen.getAllByRole('columnheader', { name: 'Age' });
       // Click twice: first click sets to desc (default), second click to asc
       fireEvent.click(ageHeaders[0]);
       fireEvent.click(ageHeaders[0]);
@@ -238,7 +239,7 @@ describe('AdminGamesView', () => {
         expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
-      const ageHeaders = screen.getAllByText('Age');
+      const ageHeaders = screen.getAllByRole('columnheader', { name: 'Age' });
       fireEvent.click(ageHeaders[0]); // First click for desc (default for age)
 
       await waitFor(() => {
@@ -254,7 +255,7 @@ describe('AdminGamesView', () => {
         expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
-      const ageDiffHeader = screen.getByText('Age Diff');
+      const ageDiffHeader = screen.getByRole('columnheader', { name: 'Age Diff' });
       // Click twice: first click is desc (default), second is asc
       fireEvent.click(ageDiffHeader);
       fireEvent.click(ageDiffHeader);
@@ -276,7 +277,7 @@ describe('AdminGamesView', () => {
         expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
-      const handicapHeader = screen.getByText('Handicap');
+      const handicapHeader = screen.getByRole('columnheader', { name: 'Handicap' });
       // Click twice: first click is desc (default for handicap), second is asc
       fireEvent.click(handicapHeader);
       fireEvent.click(handicapHeader);
@@ -295,7 +296,7 @@ describe('AdminGamesView', () => {
         expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
-      const winnerHeader = screen.getByText('Winner');
+      const winnerHeader = screen.getByRole('columnheader', { name: 'Winner' });
       fireEvent.click(winnerHeader);
 
       await waitFor(() => {
@@ -315,7 +316,7 @@ describe('AdminGamesView', () => {
         expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
-      const ratedHeader = screen.getByText('Rated');
+      const ratedHeader = screen.getByRole('columnheader', { name: 'Rated' });
       fireEvent.click(ratedHeader);
 
       await waitFor(() => {
@@ -347,7 +348,7 @@ describe('AdminGamesView', () => {
         expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
-      const dateHeader = screen.getByText('Date');
+      const dateHeader = screen.getByRole('columnheader', { name: 'Date' });
       fireEvent.click(dateHeader);
 
       await waitFor(() => {
@@ -364,7 +365,7 @@ describe('AdminGamesView', () => {
       });
 
       // Sort by black player name
-      const blackPlayerHeader = screen.getByText('Black Player');
+      const blackPlayerHeader = screen.getByRole('columnheader', { name: 'Black Player' });
       fireEvent.click(blackPlayerHeader);
 
       await waitFor(() => {
@@ -384,7 +385,7 @@ describe('AdminGamesView', () => {
       });
 
       // Click on first Rank header (black player rank)
-      const rankHeaders = screen.getAllByText('Rank');
+      const rankHeaders = screen.getAllByRole('columnheader', { name: 'Rank' });
       fireEvent.click(rankHeaders[0]);
 
       await waitFor(() => {
@@ -402,7 +403,7 @@ describe('AdminGamesView', () => {
       });
 
       // Click on first AGA ID header (black player)
-      const agaIdHeaders = screen.getAllByText('AGA ID');
+      const agaIdHeaders = screen.getAllByRole('columnheader', { name: 'AGA ID' });
       fireEvent.click(agaIdHeaders[0]);
 
       await waitFor(() => {
