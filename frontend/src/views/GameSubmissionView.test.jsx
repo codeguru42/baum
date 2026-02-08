@@ -266,7 +266,7 @@ describe('GameSubmissionView', () => {
       renderComponent();
 
       const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
-      
+
       // Simulate pasting or fast typing that results in final value
       fireEvent.change(agaIdInputs[0], { target: { value: '12345' } });
 

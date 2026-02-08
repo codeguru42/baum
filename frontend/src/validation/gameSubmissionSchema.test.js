@@ -388,14 +388,14 @@ describe('gameSubmissionSchema', () => {
       const data = createValidData();
       data.playerBlack.name = 'A'; // Too short
       data.playerWhite.aga_rank = '99k'; // Invalid rank
-      
+
       await expect(gameSubmissionSchema.validate(data)).rejects.toThrow();
     });
 
     it('requires all fields for both players', async () => {
       const data = createValidData();
       data.playerWhite.age = undefined;
-      
+
       await expect(gameSubmissionSchema.validate(data)).rejects.toThrow('Age is required');
     });
   });

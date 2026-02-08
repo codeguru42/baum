@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Container from '@mui/material/Container';
@@ -16,6 +15,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Controller, useForm } from 'react-hook-form';
 import { useNotification } from '../components/NotificationContext';
+import PlayerFieldsSection from '../components/PlayerFieldsSection';
 import { gameService, playerService } from '../services/api';
 import { gameSubmissionSchema } from '../validation/gameSubmissionSchema';
 
@@ -148,136 +148,24 @@ const GameSubmissionView = () => {
         <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate>
           <Grid container spacing={4}>
             {/* Black Player Section */}
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="h6" gutterBottom color="primary">
-                Black
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Controller
-                  name="playerBlack.aga_id"
-                  control={control}
-                  render={({ field: { onChange: _onChange, ...field }, fieldState: { error } }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="AGA ID Number"
-                      onChange={(e) => handleAgaIdChange('black', e.target.value)}
-                      disabled={loading.playerBlack}
-                      inputRef={playerBlackAgaIdRef}
-                      error={!!error}
-                      helperText={error?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name="playerBlack.name"
-                  control={control}
-                  render={({ field, fieldState: { error } }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="Name"
-                      error={!!error}
-                      helperText={error?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name="playerBlack.aga_rank"
-                  control={control}
-                  render={({ field, fieldState: { error } }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="AGA Rank"
-                      placeholder="e.g., 5d, 3k"
-                      error={!!error}
-                      helperText={error?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name="playerBlack.age"
-                  control={control}
-                  render={({ field, fieldState: { error } }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      type="number"
-                      label="Age"
-                      error={!!error}
-                      helperText={error?.message}
-                    />
-                  )}
-                />
-              </Box>
-            </Grid>
+            <PlayerFieldsSection
+              playerColor="black"
+              fieldNamePrefix="playerBlack"
+              control={control}
+              onAgaIdChange={handleAgaIdChange}
+              isLoading={loading.playerBlack}
+              agaIdInputRef={playerBlackAgaIdRef}
+            />
 
             {/* White Player Section */}
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="h6" gutterBottom color="primary">
-                White
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Controller
-                  name="playerWhite.aga_id"
-                  control={control}
-                  render={({ field: { onChange: _onChange, ...field }, fieldState: { error } }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="AGA ID Number"
-                      onChange={(e) => handleAgaIdChange('white', e.target.value)}
-                      disabled={loading.playerWhite}
-                      inputRef={playerWhiteAgaIdRef}
-                      error={!!error}
-                      helperText={error?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name="playerWhite.name"
-                  control={control}
-                  render={({ field, fieldState: { error } }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="Name"
-                      error={!!error}
-                      helperText={error?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name="playerWhite.aga_rank"
-                  control={control}
-                  render={({ field, fieldState: { error } }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="AGA Rank"
-                      placeholder="e.g., 5d, 3k"
-                      error={!!error}
-                      helperText={error?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name="playerWhite.age"
-                  control={control}
-                  render={({ field, fieldState: { error } }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      type="number"
-                      label="Age"
-                      error={!!error}
-                      helperText={error?.message}
-                    />
-                  )}
-                />
-              </Box>
-            </Grid>
+            <PlayerFieldsSection
+              playerColor="white"
+              fieldNamePrefix="playerWhite"
+              control={control}
+              onAgaIdChange={handleAgaIdChange}
+              isLoading={loading.playerWhite}
+              agaIdInputRef={playerWhiteAgaIdRef}
+            />
 
             {/* Game Information Section */}
             <Grid size={12}>
