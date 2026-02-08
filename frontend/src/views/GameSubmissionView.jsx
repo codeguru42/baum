@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
@@ -11,6 +10,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import { Controller, useForm } from 'react-hook-form';
 import { useNotification } from '../components/NotificationContext';
@@ -42,7 +42,7 @@ const GameSubmissionView = () => {
       playerBlack: { aga_id: '', name: '', aga_rank: '', age: '' },
       playerWhite: { aga_id: '', name: '', aga_rank: '', age: '' },
       handicap: 0,
-      rated: true,
+      rated: false,
       winner: 'black',
     },
     mode: 'onBlur', // Validate on blur for better UX
@@ -232,7 +232,7 @@ const GameSubmissionView = () => {
                 render={({ field: { value, onChange, ...field } }) => (
                   <FormControlLabel
                     control={
-                      <Checkbox
+                      <Switch
                         {...field}
                         checked={value}
                         onChange={(e) => onChange(e.target.checked)}

@@ -98,7 +98,7 @@ describe('GameSubmissionView', () => {
       const ratedCheckbox = screen.getByLabelText('Rated Game');
 
       expect(handicapInput).toHaveTextContent('0');
-      expect(ratedCheckbox).toBeChecked();
+      expect(ratedCheckbox).not.toBeChecked();
     });
   });
 
@@ -171,11 +171,11 @@ describe('GameSubmissionView', () => {
       renderComponent();
 
       const ratedCheckbox = screen.getByLabelText('Rated Game');
-      expect(ratedCheckbox).toBeChecked();
+      expect(ratedCheckbox).not.toBeChecked();
 
       await user.click(ratedCheckbox);
       await waitFor(() => {
-        expect(ratedCheckbox).not.toBeChecked();
+        expect(ratedCheckbox).toBeChecked();
       });
     });
   });
@@ -378,7 +378,7 @@ describe('GameSubmissionView', () => {
           player_black_id: '12345',
           player_white_id: '67890',
           handicap: 0,
-          rated: true,
+          rated: false,
           winner: 'black',
         });
       });

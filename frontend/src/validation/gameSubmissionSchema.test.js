@@ -288,33 +288,25 @@ describe('gameSubmissionSchema', () => {
     it('rejects non-numeric handicap', async () => {
       const data = createValidData();
       data.handicap = 'three';
-      await expect(gameSubmissionSchema.validate(data)).rejects.toThrow(
-        'Invalid handicap value'
-      );
+      await expect(gameSubmissionSchema.validate(data)).rejects.toThrow('Invalid handicap value');
     });
 
     it('rejects negative handicap', async () => {
       const data = createValidData();
       data.handicap = -1;
-      await expect(gameSubmissionSchema.validate(data)).rejects.toThrow(
-        'Invalid handicap value'
-      );
+      await expect(gameSubmissionSchema.validate(data)).rejects.toThrow('Invalid handicap value');
     });
 
     it('rejects handicap greater than 9', async () => {
       const data = createValidData();
       data.handicap = 10;
-      await expect(gameSubmissionSchema.validate(data)).rejects.toThrow(
-        'Invalid handicap value'
-      );
+      await expect(gameSubmissionSchema.validate(data)).rejects.toThrow('Invalid handicap value');
     });
 
     it('rejects decimal handicap', async () => {
       const data = createValidData();
       data.handicap = 3.5;
-      await expect(gameSubmissionSchema.validate(data)).rejects.toThrow(
-        'Invalid handicap value'
-      );
+      await expect(gameSubmissionSchema.validate(data)).rejects.toThrow('Invalid handicap value');
     });
 
     it('accepts handicap from 0 to 9', async () => {
