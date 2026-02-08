@@ -15,60 +15,49 @@ import PropTypes from 'prop-types';
  * Table header component with sortable columns
  */
 const GamesTableHeader = ({ sortBy, sortOrder, onSort }) => {
+  const createSortableHeader = (label, sortKey, defaultDirection = 'asc') => (
+    <TableCell
+      sx={{ color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
+      onClick={() => onSort(sortKey)}
+    >
+      <TableSortLabel
+        active={sortBy === sortKey}
+        direction={sortBy === sortKey ? sortOrder : defaultDirection}
+        sx={{
+          color: 'white !important',
+          '&:hover': { color: 'white !important' },
+          '& .MuiTableSortLabel-icon': { color: 'white !important' },
+        }}
+      >
+        {label}
+      </TableSortLabel>
+    </TableCell>
+  );
+
   return (
     <TableHead>
       <TableRow sx={{ backgroundColor: 'primary.main' }}>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Black Player</TableCell>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>White Player</TableCell>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
-        <TableCell
-          sx={{ color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
-          onClick={() => onSort('ageDiff')}
-        >
-          <TableSortLabel
-            active={sortBy === 'ageDiff'}
-            direction={sortBy === 'ageDiff' ? sortOrder : 'desc'}
-            sx={{
-              color: 'white !important',
-              '&:hover': { color: 'white !important' },
-              '& .MuiTableSortLabel-icon': { color: 'white !important' },
-            }}
-          >
-            Age Diff
-          </TableSortLabel>
-        </TableCell>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Handicap</TableCell>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Winner</TableCell>
-        <TableCell
-          sx={{ color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
-          onClick={() => onSort('rated')}
-        >
-          <TableSortLabel
-            active={sortBy === 'rated'}
-            direction={sortBy === 'rated' ? sortOrder : 'asc'}
-            sx={{
-              color: 'white !important',
-              '&:hover': { color: 'white !important' },
-              '& .MuiTableSortLabel-icon': { color: 'white !important' },
-            }}
-          >
-            Rated
-          </TableSortLabel>
-        </TableCell>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Valid for Prizes</TableCell>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
+        {createSortableHeader('Black Player', 'blackPlayer')}
+        {createSortableHeader('AGA ID', 'blackAgaId')}
+        {createSortableHeader('Rank', 'blackRank')}
+        {createSortableHeader('Age', 'blackAge')}
+        {createSortableHeader('White Player', 'whitePlayer')}
+        {createSortableHeader('AGA ID', 'whiteAgaId')}
+        {createSortableHeader('Rank', 'whiteRank')}
+        {createSortableHeader('Age', 'whiteAge')}
+        {createSortableHeader('Age Diff', 'ageDiff', 'desc')}
+        {createSortableHeader('Handicap', 'handicap')}
+        {createSortableHeader('Winner', 'winner')}
+        {createSortableHeader('Rated', 'rated')}
+        {createSortableHeader('Valid for Prizes', 'validForPrizes')}
+        {createSortableHeader('Date', 'date', 'desc')}
       </TableRow>
     </TableHead>
   );
 };
 
 GamesTableHeader.propTypes = {
-  sortBy: PropTypes.oneOf(['ageDiff', 'rated']).isRequired,
+  sortBy: PropTypes.string.isRequired,
   sortOrder: PropTypes.oneOf(['asc', 'desc']).isRequired,
   onSort: PropTypes.func.isRequired,
 };
@@ -223,7 +212,7 @@ GamesTable.propTypes = {
     })
   ).isRequired,
   onToggleValid: PropTypes.func.isRequired,
-  sortBy: PropTypes.oneOf(['ageDiff', 'rated']).isRequired,
+  sortBy: PropTypes.string.isRequired,
   sortOrder: PropTypes.oneOf(['asc', 'desc']).isRequired,
   onSort: PropTypes.func.isRequired,
 };

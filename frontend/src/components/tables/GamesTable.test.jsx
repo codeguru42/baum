@@ -85,7 +85,6 @@ describe('GamesTable', () => {
       />
     );
 
-    expect(screen.getByText('Game ID')).toBeInTheDocument();
     expect(screen.getByText('Black Player')).toBeInTheDocument();
     expect(screen.getByText('White Player')).toBeInTheDocument();
     expect(screen.getByText('Age Diff')).toBeInTheDocument();
@@ -93,6 +92,7 @@ describe('GamesTable', () => {
     expect(screen.getByText('Winner')).toBeInTheDocument();
     expect(screen.getByText('Rated')).toBeInTheDocument();
     expect(screen.getByText('Valid for Prizes')).toBeInTheDocument();
+    expect(screen.getByText('Date')).toBeInTheDocument();
   });
 
   it('displays correct player colors (black and white)', () => {
@@ -191,10 +191,12 @@ describe('GamesTable', () => {
       />
     );
 
-    // Get all icon buttons
+    // Get all icon buttons (filter for validity toggle buttons specifically)
     const buttons = screen.getAllByRole('button');
-    // Click third button (validity toggle - first two are sort buttons)
-    fireEvent.click(buttons[2]);
+    // Now all headers are sortable, so we need to find the validity toggle buttons
+    // There are 14 sortable headers, then 2 validity toggle buttons (one per game)
+    const validityButton = buttons[14]; // First validity toggle button
+    fireEvent.click(validityButton);
     expect(mockOnToggleValid).toHaveBeenCalled();
   });
 
@@ -242,7 +244,7 @@ describe('GamesTable', () => {
     );
 
     // Headers should still be present
-    expect(screen.getByText('Game ID')).toBeInTheDocument();
+    expect(screen.getByText('Black Player')).toBeInTheDocument();
     // But no data rows
     expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
   });

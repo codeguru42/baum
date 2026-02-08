@@ -14,7 +14,7 @@ import { useTournamentData } from '../components/TournamentDataContext';
 const AdminGamesView = () => {
   const { showError } = useNotification();
   const { games, loadingGames, gamesError, toggleGameValidity } = useTournamentData();
-  const [sortBy, setSortBy] = useState('ageDiff');
+  const [sortBy, setSortBy] = useState('date');
   const [sortOrder, setSortOrder] = useState('desc');
 
   const handleToggleValidity = async (gameId, _currentValidity) => {
@@ -30,7 +30,9 @@ const AdminGamesView = () => {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(column);
-      setSortOrder(column === 'ageDiff' ? 'desc' : 'asc');
+      // Set default sort order based on column type
+      const descByDefault = ['ageDiff', 'date', 'blackAge', 'whiteAge', 'handicap'];
+      setSortOrder(descByDefault.includes(column) ? 'desc' : 'asc');
     }
   };
 
@@ -43,19 +45,58 @@ const AdminGamesView = () => {
       return gamesToSort.sort((a, b) => {
         let comparison = 0;
 
-        if (sortBy === 'ageDiff') {
-          const ageDiffA = Math.abs(a.player_black.age - a.player_white.age);
-          const ageDiffB = Math.abs(b.player_black.age - b.player_white.age);
-          comparison = ageDiffB - ageDiffA;
-        } else if (sortBy === 'rated') {
-          if (a.rated === b.rated) {
-            comparison = 0;
-          } else {
-            comparison = a.rated ? -1 : 1;
+        switch (sortBy) {
+          case 'blackPlayer':
+            comparison = a.player_black.name.localeCompare(b.player_black.name);
+            break;
+          case 'blackAgaId':
+            comparison = a.player_black.id.localeCompare(b.player_black.id);
+            break;
+          case 'blackRank':
+            comparison = a.player_black.rank.localeCompare(b.player_black.rank);
+            break;
+          case 'blackAge':
+            comparison = a.player_black.age - b.player_black.age;
+            break;
+          case 'whitePlayer':
+            comparison = a.player_white.name.localeCompare(b.player_white.name);
+            break;
+          case 'whiteAgaId':
+            comparison = a.player_white.id.localeCompare(b.player_white.id);
+            break;
+          case 'whiteRank':
+            comparison = a.player_white.rank.localeCompare(b.player_white.rank);
+            break;
+          case 'whiteAge':
+            comparison = a.player_white.age - b.player_white.age;
+            break;
+          case 'ageDiff': {
+            const ageDiffA = Math.abs(a.player_black.age - a.player_white.age);
+            const ageDiffB = Math.abs(b.player_black.age - b.player_white.age);
+            comparison = ageDiffA - ageDiffB;
+            break;
           }
+          case 'handicap':
+            comparison = a.handicap - b.handicap;
+            break;
+          case 'winner':
+            comparison = a.winner.localeCompare(b.winner);
+            break;
+          case 'rated':
+            comparison = a.rated === b.rated ? 0 : a.rated ? -1 : 1;
+            break;
+          case 'validForPrizes':
+            comparison =
+              a.valid_for_prizes === b.valid_for_prizes ? 0 : a.valid_for_prizes ? -1 : 1;
+            break;
+          case 'date':
+            comparison = new Date(a.created_at) - new Date(b.created_at);
+            break;
+          default:
+            comparison = 0;
         }
 
-        return sortOrder === 'asc' ? -comparison : comparison;
+        return sortOrder === 'asc' ? comparison : -comparison;
       });
     };
 
