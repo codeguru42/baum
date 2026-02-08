@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -13,8 +14,10 @@ import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { Controller, useForm } from 'react-hook-form';
 import { useNotification } from '../components/NotificationContext';
 import { gameService, playerService } from '../services/api';
+import { gameSubmissionSchema } from '../validation/gameSubmissionSchema';
 
 /**
  * Game submission view for reporting game results
@@ -25,139 +28,114 @@ const GameSubmissionView = () => {
   const playerBlackAgaIdRef = useRef(null);
   const playerWhiteAgaIdRef = useRef(null);
 
-  const [playerBlack, setPlayerBlack] = useState({
-    aga_id: '',
-    name: '',
-    aga_rank: '',
-    age: '',
+  // React Hook Form setup
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    trigger,
+    reset,
+    setFocus,
+    formState: { isSubmitting },
+  } = useForm({
+    resolver: yupResolver(gameSubmissionSchema),
+    defaultValues: {
+      playerBlack: { aga_id: '', name: '', aga_rank: '', age: '' },
+      playerWhite: { aga_id: '', name: '', aga_rank: '', age: '' },
+      handicap: 0,
+      rated: true,
+      winner: 'black',
+    },
+    mode: 'onBlur', // Validate on blur for better UX
   });
 
-  const [playerWhite, setPlayerWhite] = useState({
-    aga_id: '',
-    name: '',
-    aga_rank: '',
-    age: '',
-  });
-
-  const [gameInfo, setGameInfo] = useState({
-    handicap: 0,
-    rated: true,
-    winner: 'black',
-  });
-
+  // Keep separate loading state for auto-lookup (not form submission)
   const [loading, setLoading] = useState({
     playerBlack: false,
     playerWhite: false,
-    submit: false,
   });
 
   const handleAgaIdChange = async (playerColor, agaId) => {
-    if (playerColor === 'black') {
-      setPlayerBlack({ ...playerBlack, aga_id: agaId });
-      if (agaId.length >= 3) {
-        setLoading((prev) => ({ ...prev, playerBlack: true }));
-        try {
-          const response = await playerService.getByAgaId(agaId);
-          setPlayerBlack({
-            aga_id: response.data.aga_id,
-            name: response.data.name,
-            aga_rank: response.data.aga_rank,
-            age: response.data.age,
-          });
-        } catch (_error) {
-          // Player not found - will be created on form submission
-        }
-        setLoading((prev) => ({ ...prev, playerBlack: false }));
-        // Restore focus after auto-fill
-        setTimeout(() => playerBlackAgaIdRef.current?.focus(), 0);
+    const playerKey = playerColor === 'black' ? 'playerBlack' : 'playerWhite';
+    const loadingKey = playerColor;
+
+    // Update AGA ID field immediately
+    setValue(`${playerKey}.aga_id`, agaId, { shouldValidate: false });
+
+    // Auto-lookup if 3+ characters entered
+    if (agaId.length >= 3) {
+      setLoading((prev) => ({ ...prev, [loadingKey]: true }));
+
+      try {
+        const response = await playerService.getByAgaId(agaId);
+
+        // Auto-fill all fields from API response
+        setValue(`${playerKey}.aga_id`, response.data.aga_id);
+        setValue(`${playerKey}.name`, response.data.name);
+        setValue(`${playerKey}.aga_rank`, response.data.aga_rank);
+        setValue(`${playerKey}.age`, response.data.age);
+
+        // Trigger validation on all auto-filled fields
+        await trigger([
+          `${playerKey}.aga_id`,
+          `${playerKey}.name`,
+          `${playerKey}.aga_rank`,
+          `${playerKey}.age`,
+        ]);
+      } catch (_error) {
+        // Player not found - will be created on form submission
+        // No action needed, user can fill fields manually
       }
-    } else {
-      setPlayerWhite({ ...playerWhite, aga_id: agaId });
-      if (agaId.length >= 3) {
-        setLoading((prev) => ({ ...prev, playerWhite: true }));
-        try {
-          const response = await playerService.getByAgaId(agaId);
-          setPlayerWhite({
-            aga_id: response.data.aga_id,
-            name: response.data.name,
-            aga_rank: response.data.aga_rank,
-            age: response.data.age,
-          });
-        } catch (_error) {
-          // Player not found - will be created on form submission
-        }
-        setLoading((prev) => ({ ...prev, playerWhite: false }));
-        // Restore focus after auto-fill
-        setTimeout(() => playerWhiteAgaIdRef.current?.focus(), 0);
-      }
+
+      setLoading((prev) => ({ ...prev, [loadingKey]: false }));
+
+      // Restore focus to AGA ID field after auto-fill
+      const ref = playerColor === 'black' ? playerBlackAgaIdRef : playerWhiteAgaIdRef;
+      setTimeout(() => ref.current?.focus(), 0);
     }
   };
 
-  const validateForm = () => {
-    if (!playerBlack.aga_id || !playerBlack.name || !playerBlack.aga_rank || !playerBlack.age) {
-      showError('Please fill in all Black player information');
-      return false;
+  // Focus on first error field when validation fails
+  const onInvalid = (errors) => {
+    const firstErrorField = Object.keys(errors)[0];
+    if (firstErrorField) {
+      setFocus(firstErrorField);
     }
-    if (!playerWhite.aga_id || !playerWhite.name || !playerWhite.aga_rank || !playerWhite.age) {
-      showError('Please fill in all White player information');
-      return false;
-    }
-    if (playerBlack.aga_id === playerWhite.aga_id) {
-      showError('Black and White must be different players');
-      return false;
-    }
-    return true;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    setLoading({ ...loading, submit: true });
-
+  const onSubmit = async (data) => {
     try {
       // Create or update players
       await Promise.all([
         playerService
-          .create(playerBlack)
-          .catch(() => playerService.update(playerBlack.aga_id, playerBlack)),
+          .create(data.playerBlack)
+          .catch(() => playerService.update(data.playerBlack.aga_id, data.playerBlack)),
         playerService
-          .create(playerWhite)
-          .catch(() => playerService.update(playerWhite.aga_id, playerWhite)),
+          .create(data.playerWhite)
+          .catch(() => playerService.update(data.playerWhite.aga_id, data.playerWhite)),
       ]);
 
       // Create game result
       const gameData = {
-        player_black_id: playerBlack.aga_id,
-        player_white_id: playerWhite.aga_id,
-        handicap: parseInt(gameInfo.handicap),
-        rated: gameInfo.rated,
-        winner: gameInfo.winner,
+        player_black_id: data.playerBlack.aga_id,
+        player_white_id: data.playerWhite.aga_id,
+        handicap: parseInt(data.handicap),
+        rated: data.rated,
+        winner: data.winner,
       };
 
       await gameService.create(gameData);
 
       showSuccess('Game result submitted successfully!');
 
-      // Reset form
-      setPlayerBlack({ aga_id: '', name: '', aga_rank: '', age: '' });
-      setPlayerWhite({ aga_id: '', name: '', aga_rank: '', age: '' });
-      setGameInfo({
-        handicap: 0,
-        rated: true,
-        winner: 'black',
-      });
+      // Reset form to default values
+      reset();
 
       // Restore focus to Black player AGA ID field
       setTimeout(() => playerBlackAgaIdRef.current?.focus(), 0);
     } catch (error) {
       showError(error.response?.data?.detail || 'Error submitting game result');
     }
-
-    setLoading({ ...loading, submit: false });
   };
 
   return (
@@ -167,7 +145,7 @@ const GameSubmissionView = () => {
           Go Tournament - Report Game Result
         </Typography>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate>
           <Grid container spacing={4}>
             {/* Black Player Section */}
             <Grid size={{ xs: 12, md: 6 }}>
@@ -175,37 +153,62 @@ const GameSubmissionView = () => {
                 Black
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <TextField
-                  required
-                  fullWidth
-                  label="AGA ID Number"
-                  value={playerBlack.aga_id}
-                  onChange={(e) => handleAgaIdChange('black', e.target.value)}
-                  disabled={loading.playerBlack}
-                  inputRef={playerBlackAgaIdRef}
+                <Controller
+                  name="playerBlack.aga_id"
+                  control={control}
+                  render={({ field: { onChange: _onChange, ...field }, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="AGA ID Number"
+                      onChange={(e) => handleAgaIdChange('black', e.target.value)}
+                      disabled={loading.playerBlack}
+                      inputRef={playerBlackAgaIdRef}
+                      error={!!error}
+                      helperText={error?.message}
+                    />
+                  )}
                 />
-                <TextField
-                  required
-                  fullWidth
-                  label="Name"
-                  value={playerBlack.name}
-                  onChange={(e) => setPlayerBlack({ ...playerBlack, name: e.target.value })}
+                <Controller
+                  name="playerBlack.name"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="Name"
+                      error={!!error}
+                      helperText={error?.message}
+                    />
+                  )}
                 />
-                <TextField
-                  required
-                  fullWidth
-                  label="AGA Rank"
-                  value={playerBlack.aga_rank}
-                  onChange={(e) => setPlayerBlack({ ...playerBlack, aga_rank: e.target.value })}
-                  placeholder="e.g., 5d, 3k"
+                <Controller
+                  name="playerBlack.aga_rank"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="AGA Rank"
+                      placeholder="e.g., 5d, 3k"
+                      error={!!error}
+                      helperText={error?.message}
+                    />
+                  )}
                 />
-                <TextField
-                  required
-                  fullWidth
-                  type="number"
-                  label="Age"
-                  value={playerBlack.age}
-                  onChange={(e) => setPlayerBlack({ ...playerBlack, age: e.target.value })}
+                <Controller
+                  name="playerBlack.age"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      type="number"
+                      label="Age"
+                      error={!!error}
+                      helperText={error?.message}
+                    />
+                  )}
                 />
               </Box>
             </Grid>
@@ -216,37 +219,62 @@ const GameSubmissionView = () => {
                 White
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <TextField
-                  required
-                  fullWidth
-                  label="AGA ID Number"
-                  value={playerWhite.aga_id}
-                  onChange={(e) => handleAgaIdChange('white', e.target.value)}
-                  disabled={loading.playerWhite}
-                  inputRef={playerWhiteAgaIdRef}
+                <Controller
+                  name="playerWhite.aga_id"
+                  control={control}
+                  render={({ field: { onChange: _onChange, ...field }, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="AGA ID Number"
+                      onChange={(e) => handleAgaIdChange('white', e.target.value)}
+                      disabled={loading.playerWhite}
+                      inputRef={playerWhiteAgaIdRef}
+                      error={!!error}
+                      helperText={error?.message}
+                    />
+                  )}
                 />
-                <TextField
-                  required
-                  fullWidth
-                  label="Name"
-                  value={playerWhite.name}
-                  onChange={(e) => setPlayerWhite({ ...playerWhite, name: e.target.value })}
+                <Controller
+                  name="playerWhite.name"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="Name"
+                      error={!!error}
+                      helperText={error?.message}
+                    />
+                  )}
                 />
-                <TextField
-                  required
-                  fullWidth
-                  label="AGA Rank"
-                  value={playerWhite.aga_rank}
-                  onChange={(e) => setPlayerWhite({ ...playerWhite, aga_rank: e.target.value })}
-                  placeholder="e.g., 5d, 3k"
+                <Controller
+                  name="playerWhite.aga_rank"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="AGA Rank"
+                      placeholder="e.g., 5d, 3k"
+                      error={!!error}
+                      helperText={error?.message}
+                    />
+                  )}
                 />
-                <TextField
-                  required
-                  fullWidth
-                  type="number"
-                  label="Age"
-                  value={playerWhite.age}
-                  onChange={(e) => setPlayerWhite({ ...playerWhite, age: e.target.value })}
+                <Controller
+                  name="playerWhite.age"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      type="number"
+                      label="Age"
+                      error={!!error}
+                      helperText={error?.message}
+                    />
+                  )}
                 />
               </Box>
             </Grid>
@@ -260,40 +288,60 @@ const GameSubmissionView = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField
-                required
-                fullWidth
-                type="number"
-                label="Handicap"
-                value={gameInfo.handicap}
-                onChange={(e) => setGameInfo({ ...gameInfo, handicap: e.target.value })}
-                inputProps={{ min: 0 }}
+              <Controller
+                name="handicap"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    type="number"
+                    label="Handicap"
+                    inputProps={{ min: 0 }}
+                    error={!!error}
+                    helperText={error?.message}
+                  />
+                )}
               />
             </Grid>
 
             <Grid size={{ xs: 12, sm: 4 }}>
-              <FormControl fullWidth required>
-                <InputLabel>Winner</InputLabel>
-                <Select
-                  value={gameInfo.winner}
-                  label="Winner"
-                  onChange={(e) => setGameInfo({ ...gameInfo, winner: e.target.value })}
-                >
-                  <MenuItem value="black">Black</MenuItem>
-                  <MenuItem value="white">White</MenuItem>
-                </Select>
-              </FormControl>
+              <Controller
+                name="winner"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <FormControl fullWidth error={!!error}>
+                    <InputLabel>Winner</InputLabel>
+                    <Select {...field} label="Winner">
+                      <MenuItem value="black">Black</MenuItem>
+                      <MenuItem value="white">White</MenuItem>
+                    </Select>
+                    {error && (
+                      <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 2 }}>
+                        {error.message}
+                      </Typography>
+                    )}
+                  </FormControl>
+                )}
+              />
             </Grid>
 
             <Grid size={{ xs: 12, sm: 4 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={gameInfo.rated}
-                    onChange={(e) => setGameInfo({ ...gameInfo, rated: e.target.checked })}
+              <Controller
+                name="rated"
+                control={control}
+                render={({ field: { value, onChange, ...field } }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        {...field}
+                        checked={value}
+                        onChange={(e) => onChange(e.target.checked)}
+                      />
+                    }
+                    label="Rated Game"
                   />
-                }
-                label="Rated Game"
+                )}
               />
             </Grid>
 
@@ -304,9 +352,9 @@ const GameSubmissionView = () => {
                 variant="contained"
                 size="large"
                 fullWidth
-                disabled={loading.submit}
+                disabled={isSubmitting}
               >
-                {loading.submit ? 'Submitting...' : 'Submit Game Result'}
+                {isSubmitting ? 'Submitting...' : 'Submit Game Result'}
               </Button>
             </Grid>
           </Grid>
