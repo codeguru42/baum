@@ -13,7 +13,6 @@ describe('PlayersTable', () => {
       games_played: 10,
       games_won: 7,
       games_lost: 3,
-      updated_at: '2024-01-15T10:00:00Z',
     },
     {
       aga_id: 'AGA002',
@@ -23,7 +22,6 @@ describe('PlayersTable', () => {
       games_played: 5,
       games_won: 2,
       games_lost: 3,
-      updated_at: '2024-01-16T14:30:00Z',
     },
   ];
 
@@ -52,7 +50,6 @@ describe('PlayersTable', () => {
     expect(screen.getByText('Games Played')).toBeInTheDocument();
     expect(screen.getByText('Won')).toBeInTheDocument();
     expect(screen.getByText('Lost')).toBeInTheDocument();
-    expect(screen.getByText('Last Updated')).toBeInTheDocument();
   });
 
   it('displays player ranks', () => {
@@ -86,7 +83,6 @@ describe('PlayersTable', () => {
         name: 'Bob Wilson',
         aga_rank: '1k',
         age: 35,
-        updated_at: '2024-01-17T09:00:00Z',
       },
     ];
 
@@ -105,20 +101,12 @@ describe('PlayersTable', () => {
     expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
   });
 
-  it('displays formatted dates', () => {
-    render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
-
-    const rows = screen.getAllByRole('row');
-    const hasDate = rows.some((row) => row.textContent.includes('2024'));
-    expect(hasDate).toBe(true);
-  });
-
   it('renders sortable column headers', () => {
     render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
     // Check that all column headers are rendered and clickable
     const headers = screen.getAllByRole('columnheader');
-    expect(headers).toHaveLength(8);
+    expect(headers).toHaveLength(7);
   });
 
   it('calls onSort when column header is clicked', async () => {
@@ -196,6 +184,6 @@ describe('PlayersTable', () => {
     // Check that all column headers have sort labels
     const sortLabels = screen.getAllByRole('button', { hidden: true });
     // Each column header should have a sort button
-    expect(sortLabels.length).toBeGreaterThanOrEqual(8);
+    expect(sortLabels.length).toBeGreaterThanOrEqual(7);
   });
 });

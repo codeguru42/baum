@@ -21,7 +21,7 @@ const AdminPlayersView = () => {
     } else {
       setSortBy(column);
       // Set default sort order based on column type
-      const descByDefault = ['age', 'gamesPlayed', 'gamesWon', 'gamesLost', 'updatedAt'];
+      const descByDefault = ['age', 'gamesPlayed', 'gamesWon', 'gamesLost'];
       setSortOrder(descByDefault.includes(column) ? 'desc' : 'asc');
     }
   };
@@ -53,9 +53,6 @@ const AdminPlayersView = () => {
           break;
         case 'gamesLost':
           comparison = (a.games_lost ?? 0) - (b.games_lost ?? 0);
-          break;
-        case 'updatedAt':
-          comparison = new Date(a.updated_at) - new Date(b.updated_at);
           break;
         default:
           comparison = 0;

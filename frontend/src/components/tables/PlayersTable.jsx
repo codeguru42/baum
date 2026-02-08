@@ -40,7 +40,6 @@ const PlayersTableHeader = ({ sortBy, sortOrder, onSort }) => {
         {createSortableHeader('Games Played', 'gamesPlayed', 'desc')}
         {createSortableHeader('Won', 'gamesWon', 'desc')}
         {createSortableHeader('Lost', 'gamesLost', 'desc')}
-        {createSortableHeader('Last Updated', 'updatedAt', 'desc')}
       </TableRow>
     </TableHead>
   );
@@ -60,17 +59,6 @@ PlayersTableHeader.propTypes = {
  * @param {Function} onSort - Callback when sort is changed
  */
 const PlayersTable = ({ players, sortBy, sortOrder, onSort }) => {
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
   return (
     <TableContainer sx={{ mt: 3 }}>
       <Table>
@@ -88,7 +76,6 @@ const PlayersTable = ({ players, sortBy, sortOrder, onSort }) => {
               <TableCell sx={{ width: '120px' }}>{player.games_played ?? 0}</TableCell>
               <TableCell sx={{ width: '120px' }}>{player.games_won ?? 0}</TableCell>
               <TableCell sx={{ width: '120px' }}>{player.games_lost ?? 0}</TableCell>
-              <TableCell>{formatDate(player.updated_at)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -107,7 +94,6 @@ PlayersTable.propTypes = {
       games_played: PropTypes.number,
       games_won: PropTypes.number,
       games_lost: PropTypes.number,
-      updated_at: PropTypes.string.isRequired,
     })
   ).isRequired,
   sortBy: PropTypes.string.isRequired,
