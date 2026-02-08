@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -11,6 +12,58 @@ import { useTournamentData } from '../components/TournamentDataContext';
  */
 const AdminPlayersView = () => {
   const { players, loadingPlayers, playersError } = useTournamentData();
+  const [sortBy, setSortBy] = useState('agaId');
+  const [sortOrder, setSortOrder] = useState('asc');
+
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(column);
+      // Set default sort order based on column type
+      const descByDefault = ['age', 'gamesPlayed', 'gamesWon', 'gamesLost', 'updatedAt'];
+      setSortOrder(descByDefault.includes(column) ? 'desc' : 'asc');
+    }
+  };
+
+  const getSortedPlayers = () => {
+    const playersCopy = [...players];
+
+    return playersCopy.sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortBy) {
+        case 'agaId':
+          comparison = a.aga_id.localeCompare(b.aga_id);
+          break;
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'agaRank':
+          comparison = a.aga_rank.localeCompare(b.aga_rank);
+          break;
+        case 'age':
+          comparison = a.age - b.age;
+          break;
+        case 'gamesPlayed':
+          comparison = (a.games_played ?? 0) - (b.games_played ?? 0);
+          break;
+        case 'gamesWon':
+          comparison = (a.games_won ?? 0) - (b.games_won ?? 0);
+          break;
+        case 'gamesLost':
+          comparison = (a.games_lost ?? 0) - (b.games_lost ?? 0);
+          break;
+        case 'updatedAt':
+          comparison = new Date(a.updated_at) - new Date(b.updated_at);
+          break;
+        default:
+          comparison = 0;
+      }
+
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+  };
 
   if (loadingPlayers) {
     return (
@@ -40,7 +93,12 @@ const AdminPlayersView = () => {
       <Typography variant="subtitle1" gutterBottom align="center" color="text.secondary">
         Total Players: {players.length}
       </Typography>
-      <PlayersTable players={players} />
+      <PlayersTable
+        players={getSortedPlayers()}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSort={handleSort}
+      />
     </>
   );
 };

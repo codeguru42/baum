@@ -4,13 +4,62 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
 import PropTypes from 'prop-types';
+
+/**
+ * Table header component with sortable columns
+ */
+const PlayersTableHeader = ({ sortBy, sortOrder, onSort }) => {
+  const createSortableHeader = (label, sortKey, defaultDirection = 'asc') => (
+    <TableCell
+      sx={{ color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
+      onClick={() => onSort(sortKey)}
+    >
+      <TableSortLabel
+        active={sortBy === sortKey}
+        direction={sortBy === sortKey ? sortOrder : defaultDirection}
+        sx={{
+          color: 'white !important',
+          '&:hover': { color: 'white !important' },
+          '& .MuiTableSortLabel-icon': { color: 'white !important' },
+        }}
+      >
+        {label}
+      </TableSortLabel>
+    </TableCell>
+  );
+
+  return (
+    <TableHead>
+      <TableRow sx={{ backgroundColor: 'primary.main' }}>
+        {createSortableHeader('AGA ID', 'agaId')}
+        {createSortableHeader('Name', 'name')}
+        {createSortableHeader('Rank', 'agaRank')}
+        {createSortableHeader('Age', 'age', 'desc')}
+        {createSortableHeader('Games Played', 'gamesPlayed', 'desc')}
+        {createSortableHeader('Won', 'gamesWon', 'desc')}
+        {createSortableHeader('Lost', 'gamesLost', 'desc')}
+        {createSortableHeader('Last Updated', 'updatedAt', 'desc')}
+      </TableRow>
+    </TableHead>
+  );
+};
+
+PlayersTableHeader.propTypes = {
+  sortBy: PropTypes.string.isRequired,
+  sortOrder: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  onSort: PropTypes.func.isRequired,
+};
 
 /**
  * Reusable table component for displaying player information
  * @param {Array} players - Array of player objects to display
+ * @param {string} sortBy - Current sort column
+ * @param {string} sortOrder - Current sort order ('asc' or 'desc')
+ * @param {Function} onSort - Callback when sort is changed
  */
-const PlayersTable = ({ players }) => {
+const PlayersTable = ({ players, sortBy, sortOrder, onSort }) => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -25,20 +74,7 @@ const PlayersTable = ({ players }) => {
   return (
     <TableContainer sx={{ mt: 3 }}>
       <Table>
-        <TableHead>
-          <TableRow sx={{ backgroundColor: 'primary.main' }}>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Age</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>
-              Games Played
-            </TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>Won</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold', width: '120px' }}>Lost</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Last Updated</TableCell>
-          </TableRow>
-        </TableHead>
+        <PlayersTableHeader sortBy={sortBy} sortOrder={sortOrder} onSort={onSort} />
         <TableBody>
           {players.map((player) => (
             <TableRow
@@ -74,6 +110,9 @@ PlayersTable.propTypes = {
       updated_at: PropTypes.string.isRequired,
     })
   ).isRequired,
+  sortBy: PropTypes.string.isRequired,
+  sortOrder: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  onSort: PropTypes.func.isRequired,
 };
 
 export default PlayersTable;

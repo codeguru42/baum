@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import PlayersTable from './PlayersTable';
 
 describe('PlayersTable', () => {
@@ -26,8 +27,14 @@ describe('PlayersTable', () => {
     },
   ];
 
+  const mockSortProps = {
+    sortBy: 'name',
+    sortOrder: 'asc',
+    onSort: vi.fn(),
+  };
+
   it('renders table with player data', () => {
-    render(<PlayersTable players={mockPlayers} />);
+    render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('Jane Smith')).toBeInTheDocument();
@@ -36,7 +43,7 @@ describe('PlayersTable', () => {
   });
 
   it('renders table headers correctly', () => {
-    render(<PlayersTable players={mockPlayers} />);
+    render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
     expect(screen.getByText('AGA ID')).toBeInTheDocument();
     expect(screen.getByText('Name')).toBeInTheDocument();
@@ -49,14 +56,14 @@ describe('PlayersTable', () => {
   });
 
   it('displays player ranks', () => {
-    render(<PlayersTable players={mockPlayers} />);
+    render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
     expect(screen.getByText('5d')).toBeInTheDocument();
     expect(screen.getByText('3k')).toBeInTheDocument();
   });
 
   it('displays player ages', () => {
-    render(<PlayersTable players={mockPlayers} />);
+    render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
     const rows = screen.getAllByRole('row');
     expect(rows[1]).toHaveTextContent('30');
@@ -64,7 +71,7 @@ describe('PlayersTable', () => {
   });
 
   it('displays game statistics', () => {
-    render(<PlayersTable players={mockPlayers} />);
+    render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
     const rows = screen.getAllByRole('row');
     expect(rows[1]).toHaveTextContent('10'); // games played
@@ -83,14 +90,14 @@ describe('PlayersTable', () => {
       },
     ];
 
-    render(<PlayersTable players={playersWithoutStats} />);
+    render(<PlayersTable players={playersWithoutStats} {...mockSortProps} />);
 
     const rows = screen.getAllByRole('row');
     expect(rows[1]).toHaveTextContent('0'); // defaults for missing stats
   });
 
   it('renders empty table when no players provided', () => {
-    render(<PlayersTable players={[]} />);
+    render(<PlayersTable players={[]} {...mockSortProps} />);
 
     // Headers should still be present
     expect(screen.getByText('AGA ID')).toBeInTheDocument();
@@ -99,10 +106,96 @@ describe('PlayersTable', () => {
   });
 
   it('displays formatted dates', () => {
-    render(<PlayersTable players={mockPlayers} />);
+    render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
     const rows = screen.getAllByRole('row');
     const hasDate = rows.some((row) => row.textContent.includes('2024'));
     expect(hasDate).toBe(true);
+  });
+
+  it('renders sortable column headers', () => {
+    render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
+
+    // Check that all column headers are rendered and clickable
+    const headers = screen.getAllByRole('columnheader');
+    expect(headers).toHaveLength(8);
+  });
+
+  it('calls onSort when column header is clicked', async () => {
+    const user = userEvent.setup();
+    const onSort = vi.fn();
+
+    render(<PlayersTable players={mockPlayers} sortBy="name" sortOrder="asc" onSort={onSort} />);
+
+    // Click on the "AGA ID" header
+    const agaIdHeader = screen.getByText('AGA ID').closest('th');
+    await user.click(agaIdHeader);
+
+    expect(onSort).toHaveBeenCalledWith('agaId');
+  });
+
+  it('calls onSort with correct column key for each header', async () => {
+    const user = userEvent.setup();
+    const onSort = vi.fn();
+
+    render(<PlayersTable players={mockPlayers} sortBy="name" sortOrder="asc" onSort={onSort} />);
+
+    // Test Name column
+    const nameHeader = screen.getByText('Name').closest('th');
+    await user.click(nameHeader);
+    expect(onSort).toHaveBeenCalledWith('name');
+
+    // Test Age column
+    const ageHeader = screen.getByText('Age').closest('th');
+    await user.click(ageHeader);
+    expect(onSort).toHaveBeenCalledWith('age');
+
+    // Test Games Played column
+    const gamesPlayedHeader = screen.getByText('Games Played').closest('th');
+    await user.click(gamesPlayedHeader);
+    expect(onSort).toHaveBeenCalledWith('gamesPlayed');
+  });
+
+  it('displays active sort indicator on sorted column', () => {
+    render(<PlayersTable players={mockPlayers} sortBy="age" sortOrder="desc" onSort={vi.fn()} />);
+
+    // The Age column should have the active sort indicator
+    const ageHeader = screen.getByText('Age').closest('th');
+    const sortLabel = ageHeader.querySelector('.MuiTableSortLabel-root');
+    expect(sortLabel).toHaveClass('Mui-active');
+  });
+
+  it('displays correct sort direction indicator', () => {
+    const { rerender } = render(
+      <PlayersTable players={mockPlayers} sortBy="name" sortOrder="asc" onSort={vi.fn()} />
+    );
+
+    // Check ascending sort - verify the icon direction class
+    const nameHeader = screen.getByText('Name').closest('th');
+    let sortLabel = nameHeader.querySelector('.MuiTableSortLabel-root');
+    expect(sortLabel).toHaveClass('Mui-active');
+    // Check direction using the icon - ascending should not have the descending class
+    let icon = sortLabel.querySelector('.MuiTableSortLabel-icon');
+    expect(icon).not.toHaveClass('MuiTableSortLabel-iconDirectionDesc');
+
+    // Rerender with descending sort
+    rerender(
+      <PlayersTable players={mockPlayers} sortBy="name" sortOrder="desc" onSort={vi.fn()} />
+    );
+
+    sortLabel = nameHeader.querySelector('.MuiTableSortLabel-root');
+    expect(sortLabel).toHaveClass('Mui-active');
+    // Check direction using the icon - descending should have the descending class
+    icon = sortLabel.querySelector('.MuiTableSortLabel-icon');
+    expect(icon).toHaveClass('MuiTableSortLabel-iconDirectionDesc');
+  });
+
+  it('marks all columns as sortable', () => {
+    render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
+
+    // Check that all column headers have sort labels
+    const sortLabels = screen.getAllByRole('button', { hidden: true });
+    // Each column header should have a sort button
+    expect(sortLabels.length).toBeGreaterThanOrEqual(8);
   });
 });
