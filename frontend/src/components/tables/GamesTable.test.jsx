@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, within, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi, afterEach } from 'vitest';
 import GamesTable from './GamesTable';
 
@@ -68,10 +68,16 @@ describe('GamesTable', () => {
       />
     );
 
-    expect(screen.getByText('John Doe')).toBeVisible();
-    expect(screen.getByText('Jane Smith')).toBeVisible();
-    expect(screen.getByText('Bob Wilson')).toBeVisible();
-    expect(screen.getByText('Alice Brown')).toBeVisible();
+    const rows = screen.getAllByRole('row');
+    const row1Cells = within(rows[1]).getAllByRole('cell');
+    const row2Cells = within(rows[2]).getAllByRole('cell');
+    
+    // Row 1: John Doe (black) vs Jane Smith (white)
+    expect(row1Cells[0]).toHaveTextContent('John Doe');
+    expect(row1Cells[4]).toHaveTextContent('Jane Smith');
+    // Row 2: Alice Brown (black) vs Bob Wilson (white)
+    expect(row2Cells[0]).toHaveTextContent('Alice Brown');
+    expect(row2Cells[4]).toHaveTextContent('Bob Wilson');
   });
 
   it('renders table headers correctly', () => {
@@ -85,14 +91,14 @@ describe('GamesTable', () => {
       />
     );
 
-    expect(screen.getByText('Black Player')).toBeVisible();
-    expect(screen.getByText('White Player')).toBeVisible();
-    expect(screen.getByText('Age Diff')).toBeVisible();
-    expect(screen.getByText('Handicap')).toBeVisible();
-    expect(screen.getByText('Winner')).toBeVisible();
-    expect(screen.getByText('Rated')).toBeVisible();
-    expect(screen.getByText('Valid for Prizes')).toBeVisible();
-    expect(screen.getByText('Date')).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Black Player' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'White Player' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Age Diff' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Handicap' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Winner' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Rated' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Valid for Prizes' })).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Date' })).toBeVisible();
   });
 
   it('displays correct player colors (black and white)', () => {
@@ -211,7 +217,7 @@ describe('GamesTable', () => {
       />
     );
 
-    const ageDiffHeader = screen.getByText('Age Diff');
+    const ageDiffHeader = screen.getByRole('columnheader', { name: 'Age Diff' });
     fireEvent.click(ageDiffHeader);
     expect(mockOnSort).toHaveBeenCalledWith('ageDiff');
   });
@@ -227,7 +233,7 @@ describe('GamesTable', () => {
       />
     );
 
-    const ratedHeader = screen.getByText('Rated');
+    const ratedHeader = screen.getByRole('columnheader', { name: 'Rated' });
     fireEvent.click(ratedHeader);
     expect(mockOnSort).toHaveBeenCalledWith('rated');
   });
@@ -244,7 +250,7 @@ describe('GamesTable', () => {
     );
 
     // Headers should still be present
-    expect(screen.getByText('Black Player')).toBeVisible();
+    expect(screen.getByRole('columnheader', { name: 'Black Player' })).toBeVisible();
     // But no data rows
     expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
   });
