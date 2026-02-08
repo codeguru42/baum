@@ -11,7 +11,6 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Controller, useForm } from 'react-hook-form';
 import { useNotification } from '../components/NotificationContext';
@@ -119,7 +118,7 @@ const GameSubmissionView = () => {
       const gameData = {
         player_black_id: data.playerBlack.aga_id,
         player_white_id: data.playerWhite.aga_id,
-        handicap: parseInt(data.handicap),
+        handicap: data.handicap === '9+' ? 10 : parseInt(data.handicap),
         rated: data.rated,
         winner: data.winner,
       };
@@ -180,15 +179,27 @@ const GameSubmissionView = () => {
                 name="handicap"
                 control={control}
                 render={({ field, fieldState: { error } }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    type="number"
-                    label="Handicap"
-                    inputProps={{ min: 0 }}
-                    error={!!error}
-                    helperText={error?.message}
-                  />
+                  <FormControl fullWidth error={!!error}>
+                    <InputLabel id="handicap-label">Handicap</InputLabel>
+                    <Select {...field} label="Handicap" labelId="handicap-label">
+                      <MenuItem value={0}>0</MenuItem>
+                      <MenuItem value={1}>1</MenuItem>
+                      <MenuItem value={2}>2</MenuItem>
+                      <MenuItem value={3}>3</MenuItem>
+                      <MenuItem value={4}>4</MenuItem>
+                      <MenuItem value={5}>5</MenuItem>
+                      <MenuItem value={6}>6</MenuItem>
+                      <MenuItem value={7}>7</MenuItem>
+                      <MenuItem value={8}>8</MenuItem>
+                      <MenuItem value={9}>9</MenuItem>
+                      <MenuItem value="9+">9+</MenuItem>
+                    </Select>
+                    {error && (
+                      <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 2 }}>
+                        {error.message}
+                      </Typography>
+                    )}
+                  </FormControl>
                 )}
               />
             </Grid>

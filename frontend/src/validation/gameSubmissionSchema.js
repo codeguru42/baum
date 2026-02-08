@@ -49,11 +49,13 @@ export const gameSubmissionSchema = yup
     playerBlack: playerSchema,
     playerWhite: playerSchema,
     handicap: yup
-      .number()
-      .min(0, 'Handicap must be at least 0')
-      .max(9, 'Handicap must be 9 or less')
-      .integer('Handicap must be a whole number')
-      .typeError('Handicap must be a number'),
+      .mixed()
+      .required('Handicap is required')
+      .test('is-valid-handicap', 'Invalid handicap value', (value) => {
+        if (value === '9+') return true;
+        const num = Number(value);
+        return Number.isInteger(num) && num >= 0 && num <= 9;
+      }),
     rated: yup.boolean(),
     winner: yup
       .string()

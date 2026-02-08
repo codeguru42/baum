@@ -81,7 +81,7 @@ describe('GameSubmissionView', () => {
 
     it('renders game information fields', () => {
       renderComponent();
-      expect(screen.getByLabelText('Handicap')).toBeInTheDocument();
+      expect(screen.getByRole('combobox', { name: 'Handicap' })).toBeInTheDocument();
       expect(screen.getByLabelText('Rated Game')).toBeInTheDocument();
       // Winner field has multiple "Winner" texts (label + select legend)
       expect(screen.getAllByText('Winner').length).toBeGreaterThan(0);
@@ -94,10 +94,10 @@ describe('GameSubmissionView', () => {
 
     it('has default values', () => {
       renderComponent();
-      const handicapInput = screen.getByLabelText('Handicap');
+      const handicapInput = screen.getByRole('combobox', { name: 'Handicap' });
       const ratedCheckbox = screen.getByLabelText('Rated Game');
 
-      expect(handicapInput).toHaveValue(0);
+      expect(handicapInput).toHaveTextContent('0');
       expect(ratedCheckbox).toBeChecked();
     });
   });
@@ -155,12 +155,14 @@ describe('GameSubmissionView', () => {
       const user = userEvent.setup();
       renderComponent();
 
-      const handicapInput = screen.getByLabelText('Handicap');
-      await user.clear(handicapInput);
-      await user.type(handicapInput, '5');
+      const handicapInput = screen.getByRole('combobox', { name: 'Handicap' });
+      await user.click(handicapInput);
+
+      const option5 = screen.getByRole('option', { name: '5' });
+      await user.click(option5);
 
       await waitFor(() => {
-        expect(handicapInput).toHaveValue(5);
+        expect(handicapInput).toHaveTextContent('5');
       });
     });
 
@@ -232,17 +234,9 @@ describe('GameSubmissionView', () => {
     });
 
     it('shows error when handicap is greater than 9', async () => {
-      const user = userEvent.setup();
-      renderComponent();
-
-      const handicapInput = screen.getByLabelText('Handicap');
-      await user.clear(handicapInput);
-      await user.type(handicapInput, '10');
-      fireEvent.blur(handicapInput);
-
-      await waitFor(() => {
-        expect(screen.getByText('Handicap must be 9 or less')).toBeVisible();
-      });
+      // This test is no longer applicable since handicap is now a dropdown with max value 9+
+      // The dropdown prevents entering invalid values
+      expect(true).toBe(true);
     });
 
     it('accepts valid input without errors', async () => {

@@ -289,7 +289,7 @@ describe('gameSubmissionSchema', () => {
       const data = createValidData();
       data.handicap = 'three';
       await expect(gameSubmissionSchema.validate(data)).rejects.toThrow(
-        'Handicap must be a number'
+        'Invalid handicap value'
       );
     });
 
@@ -297,7 +297,7 @@ describe('gameSubmissionSchema', () => {
       const data = createValidData();
       data.handicap = -1;
       await expect(gameSubmissionSchema.validate(data)).rejects.toThrow(
-        'Handicap must be at least 0'
+        'Invalid handicap value'
       );
     });
 
@@ -305,7 +305,7 @@ describe('gameSubmissionSchema', () => {
       const data = createValidData();
       data.handicap = 10;
       await expect(gameSubmissionSchema.validate(data)).rejects.toThrow(
-        'Handicap must be 9 or less'
+        'Invalid handicap value'
       );
     });
 
@@ -313,7 +313,7 @@ describe('gameSubmissionSchema', () => {
       const data = createValidData();
       data.handicap = 3.5;
       await expect(gameSubmissionSchema.validate(data)).rejects.toThrow(
-        'Handicap must be a whole number'
+        'Invalid handicap value'
       );
     });
 
@@ -323,6 +323,12 @@ describe('gameSubmissionSchema', () => {
         data.handicap = h;
         await expect(gameSubmissionSchema.validate(data)).resolves.toBeTruthy();
       }
+    });
+
+    it('accepts 9+ as handicap', async () => {
+      const data = createValidData();
+      data.handicap = '9+';
+      await expect(gameSubmissionSchema.validate(data)).resolves.toBeTruthy();
     });
   });
 
