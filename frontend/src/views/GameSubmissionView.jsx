@@ -60,7 +60,7 @@ const GameSubmissionView = () => {
     const loadingKey = playerColor;
 
     // Update AGA ID field immediately
-    setValue(`${playerKey}.aga_id`, agaId, { shouldValidate: false });
+    setValue(`${playerKey}.aga_id`, agaId, { shouldValidate: true });
 
     // Auto-lookup if 3+ characters entered
     if (agaId.length >= 3) {
