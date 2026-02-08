@@ -19,6 +19,7 @@ describe('NotificationSnackbar', () => {
       />
     );
 
+    expect(screen.getByRole('alert')).toBeVisible();
     expect(screen.getByText('Test message')).toBeVisible();
   });
 
@@ -32,7 +33,7 @@ describe('NotificationSnackbar', () => {
       />
     );
 
-    expect(screen.queryByText('Test message')).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('renders with success severity', () => {
@@ -118,7 +119,7 @@ describe('NotificationSnackbar', () => {
     );
 
     // Check that message is rendered (confirms snackbar is displayed)
-    expect(screen.getByText('Test message')).toBeVisible();
+    expect(screen.getByRole('alert')).toBeVisible();
   });
 
   it('uses custom autoHideDuration when provided', () => {
@@ -133,6 +134,6 @@ describe('NotificationSnackbar', () => {
     );
 
     // Check that message is rendered (confirms snackbar is displayed)
-    expect(screen.getByText('Test message')).toBeVisible();
+    expect(screen.getByRole('alert')).toBeVisible();
   });
 });
