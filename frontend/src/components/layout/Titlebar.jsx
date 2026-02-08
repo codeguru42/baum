@@ -16,7 +16,7 @@ const Titlebar = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" component="h1" sx={{ flexGrow: 1 }}>
           Go Tournament Manager
         </Typography>
         <IconButton color="inherit" onClick={toggleTheme} aria-label="Toggle theme">
