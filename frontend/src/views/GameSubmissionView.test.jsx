@@ -73,7 +73,7 @@ describe('GameSubmissionView', () => {
       renderComponent();
 
       // Both players have these fields (2 of each)
-      expect(screen.getAllByLabelText('AGA ID Number').length).toBe(2);
+      expect(screen.getAllByLabelText('AGA ID').length).toBe(2);
       expect(screen.getAllByLabelText('Name').length).toBe(2);
       expect(screen.getAllByLabelText('AGA Rank').length).toBe(2);
       expect(screen.getAllByLabelText('Age').length).toBe(2);
@@ -103,11 +103,11 @@ describe('GameSubmissionView', () => {
   });
 
   describe('Form Input', () => {
-    it('allows typing in AGA ID Number field', async () => {
+    it('allows typing in AGA ID field', async () => {
       const user = userEvent.setup();
       renderComponent();
 
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
       await user.type(agaIdInputs[0], '123');
 
       await waitFor(() => {
@@ -183,7 +183,7 @@ describe('GameSubmissionView', () => {
       const user = userEvent.setup();
       renderComponent();
 
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
       await user.type(agaIdInputs[0], 'ABC123');
       fireEvent.blur(agaIdInputs[0]);
 
@@ -249,7 +249,7 @@ describe('GameSubmissionView', () => {
       const user = userEvent.setup();
       renderComponent();
 
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
       await user.type(agaIdInputs[0], '12345');
       fireEvent.blur(agaIdInputs[0]);
 
@@ -265,7 +265,7 @@ describe('GameSubmissionView', () => {
 
       renderComponent();
 
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
 
       // Simulate pasting or fast typing that results in final value
       fireEvent.change(agaIdInputs[0], { target: { value: '12345' } });
@@ -291,7 +291,7 @@ describe('GameSubmissionView', () => {
       const user = userEvent.setup();
       renderComponent();
 
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
       await user.type(agaIdInputs[0], '12');
 
       // Wait a bit to ensure no API call
@@ -306,7 +306,7 @@ describe('GameSubmissionView', () => {
 
       renderComponent();
 
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
       await user.type(agaIdInputs[0], '99999');
 
       await waitFor(() => {
@@ -325,7 +325,7 @@ describe('GameSubmissionView', () => {
 
       renderComponent();
 
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
 
       // Fill black player (simulate paste/fast entry)
       fireEvent.change(agaIdInputs[0], { target: { value: '12345' } });
@@ -360,7 +360,7 @@ describe('GameSubmissionView', () => {
       renderComponent();
 
       // Fill in all required fields
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
       const nameInputs = screen.getAllByLabelText('Name');
       const rankInputs = screen.getAllByLabelText('AGA Rank');
       const ageInputs = screen.getAllByLabelText('Age');
@@ -419,7 +419,7 @@ describe('GameSubmissionView', () => {
       const user = userEvent.setup();
       renderComponent();
 
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
       const nameInputs = screen.getAllByLabelText('Name');
       const rankInputs = screen.getAllByLabelText('AGA Rank');
       const ageInputs = screen.getAllByLabelText('Age');
@@ -455,7 +455,7 @@ describe('GameSubmissionView', () => {
       renderComponent();
 
       // Fill in all required fields
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
       const nameInputs = screen.getAllByLabelText('Name');
       const rankInputs = screen.getAllByLabelText('AGA Rank');
       const ageInputs = screen.getAllByLabelText('Age');
@@ -490,7 +490,7 @@ describe('GameSubmissionView', () => {
       renderComponent();
 
       // Fill in all required fields
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
       const nameInputs = screen.getAllByLabelText('Name');
       const rankInputs = screen.getAllByLabelText('AGA Rank');
       const ageInputs = screen.getAllByLabelText('Age');
@@ -522,7 +522,7 @@ describe('GameSubmissionView', () => {
       renderComponent();
 
       // Fill in all required fields
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
       const nameInputs = screen.getAllByLabelText('Name');
       const rankInputs = screen.getAllByLabelText('AGA Rank');
       const ageInputs = screen.getAllByLabelText('Age');
@@ -570,7 +570,7 @@ describe('GameSubmissionView', () => {
       renderComponent();
 
       // Fill in all required fields
-      const agaIdInputs = screen.getAllByLabelText('AGA ID Number');
+      const agaIdInputs = screen.getAllByLabelText('AGA ID');
       const nameInputs = screen.getAllByLabelText('Name');
       const rankInputs = screen.getAllByLabelText('AGA Rank');
       const ageInputs = screen.getAllByLabelText('Age');

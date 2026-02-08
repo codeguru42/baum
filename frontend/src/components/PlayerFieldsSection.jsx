@@ -39,7 +39,7 @@ const PlayerFieldsSection = ({
             <TextField
               {...field}
               fullWidth
-              label="AGA ID Number"
+              label="AGA ID"
               onChange={(e) => onAgaIdChange(playerColor, e.target.value)}
               disabled={isLoading}
               inputRef={agaIdInputRef}
