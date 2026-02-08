@@ -38,9 +38,6 @@ services:
       registry: ghcr.io
       repository: REPO_PLACEHOLDER/nginx
       tag: latest
-    envs:
-      - key: BACKEND_URL
-        value: http://backend:8000
     http_port: 80
     instance_count: 1
     instance_size_slug: basic-xxs
