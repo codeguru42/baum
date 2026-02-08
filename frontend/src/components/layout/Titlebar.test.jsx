@@ -17,7 +17,7 @@ describe('Titlebar', () => {
 
   it('renders the app title', () => {
     renderTitlebar();
-    expect(screen.getByText('Go Tournament Manager')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Go Tournament Manager', level: 1 })).toBeVisible();
   });
 
   it('renders titlebar within an AppBar', () => {
