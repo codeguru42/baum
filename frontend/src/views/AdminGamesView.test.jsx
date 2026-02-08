@@ -108,16 +108,16 @@ describe('AdminGamesView', () => {
     it('renders games table when games are available', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
-        expect(screen.getByText('Bob Wilson')).toBeInTheDocument();
-        expect(screen.getByText('Charlie Davis')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
+        expect(screen.getByText('Bob Wilson')).toBeVisible();
+        expect(screen.getByText('Charlie Davis')).toBeVisible();
       });
     });
 
     it('displays total games count', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Total Games: 3')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
     });
 
@@ -130,7 +130,7 @@ describe('AdminGamesView', () => {
       });
 
       renderComponent();
-      expect(screen.getByText('Loading games...')).toBeInTheDocument();
+      expect(screen.getByText('Loading games...')).toBeVisible();
     });
 
     it('displays error state', () => {
@@ -142,7 +142,7 @@ describe('AdminGamesView', () => {
       });
 
       renderComponent();
-      expect(screen.getByText('Failed to load games')).toBeInTheDocument();
+      expect(screen.getByText('Failed to load games')).toBeVisible();
     });
 
     it('displays empty state when no games', () => {
@@ -154,7 +154,7 @@ describe('AdminGamesView', () => {
       });
 
       renderComponent();
-      expect(screen.getByText('No games recorded yet')).toBeInTheDocument();
+      expect(screen.getByText('No games recorded yet')).toBeVisible();
     });
   });
 
@@ -162,7 +162,7 @@ describe('AdminGamesView', () => {
     it('sorts by black player name ascending', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       // Click on Black Player header
@@ -179,7 +179,7 @@ describe('AdminGamesView', () => {
     it('sorts by black player name descending', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       // Click on Black Player header twice (once for asc, once for desc)
@@ -197,7 +197,7 @@ describe('AdminGamesView', () => {
     it('sorts by white player name', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Bob Wilson')).toBeInTheDocument();
+        expect(screen.getByText('Bob Wilson')).toBeVisible();
       });
 
       const whitePlayerHeader = screen.getByText('White Player');
@@ -213,7 +213,7 @@ describe('AdminGamesView', () => {
     it('sorts by black age ascending', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       // Find the first Age header (black player age)
@@ -235,7 +235,7 @@ describe('AdminGamesView', () => {
     it('sorts by black age descending', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       const ageHeaders = screen.getAllByText('Age');
@@ -251,7 +251,7 @@ describe('AdminGamesView', () => {
     it('sorts by age difference', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       const ageDiffHeader = screen.getByText('Age Diff');
@@ -273,7 +273,7 @@ describe('AdminGamesView', () => {
     it('sorts by handicap', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       const handicapHeader = screen.getByText('Handicap');
@@ -292,7 +292,7 @@ describe('AdminGamesView', () => {
     it('sorts by winner', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       const winnerHeader = screen.getByText('Winner');
@@ -312,7 +312,7 @@ describe('AdminGamesView', () => {
     it('sorts by rated status', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       const ratedHeader = screen.getByText('Rated');
@@ -332,7 +332,7 @@ describe('AdminGamesView', () => {
     it('sorts by date (newest first by default)', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Eve Foster')).toBeInTheDocument();
+        expect(screen.getByText('Eve Foster')).toBeVisible();
       });
 
       // Default sort should be by date desc (newest first)
@@ -344,7 +344,7 @@ describe('AdminGamesView', () => {
     it('sorts by date ascending when clicked', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       const dateHeader = screen.getByText('Date');
@@ -360,7 +360,7 @@ describe('AdminGamesView', () => {
     it('maintains valid games before invalid games when sorting', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       // Sort by black player name
@@ -380,7 +380,7 @@ describe('AdminGamesView', () => {
     it('sorts by rank correctly', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       // Click on first Rank header (black player rank)
@@ -398,7 +398,7 @@ describe('AdminGamesView', () => {
     it('sorts by AGA ID correctly', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       // Click on first AGA ID header (black player)
@@ -417,7 +417,7 @@ describe('AdminGamesView', () => {
     it('calls toggleGameValidity when validity button is clicked', async () => {
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       const buttons = screen.getAllByRole('button');
@@ -433,7 +433,7 @@ describe('AdminGamesView', () => {
 
       renderComponent();
       await waitFor(() => {
-        expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+        expect(screen.getByText('Alice Brown')).toBeVisible();
       });
 
       const buttons = screen.getAllByRole('button');

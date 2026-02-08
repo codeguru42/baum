@@ -17,11 +17,11 @@ describe('Titlebar', () => {
 
   it('renders the app title', () => {
     renderTitlebar();
-    expect(screen.getByText('Go Tournament Manager')).toBeInTheDocument();
+    expect(screen.getByText('Go Tournament Manager')).toBeVisible();
   });
 
   it('renders titlebar within an AppBar', () => {
     renderTitlebar();
-    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByRole('banner')).toBeVisible();
   });
 });

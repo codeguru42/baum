@@ -11,7 +11,7 @@ describe('NotificationContext', () => {
       </NotificationProvider>
     );
 
-    expect(screen.getByText('Test Child')).toBeInTheDocument();
+    expect(screen.getByText('Test Child')).toBeVisible();
   });
 
   it('throws error when useNotification is used outside provider', () => {
@@ -143,7 +143,7 @@ describe('NotificationContext', () => {
     await user.click(closeButton);
 
     await waitFor(() => {
-      expect(screen.queryByText('Success message')).not.toBeInTheDocument();
+      expect(screen.queryByText('Success message')).not.toBeVisible();
     });
   });
 });

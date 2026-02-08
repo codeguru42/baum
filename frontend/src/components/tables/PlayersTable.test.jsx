@@ -34,29 +34,29 @@ describe('PlayersTable', () => {
   it('renders table with player data', () => {
     render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('Jane Smith')).toBeInTheDocument();
-    expect(screen.getByText('AGA001')).toBeInTheDocument();
-    expect(screen.getByText('AGA002')).toBeInTheDocument();
+    expect(screen.getByText('John Doe')).toBeVisible();
+    expect(screen.getByText('Jane Smith')).toBeVisible();
+    expect(screen.getByText('AGA001')).toBeVisible();
+    expect(screen.getByText('AGA002')).toBeVisible();
   });
 
   it('renders table headers correctly', () => {
     render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
-    expect(screen.getByText('AGA ID')).toBeInTheDocument();
-    expect(screen.getByText('Name')).toBeInTheDocument();
-    expect(screen.getByText('Rank')).toBeInTheDocument();
-    expect(screen.getByText('Age')).toBeInTheDocument();
-    expect(screen.getByText('Games Played')).toBeInTheDocument();
-    expect(screen.getByText('Won')).toBeInTheDocument();
-    expect(screen.getByText('Lost')).toBeInTheDocument();
+    expect(screen.getByText('AGA ID')).toBeVisible();
+    expect(screen.getByText('Name')).toBeVisible();
+    expect(screen.getByText('Rank')).toBeVisible();
+    expect(screen.getByText('Age')).toBeVisible();
+    expect(screen.getByText('Games Played')).toBeVisible();
+    expect(screen.getByText('Won')).toBeVisible();
+    expect(screen.getByText('Lost')).toBeVisible();
   });
 
   it('displays player ranks', () => {
     render(<PlayersTable players={mockPlayers} {...mockSortProps} />);
 
-    expect(screen.getByText('5d')).toBeInTheDocument();
-    expect(screen.getByText('3k')).toBeInTheDocument();
+    expect(screen.getByText('5d')).toBeVisible();
+    expect(screen.getByText('3k')).toBeVisible();
   });
 
   it('displays player ages', () => {
@@ -96,7 +96,7 @@ describe('PlayersTable', () => {
     render(<PlayersTable players={[]} {...mockSortProps} />);
 
     // Headers should still be present
-    expect(screen.getByText('AGA ID')).toBeInTheDocument();
+    expect(screen.getByText('AGA ID')).toBeVisible();
     // But no data rows
     expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
   });

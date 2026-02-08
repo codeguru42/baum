@@ -20,7 +20,7 @@ describe('ThemeContext', () => {
       </ThemeProvider>
     );
 
-    expect(screen.getByText('Test Child')).toBeInTheDocument();
+    expect(screen.getByText('Test Child')).toBeVisible();
   });
 
   it('throws error when useTheme is used outside provider', () => {
@@ -60,8 +60,8 @@ describe('ThemeContext', () => {
       </ThemeProvider>
     );
 
-    expect(screen.getByText('Mode: light')).toBeInTheDocument();
-    expect(screen.getByText('Is Dark: no')).toBeInTheDocument();
+    expect(screen.getByText('Mode: light')).toBeVisible();
+    expect(screen.getByText('Is Dark: no')).toBeVisible();
   });
 
   it('loads saved theme preference from localStorage', () => {
@@ -83,8 +83,8 @@ describe('ThemeContext', () => {
       </ThemeProvider>
     );
 
-    expect(screen.getByText('Mode: dark')).toBeInTheDocument();
-    expect(screen.getByText('Is Dark: yes')).toBeInTheDocument();
+    expect(screen.getByText('Mode: dark')).toBeVisible();
+    expect(screen.getByText('Is Dark: yes')).toBeVisible();
   });
 
   it('toggles theme from light to dark', async () => {
@@ -105,12 +105,12 @@ describe('ThemeContext', () => {
       </ThemeProvider>
     );
 
-    expect(screen.getByText('Mode: light')).toBeInTheDocument();
+    expect(screen.getByText('Mode: light')).toBeVisible();
 
     const toggleButton = screen.getByRole('button', { name: /toggle theme/i });
     await user.click(toggleButton);
 
-    expect(screen.getByText('Mode: dark')).toBeInTheDocument();
+    expect(screen.getByText('Mode: dark')).toBeVisible();
     expect(localStorage.getItem('themeMode')).toBe('dark');
   });
 
@@ -134,12 +134,12 @@ describe('ThemeContext', () => {
       </ThemeProvider>
     );
 
-    expect(screen.getByText('Mode: dark')).toBeInTheDocument();
+    expect(screen.getByText('Mode: dark')).toBeVisible();
 
     const toggleButton = screen.getByRole('button', { name: /toggle theme/i });
     await user.click(toggleButton);
 
-    expect(screen.getByText('Mode: light')).toBeInTheDocument();
+    expect(screen.getByText('Mode: light')).toBeVisible();
     expect(localStorage.getItem('themeMode')).toBe('light');
   });
 
@@ -164,7 +164,7 @@ describe('ThemeContext', () => {
     const toggleButton = screen.getByRole('button', { name: /toggle theme/i });
     await user.click(toggleButton);
 
-    expect(screen.getByText('Mode: dark')).toBeInTheDocument();
+    expect(screen.getByText('Mode: dark')).toBeVisible();
 
     // Unmount and remount
     unmount();
@@ -175,6 +175,6 @@ describe('ThemeContext', () => {
     );
 
     // Should still be dark mode
-    expect(screen.getByText('Mode: dark')).toBeInTheDocument();
+    expect(screen.getByText('Mode: dark')).toBeVisible();
   });
 });

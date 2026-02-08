@@ -51,22 +51,22 @@ describe('GameSubmissionView', () => {
   describe('Rendering', () => {
     it('renders the form title', () => {
       renderComponent();
-      expect(screen.getByText('Go Tournament - Report Game Result')).toBeInTheDocument();
+      expect(screen.getByText('Go Tournament - Report Game Result')).toBeVisible();
     });
 
     it('renders black player section', () => {
       renderComponent();
-      expect(screen.getByRole('heading', { name: 'Black' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Black' })).toBeVisible();
     });
 
     it('renders white player section', () => {
       renderComponent();
-      expect(screen.getByText('White')).toBeInTheDocument();
+      expect(screen.getByText('White')).toBeVisible();
     });
 
     it('renders game information section', () => {
       renderComponent();
-      expect(screen.getByText('Game Information')).toBeInTheDocument();
+      expect(screen.getByText('Game Information')).toBeVisible();
     });
 
     it('renders all required input fields for both players', () => {
@@ -81,7 +81,7 @@ describe('GameSubmissionView', () => {
 
     it('renders game information fields', () => {
       renderComponent();
-      expect(screen.getByRole('combobox', { name: 'Handicap' })).toBeInTheDocument();
+      expect(screen.getByRole('combobox', { name: 'Handicap' })).toBeVisible();
       expect(screen.getByLabelText('Rated Game')).toBeInTheDocument();
       // Winner field has multiple "Winner" texts (label + select legend)
       expect(screen.getAllByText('Winner').length).toBeGreaterThan(0);
@@ -89,7 +89,7 @@ describe('GameSubmissionView', () => {
 
     it('renders submit button', () => {
       renderComponent();
-      expect(screen.getByRole('button', { name: /submit game result/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /submit game result/i })).toBeVisible();
     });
 
     it('has default values', () => {

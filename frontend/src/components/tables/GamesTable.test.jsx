@@ -68,10 +68,10 @@ describe('GamesTable', () => {
       />
     );
 
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('Jane Smith')).toBeInTheDocument();
-    expect(screen.getByText('Bob Wilson')).toBeInTheDocument();
-    expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+    expect(screen.getByText('John Doe')).toBeVisible();
+    expect(screen.getByText('Jane Smith')).toBeVisible();
+    expect(screen.getByText('Bob Wilson')).toBeVisible();
+    expect(screen.getByText('Alice Brown')).toBeVisible();
   });
 
   it('renders table headers correctly', () => {
@@ -85,14 +85,14 @@ describe('GamesTable', () => {
       />
     );
 
-    expect(screen.getByText('Black Player')).toBeInTheDocument();
-    expect(screen.getByText('White Player')).toBeInTheDocument();
-    expect(screen.getByText('Age Diff')).toBeInTheDocument();
-    expect(screen.getByText('Handicap')).toBeInTheDocument();
-    expect(screen.getByText('Winner')).toBeInTheDocument();
-    expect(screen.getByText('Rated')).toBeInTheDocument();
-    expect(screen.getByText('Valid for Prizes')).toBeInTheDocument();
-    expect(screen.getByText('Date')).toBeInTheDocument();
+    expect(screen.getByText('Black Player')).toBeVisible();
+    expect(screen.getByText('White Player')).toBeVisible();
+    expect(screen.getByText('Age Diff')).toBeVisible();
+    expect(screen.getByText('Handicap')).toBeVisible();
+    expect(screen.getByText('Winner')).toBeVisible();
+    expect(screen.getByText('Rated')).toBeVisible();
+    expect(screen.getByText('Valid for Prizes')).toBeVisible();
+    expect(screen.getByText('Date')).toBeVisible();
   });
 
   it('displays correct player colors (black and white)', () => {
@@ -244,7 +244,7 @@ describe('GamesTable', () => {
     );
 
     // Headers should still be present
-    expect(screen.getByText('Black Player')).toBeInTheDocument();
+    expect(screen.getByText('Black Player')).toBeVisible();
     // But no data rows
     expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
   });

@@ -40,7 +40,7 @@ describe('TournamentDataContext', () => {
       </TournamentDataProvider>
     );
 
-    expect(screen.getByText('Test Child')).toBeInTheDocument();
+    expect(screen.getByText('Test Child')).toBeVisible();
   });
 
   it('throws error when useTournamentData is used outside provider', () => {
@@ -95,12 +95,12 @@ describe('TournamentDataContext', () => {
 
     // Wait for data to load
     await waitFor(() => {
-      expect(screen.getByText('Players Loading: no')).toBeInTheDocument();
-      expect(screen.getByText('Games Loading: no')).toBeInTheDocument();
+      expect(screen.getByText('Players Loading: no')).toBeVisible();
+      expect(screen.getByText('Games Loading: no')).toBeVisible();
     });
 
-    expect(screen.getByText('Players Count: 2')).toBeInTheDocument();
-    expect(screen.getByText('Games Count: 1')).toBeInTheDocument();
+    expect(screen.getByText('Players Count: 2')).toBeVisible();
+    expect(screen.getByText('Games Count: 1')).toBeVisible();
     expect(playerService.getAll).toHaveBeenCalledTimes(1);
     expect(gameService.getAll).toHaveBeenCalledTimes(1);
   });
@@ -123,7 +123,7 @@ describe('TournamentDataContext', () => {
     await waitFor(() => {
       expect(
         screen.getByText('Failed to load players. Please try again later.')
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
   });
 
@@ -143,7 +143,7 @@ describe('TournamentDataContext', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to load games. Please try again later.')).toBeInTheDocument();
+      expect(screen.getByText('Failed to load games. Please try again later.')).toBeVisible();
     });
   });
 
@@ -182,7 +182,7 @@ describe('TournamentDataContext', () => {
 
     // Wait for initial data load
     await waitFor(() => {
-      expect(screen.getByText('Game Valid: yes')).toBeInTheDocument();
+      expect(screen.getByText('Game Valid: yes')).toBeVisible();
     });
 
     // Click toggle button
@@ -191,7 +191,7 @@ describe('TournamentDataContext', () => {
 
     // Optimistic update should happen immediately
     await waitFor(() => {
-      expect(screen.getByText('Game Valid: no')).toBeInTheDocument();
+      expect(screen.getByText('Game Valid: no')).toBeVisible();
     });
 
     // API should be called
@@ -242,7 +242,7 @@ describe('TournamentDataContext', () => {
 
     // Wait for initial data load
     await waitFor(() => {
-      expect(screen.getByText('Game Valid: yes')).toBeInTheDocument();
+      expect(screen.getByText('Game Valid: yes')).toBeVisible();
     });
 
     // Click toggle button
@@ -251,8 +251,8 @@ describe('TournamentDataContext', () => {
 
     // Should roll back to original state
     await waitFor(() => {
-      expect(screen.getByText('Game Valid: yes')).toBeInTheDocument();
-      expect(screen.getByText('Error: Failed')).toBeInTheDocument();
+      expect(screen.getByText('Game Valid: yes')).toBeVisible();
+      expect(screen.getByText('Error: Failed')).toBeVisible();
     });
   });
 });

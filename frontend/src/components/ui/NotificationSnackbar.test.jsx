@@ -19,7 +19,7 @@ describe('NotificationSnackbar', () => {
       />
     );
 
-    expect(screen.getByText('Test message')).toBeInTheDocument();
+    expect(screen.getByText('Test message')).toBeVisible();
   });
 
   it('does not render when open is false', () => {
@@ -118,7 +118,7 @@ describe('NotificationSnackbar', () => {
     );
 
     // Check that message is rendered (confirms snackbar is displayed)
-    expect(screen.getByText('Test message')).toBeInTheDocument();
+    expect(screen.getByText('Test message')).toBeVisible();
   });
 
   it('uses custom autoHideDuration when provided', () => {
@@ -133,6 +133,6 @@ describe('NotificationSnackbar', () => {
     );
 
     // Check that message is rendered (confirms snackbar is displayed)
-    expect(screen.getByText('Test message')).toBeInTheDocument();
+    expect(screen.getByText('Test message')).toBeVisible();
   });
 });
