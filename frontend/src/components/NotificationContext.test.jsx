@@ -52,6 +52,7 @@ describe('NotificationContext', () => {
     await user.click(successButton);
 
     await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeVisible();
       expect(screen.getByText('Success message')).toBeVisible();
     });
   });
@@ -73,6 +74,7 @@ describe('NotificationContext', () => {
     await user.click(errorButton);
 
     await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeVisible();
       expect(screen.getByText('Error message')).toBeVisible();
     });
   });
@@ -94,6 +96,7 @@ describe('NotificationContext', () => {
     await user.click(warningButton);
 
     await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeVisible();
       expect(screen.getByText('Warning message')).toBeVisible();
     });
   });
@@ -115,6 +118,7 @@ describe('NotificationContext', () => {
     await user.click(infoButton);
 
     await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeVisible();
       expect(screen.getByText('Info message')).toBeVisible();
     });
   });
@@ -136,6 +140,7 @@ describe('NotificationContext', () => {
     await user.click(successButton);
 
     await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeVisible();
       expect(screen.getByText('Success message')).toBeVisible();
     });
 
@@ -143,7 +148,7 @@ describe('NotificationContext', () => {
     await user.click(closeButton);
 
     await waitFor(() => {
-      expect(screen.queryByText('Success message')).not.toBeVisible();
+      expect(screen.queryByRole('alert')).not.toBeVisible();
     });
   });
 });
