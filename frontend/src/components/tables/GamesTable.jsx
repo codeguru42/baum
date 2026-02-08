@@ -18,7 +18,6 @@ const GamesTableHeader = ({ sortBy, sortOrder, onSort }) => {
   return (
     <TableHead>
       <TableRow sx={{ backgroundColor: 'primary.main' }}>
-        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Game ID</TableCell>
         <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Black Player</TableCell>
         <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>AGA ID</TableCell>
         <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
@@ -101,7 +100,6 @@ const GamesTableRow = ({ game, onToggleValid }) => {
 
   return (
     <TableRow key={game.id} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
-      <TableCell>{game.id}</TableCell>
       <TableCell sx={{ fontWeight: 'medium' }}>{blackPlayer.name}</TableCell>
       <TableCell>{blackPlayer.id}</TableCell>
       <TableCell>{blackPlayer.rank}</TableCell>
