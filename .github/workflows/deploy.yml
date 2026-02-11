@@ -108,11 +108,11 @@ jobs:
             image:
               registry_type: GHCR
               registry: ghcr.io
-              repository: ${{ github.repository }}/nginx
+              repository: ${{ github.repository }}/frontend
               tag: latest
             envs:
-              - key: BACKEND_URL
-                value: http://backend:8000
+              - key: VITE_API_URL
+                value: ${APP_URL}/api
             http_port: 80
             instance_count: 1
             instance_size_slug: basic-xxs

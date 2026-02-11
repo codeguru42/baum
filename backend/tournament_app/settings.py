@@ -132,6 +132,8 @@ CORS_ALLOWED_ORIGINS = env.list(
     default=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://localhost",  # For local production testing
+        "http://localhost:80",  # For local production testing
     ]
 )
 

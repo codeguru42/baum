@@ -36,8 +36,11 @@ services:
     image:
       registry_type: GHCR
       registry: ghcr.io
-      repository: REPO_PLACEHOLDER/nginx
+      repository: REPO_PLACEHOLDER/frontend
       tag: latest
+    envs:
+      - key: VITE_API_URL
+        value: ${APP_URL}/api
     http_port: 80
     instance_count: 1
     instance_size_slug: basic-xxs

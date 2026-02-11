@@ -99,19 +99,13 @@ jobs:
         echo "Pulling frontend image from GHCR..."
         docker pull ghcr.io/${{ github.repository }}/frontend:latest
     
-    - name: Pull nginx image from GHCR
-      run: |
-        echo "Pulling nginx image from GHCR..."
-        docker pull ghcr.io/${{ github.repository }}/nginx:latest
-    
     - name: Test production stack
       env:
         BACKEND_IMAGE: ghcr.io/${{ github.repository }}/backend:latest
         FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/frontend:latest
-        NGINX_IMAGE: ghcr.io/${{ github.repository }}/nginx:latest
         DJANGO_SECRET_KEY: test-secret-key-for-ci
         DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
-        VITE_API_URL: http://localhost/api
+        VITE_API_URL: http://localhost:8000/api
       run: |
         # Start containers using production docker-compose file
         docker compose -f docker-compose.prod.yml up -d
@@ -131,9 +125,9 @@ jobs:
         echo "Testing backend health..."
         docker compose -f docker-compose.prod.yml exec -T backend uv run python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/players/')" || exit 1
         
-        # Test through nginx
-        echo "Testing through nginx..."
-        curl -f http://localhost/api/players/ || exit 1
+        # Test frontend serves static files
+        echo "Testing frontend..."
+        curl -f http://localhost/ || exit 1
         
         echo "All health checks passed!"
         

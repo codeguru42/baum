@@ -28,29 +28,12 @@ services:
     pull_policy: always
     container_name: tournament-frontend-prod
     restart: always
-    expose:
-      - "80"
-    depends_on:
-      - backend
-    networks:
-      - tournament-network
-
-  nginx:
-    image: ${NGINX_IMAGE:-ghcr.io/codeguru42/baum/nginx:latest}
-    pull_policy: always
-    container_name: tournament-nginx
-    restart: always
     ports:
       - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - static-files:/static:ro
-      - ssl-certs:/etc/nginx/ssl:ro
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8000/api}
     depends_on:
       - backend
-      - frontend
     networks:
       - tournament-network
 
@@ -61,4 +44,3 @@ networks:
 volumes:
   backend-data:
   static-files:
-  ssl-certs:
