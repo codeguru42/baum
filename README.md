@@ -15,7 +15,7 @@ A web application for participants in a Go tournament to report their game resul
   - Game outcome (winner, rated/unrated)
 - Form validation and error handling
 - Responsive Material-UI design
-- Docker containerization for easy deployment
+- Docker containerization for development
 
 ## Technology Stack
 
@@ -31,7 +31,7 @@ A web application for participants in a Go tournament to report their game resul
 - Axios for API calls
 - React Testing Library
 
-### Deployment
+### Development
 - Docker & Docker Compose
 - Multi-container architecture
 
@@ -90,36 +90,6 @@ docker compose up --build
 ```bash
 docker compose down
 ```
-
-### Running Production Environment
-
-For production deployment with optimized builds and nginx:
-
-1. Configure environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your production settings
-```
-
-2. Build and start production services:
-```bash
-docker compose -f docker-compose.prod.yml up -d --build
-```
-
-3. Access the application on port 80
-
-**For detailed production deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)**
-
-### Automated Deployment to DigitalOcean
-
-This project includes GitHub Actions workflow for automated deployment:
-
-- **Automatic deployment** when pushing to `main` branch
-- **Manual deployment** via GitHub Actions UI
-- **Zero-downtime deployments** with App Platform
-- **Health checks** to verify deployment success
-
-**Setup Guide**: See [DIGITALOCEAN.md](DIGITALOCEAN.md) for deployment configuration.
 
 ### Docker Commands
 
