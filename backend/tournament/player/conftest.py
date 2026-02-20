@@ -2,7 +2,7 @@
 
 import pytest
 
-from tournament.player.models import Player
+from models import Player
 
 
 @pytest.fixture
@@ -17,17 +17,25 @@ def player_data() -> dict:
 
 
 @pytest.fixture
-def player(db, player_data) -> Player:
+def player(session, player_data) -> Player:
     """Create and return a player instance."""
-    return Player.objects.create(**player_data)
+    player = Player(**player_data)
+    session.add(player)
+    session.commit()
+    session.refresh(player)
+    return player
 
 
 @pytest.fixture
-def api_player(db) -> Player:
+def api_player(session) -> Player:
     """Create and return a player for API tests."""
-    return Player.objects.create(
+    player = Player(
         aga_id="AGA123",
         name="Test Player",
         aga_rank="1k",
         age=22,
     )
+    session.add(player)
+    session.commit()
+    session.refresh(player)
+    return player
