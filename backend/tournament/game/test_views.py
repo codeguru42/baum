@@ -1,27 +1,13 @@
 """Test cases for Game API endpoints."""
 
 import pytest
-from rest_framework import status
-from rest_framework.test import APIClient
-
-from tournament.game.models import Game
 
 
-@pytest.fixture
-def api_client():
-    """Provide an API client for making HTTP requests."""
-    return APIClient()
-
-
-@pytest.mark.django_db
-def test_create_game(api_client, valid_game_data):
+def test_create_game(client, valid_game_data):
     """Test creating a game via API."""
-    response = api_client.post("/api/games/", valid_game_data, format="json")
-    if response.status_code != status.HTTP_201_CREATED:
-        print(f"Response data: {response.json()}")
-    assert response.status_code == status.HTTP_201_CREATED
-    assert Game.objects.count() == 1
-
+    response = client.post("/api/games/", json=valid_game_data)
+    assert response.status_code == 201, f"Response: {response.json()}"
+    
     # Verify nested player structure in response
     data = response.json()
     assert "player_black" in data
@@ -37,24 +23,23 @@ def test_create_game(api_client, valid_game_data):
     assert data["player_white"]["color"] == "white"
 
 
-@pytest.mark.django_db
-def test_list_games(api_client, game):
+def test_list_games(client, game):
     """Test listing all games."""
-    response = api_client.get("/api/games/")
-    assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 1
+    response = client.get("/api/games/")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["id"] == game.id
 
 
-@pytest.mark.django_db
-def test_list_games_empty(api_client):
+def test_list_games_empty(client):
     """Test listing games when there are none."""
-    response = api_client.get("/api/games/")
-    assert response.status_code == status.HTTP_200_OK
+    response = client.get("/api/games/")
+    assert response.status_code == 200
     assert len(response.json()) == 0
 
 
-@pytest.mark.django_db
-def test_create_game_same_player_validation(api_client, two_players):
+def test_create_game_same_player_validation(client, two_players):
     """Test that API rejects games where both players are the same."""
     player_black, _ = two_players
     game_data = {
@@ -64,17 +49,17 @@ def test_create_game_same_player_validation(api_client, two_players):
         "rated": True,
         "winner": "black",
     }
-    response = api_client.post("/api/games/", game_data, format="json")
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    response = client.post("/api/games/", json=game_data)
+    assert response.status_code == 422  # Validation error
+    assert "different" in response.text.lower()
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize(
     "winner,handicap",
     [("black", 0), ("white", 2)],
     ids=["black-wins-even", "white-wins-with-handicap"],
 )
-def test_create_game_different_winners(api_client, two_players, winner, handicap):
+def test_create_game_different_winners(client, two_players, winner, handicap):
     """Test creating games with different winner values and handicaps."""
     player_black, player_white = two_players
     game_data = {
@@ -84,8 +69,8 @@ def test_create_game_different_winners(api_client, two_players, winner, handicap
         "rated": True,
         "winner": winner,
     }
-    response = api_client.post("/api/games/", game_data, format="json")
-    assert response.status_code == status.HTTP_201_CREATED
-    created_game = Game.objects.first()
-    assert created_game.winner == winner
-    assert created_game.handicap == handicap
+    response = client.post("/api/games/", json=game_data)
+    assert response.status_code == 201
+    data = response.json()
+    assert data["winner"] == winner
+    assert data["handicap"] == handicap
