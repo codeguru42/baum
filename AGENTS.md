@@ -7,7 +7,7 @@ This guide provides essential information for AI coding agents working on the ba
 ```
 baum-vibe/
 ├── backend/          # FastAPI backend with SQLModel
-│   ├── main.py       # FastAPI app entry point
+│   ├── app.py        # FastAPI app entry point
 │   ├── models.py     # SQLModel database models
 │   ├── schemas.py    # Pydantic request/response schemas
 │   ├── database.py   # Database session management
@@ -54,8 +54,8 @@ uv run mypy .                                   # Type checking
 **Running:**
 ```bash
 cd backend
-uv run uvicorn main:app --reload                # Start dev server (port 8000)
-uv run uvicorn main:app --reload --port 8001    # Start on different port
+uv run uvicorn app:app --reload                # Start dev server (port 8000)
+uv run uvicorn app:app --reload --port 8001    # Start on different port
 # No migrations needed - SQLModel auto-creates tables on startup
 ```
 
