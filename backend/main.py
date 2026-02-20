@@ -1,31 +1,41 @@
 """FastAPI application entry point for Baum Tournament Management System."""
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from config import settings
+from database import create_db_and_tables, engine
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle startup and shutdown events."""
+    # Startup: create database tables
+    create_db_and_tables()
+    yield
+    # Shutdown: dispose of the engine
+    engine.dispose()
+
+
 app = FastAPI(
-    title="Baum Tournament Management API",
+    title=settings.app_name,
     description=(
         "REST API for managing Go tournament players and game results. "
         "This API provides endpoints to manage player information (CRUD operations), "
         "record and manage game results, and track player statistics."
     ),
-    version="1.0.0",
+    version=settings.app_version,
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 # Configure CORS
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost",
-    "http://localhost:80",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
