@@ -8,9 +8,7 @@ from models import Game, Player
 @pytest.fixture
 def two_players(session) -> tuple[Player, Player]:
     """Create and return two player instances."""
-    player_black = Player(
-        aga_id="AGA001", name="Alice", aga_rank="3d", age=30
-    )
+    player_black = Player(aga_id="AGA001", name="Alice", aga_rank="3d", age=30)
     player_white = Player(aga_id="AGA002", name="Bob", aga_rank="2d", age=28)
     session.add(player_black)
     session.add(player_white)

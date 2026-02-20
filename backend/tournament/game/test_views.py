@@ -7,7 +7,7 @@ def test_create_game(client, valid_game_data):
     """Test creating a game via API."""
     response = client.post("/api/games/", json=valid_game_data)
     assert response.status_code == 201, f"Response: {response.json()}"
-    
+
     # Verify nested player structure in response
     data = response.json()
     assert "player_black" in data

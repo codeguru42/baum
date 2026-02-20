@@ -15,7 +15,7 @@ from main import app
 def engine_fixture():
     """
     Create an in-memory SQLite engine for testing.
-    
+
     Uses StaticPool to maintain a single connection for the entire test.
     """
     engine = create_engine(
@@ -31,7 +31,7 @@ def engine_fixture():
 def session_fixture(engine) -> Generator[Session, None, None]:
     """
     Create a database session for testing.
-    
+
     Automatically rolls back after each test to ensure isolation.
     """
     with Session(engine) as session:
@@ -42,9 +42,10 @@ def session_fixture(engine) -> Generator[Session, None, None]:
 def client_fixture(session: Session) -> Generator[TestClient, None, None]:
     """
     Create a TestClient with dependency overrides.
-    
+
     Overrides the get_session dependency to use the test session.
     """
+
     def get_session_override():
         return session
 

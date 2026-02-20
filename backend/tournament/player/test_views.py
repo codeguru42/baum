@@ -73,9 +73,7 @@ def test_update_player(client, api_player):
         "aga_rank": "1d",
         "age": 23,
     }
-    response = client.put(
-        f"/api/players/{api_player.aga_id}/", json=updated_data
-    )
+    response = client.put(f"/api/players/{api_player.aga_id}/", json=updated_data)
     assert response.status_code == 200
     data = response.json()
     assert data["name"] == "Updated Name"
@@ -87,7 +85,7 @@ def test_delete_player(client, api_player):
     """Test deleting a player."""
     response = client.delete(f"/api/players/{api_player.aga_id}/")
     assert response.status_code == 204
-    
+
     # Verify player is deleted
     response = client.get(f"/api/players/{api_player.aga_id}/")
     assert response.status_code == 404

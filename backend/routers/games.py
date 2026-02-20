@@ -20,7 +20,7 @@ def _game_to_response(game: Game) -> GameResponse:
         age=game.player_black.age,
         color="black",
     )
-    
+
     player_white_data = PlayerInGame(
         id=game.player_white.aga_id,
         name=game.player_white.name,
@@ -28,7 +28,7 @@ def _game_to_response(game: Game) -> GameResponse:
         age=game.player_white.age,
         color="white",
     )
-    
+
     return GameResponse(
         id=game.id,
         player_black=player_black_data,
@@ -45,7 +45,7 @@ def _game_to_response(game: Game) -> GameResponse:
 def list_games(session: Session = Depends(get_session)):
     """
     List all games with nested player data.
-    
+
     Uses join loading for efficient retrieval of player information.
     """
     statement = (
@@ -64,7 +64,7 @@ def list_games(session: Session = Depends(get_session)):
 def create_game(game_data: GameCreate, session: Session = Depends(get_session)):
     """
     Create a new game result.
-    
+
     Validates that both players exist and are different.
     Returns the created game with nested player data.
     """
@@ -75,14 +75,14 @@ def create_game(game_data: GameCreate, session: Session = Depends(get_session)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Player with aga_id '{game_data.player_black_id}' not found",
         )
-    
+
     player_white = session.get(Player, game_data.player_white_id)
     if not player_white:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Player with aga_id '{game_data.player_white_id}' not found",
         )
-    
+
     # Create game
     game = Game(
         player_black_id=game_data.player_black_id,
@@ -95,7 +95,7 @@ def create_game(game_data: GameCreate, session: Session = Depends(get_session)):
     session.add(game)
     session.commit()
     session.refresh(game)
-    
+
     # Reload with joined player data
     statement = (
         select(Game)
@@ -106,7 +106,7 @@ def create_game(game_data: GameCreate, session: Session = Depends(get_session)):
         )
     )
     game = session.exec(statement).first()
-    
+
     return _game_to_response(game)
 
 
@@ -114,7 +114,7 @@ def create_game(game_data: GameCreate, session: Session = Depends(get_session)):
 def get_game(game_id: int, session: Session = Depends(get_session)):
     """
     Retrieve a game by ID with nested player data.
-    
+
     Uses join loading for efficient player data retrieval.
     """
     statement = (
@@ -126,13 +126,13 @@ def get_game(game_id: int, session: Session = Depends(get_session)):
         )
     )
     game = session.exec(statement).first()
-    
+
     if not game:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Game with id '{game_id}' not found",
         )
-    
+
     return _game_to_response(game)
 
 
@@ -142,7 +142,7 @@ def update_game(
 ):
     """
     Update a game's information.
-    
+
     Only provided fields will be updated (partial update).
     """
     game = session.get(Game, game_id)
@@ -151,10 +151,10 @@ def update_game(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Game with id '{game_id}' not found",
         )
-    
+
     # Update only provided fields
     update_data = game_data.model_dump(exclude_unset=True)
-    
+
     # Validate players if they're being updated
     if "player_black_id" in update_data:
         player = session.get(Player, update_data["player_black_id"])
@@ -164,7 +164,7 @@ def update_game(
                 detail=f"Player with aga_id '{update_data['player_black_id']}' not found",
             )
         game.player_black_id = update_data["player_black_id"]
-    
+
     if "player_white_id" in update_data:
         player = session.get(Player, update_data["player_white_id"])
         if not player:
@@ -173,23 +173,23 @@ def update_game(
                 detail=f"Player with aga_id '{update_data['player_white_id']}' not found",
             )
         game.player_white_id = update_data["player_white_id"]
-    
+
     # Validate different players if both are present
     if game.player_black_id == game.player_white_id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Black and White players must be different.",
         )
-    
+
     # Update other fields
     for field in ["handicap", "rated", "winner", "valid_for_prizes"]:
         if field in update_data:
             setattr(game, field, update_data[field])
-    
+
     session.add(game)
     session.commit()
     session.refresh(game)
-    
+
     # Reload with joined player data
     statement = (
         select(Game)
@@ -200,7 +200,7 @@ def update_game(
         )
     )
     game = session.exec(statement).first()
-    
+
     return _game_to_response(game)
 
 
@@ -208,7 +208,7 @@ def update_game(
 def delete_game(game_id: int, session: Session = Depends(get_session)):
     """
     Delete a game.
-    
+
     Returns 204 No Content on success.
     """
     game = session.get(Game, game_id)
@@ -217,7 +217,7 @@ def delete_game(game_id: int, session: Session = Depends(get_session)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Game with id '{game_id}' not found",
         )
-    
+
     session.delete(game)
     session.commit()
     return None

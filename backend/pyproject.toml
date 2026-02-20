@@ -72,7 +72,6 @@ select = [
     "B",   # flake8-bugbear
     "C4",  # flake8-comprehensions
     "UP",  # pyupgrade
-    "DJ",  # flake8-django
 ]
 ignore = [
     "E501",  # line too long (black handles this)
@@ -80,7 +79,6 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # Unused imports in __init__.py
-"migrations/*.py" = ["E501", "DJ"]  # Ignore in migrations
 
 # Pytest - Testing framework
 [tool.pytest.ini_options]
@@ -104,7 +102,6 @@ markers = [
 # Mypy - Type checker
 [tool.mypy]
 python_version = "3.11"
-plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 strict = false
 warn_unused_ignores = true
 warn_redundant_casts = true
@@ -112,17 +109,9 @@ warn_unused_configs = true
 warn_return_any = false
 warn_unreachable = true
 exclude = [
-    "migrations/",
     "venv/",
     ".venv/",
 ]
-
-[[tool.mypy.overrides]]
-module = "*.migrations.*"
-ignore_errors = true
-
-[tool.django-stubs]
-django_settings_module = "tournament_app.settings"
 
 # Coverage - Code coverage
 [tool.coverage.run]

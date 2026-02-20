@@ -135,7 +135,7 @@ CORS_ALLOWED_ORIGINS = env.list(
         "http://127.0.0.1:3000",
         "http://localhost",  # For local production testing
         "http://localhost:80",  # For local production testing
-    ]
+    ],
 )
 
 # REST Framework settings

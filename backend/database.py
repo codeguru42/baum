@@ -23,7 +23,7 @@ def create_db_and_tables():
 def get_session() -> Generator[Session, None, None]:
     """
     Dependency function to get database session.
-    
+
     Yields a database session and ensures it's closed after use.
     Used with FastAPI's Depends() for dependency injection.
     """
