@@ -1,13 +1,22 @@
 # AGENTS.md - Developer Guide for Coding Agents
 
-This guide provides essential information for AI coding agents working on the baum-vibe Go tournament management system. The project is a full-stack application with a Django REST Framework backend and React frontend.
+This guide provides essential information for AI coding agents working on the baum-vibe Go tournament management system. The project is a full-stack application with a FastAPI backend and React frontend.
 
 ## Project Structure
 
 ```
 baum-vibe/
-├── backend/          # Django REST Framework backend
-│   ├── tournament/   # Main Django app (models, views, serializers, tests)
+├── backend/          # FastAPI backend with SQLModel
+│   ├── main.py       # FastAPI app entry point
+│   ├── models.py     # SQLModel database models
+│   ├── schemas.py    # Pydantic request/response schemas
+│   ├── database.py   # Database session management
+│   ├── routers/      # API endpoint routers
+│   │   ├── players.py
+│   │   └── games.py
+│   ├── tournament/   # Test modules
+│   │   ├── player/   # Player tests
+│   │   └── game/     # Game tests
 │   └── pyproject.toml
 └── frontend/         # React frontend with Material-UI
     ├── src/
@@ -19,37 +28,35 @@ baum-vibe/
 
 ## Build, Lint, and Test Commands
 
-### Backend (Django)
+### Backend (FastAPI)
 
 **Testing:**
 ```bash
 cd backend
-uv run python manage.py test                    # Run all tests
-uv run pytest                                   # Run with pytest (preferred)
-uv run pytest tournament/tests/test_player_model.py  # Single test file
-uv run pytest tournament/tests/test_player_model.py::test_create_player  # Single test
-uv run pytest -k "player"                       # Run tests matching pattern
-uv run pytest -m "not slow"                     # Exclude slow tests
-uv run pytest --cov                             # Run with coverage
+uv run python -m pytest                         # Run all tests
+uv run python -m pytest tournament/player/      # Run player tests
+uv run python -m pytest tournament/game/        # Run game tests
+uv run python -m pytest -k "player"             # Run tests matching pattern
+uv run python -m pytest -m "not slow"           # Exclude slow tests
+uv run python -m pytest --cov                   # Run with coverage
 ```
 
 **Linting and Formatting:**
 ```bash
 cd backend
-uv run black .                                  # Format code (line-length 88)
-uv run black --check .                          # Check formatting
-uv run ruff check .                             # Lint code
-uv run ruff check --fix .                       # Auto-fix linting issues
+uv run python -m black .                        # Format code (line-length 88)
+uv run python -m black --check .                # Check formatting
+uv run python -m ruff check .                   # Lint code
+uv run python -m ruff check --fix .             # Auto-fix linting issues
 uv run mypy .                                   # Type checking
 ```
 
 **Running:**
 ```bash
 cd backend
-uv run python manage.py runserver               # Start dev server (port 8000)
-uv run python manage.py migrate                 # Run migrations
-uv run python manage.py makemigrations          # Create migrations
-uv run python manage.py createsuperuser         # Create admin user
+uv run uvicorn main:app --reload                # Start dev server (port 8000)
+uv run uvicorn main:app --reload --port 8001    # Start on different port
+# No migrations needed - SQLModel auto-creates tables on startup
 ```
 
 ### Frontend (React)
@@ -84,62 +91,131 @@ npm run build                                   # Production build
 
 ```bash
 docker compose up --build                       # Start all services
-docker compose exec backend python manage.py test  # Run backend tests in container
+docker compose exec backend uv run python -m pytest  # Run backend tests in container
 docker compose exec frontend npm test -- --watchAll=false  # Run frontend tests
 docker compose logs -f backend                  # View backend logs
 ```
 
 ## Code Style Guidelines
 
-### Backend (Python/Django)
+### Backend (Python/FastAPI)
 
 **Formatting:**
 - Use Black formatter (line length: 88)
 - Follow PEP 8 conventions
-- Ruff linter enforces style rules (pycodestyle, pyflakes, isort, flake8-bugbear, Django)
+- Ruff linter enforces style rules (pycodestyle, pyflakes, isort, flake8-bugbear)
 
 **Imports:**
 - Sort imports automatically with isort (via ruff)
-- Group order: standard library → third-party → Django → local
+- Group order: standard library → third-party → FastAPI/SQLModel → local
 - Example:
 ```python
-from django.db import models
-from rest_framework import viewsets
+from datetime import datetime
 
-from .models import Player
-from .serializers import PlayerSerializer
+from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import Session, select
+
+from database import get_session
+from models import Player
+from schemas import PlayerResponse
 ```
 
 **Type Hints:**
 - Use type hints where appropriate (mypy enabled)
 - Not strict mode, but encouraged for clarity
+- Use modern Python 3.11+ syntax (e.g., `list[str]` not `List[str]`)
 
 **Naming Conventions:**
 - Models: PascalCase (e.g., `Player`, `Game`)
 - Functions/variables: snake_case (e.g., `get_player`, `aga_id`)
-- Constants: UPPER_SNAKE_CASE (e.g., `COLOR_CHOICES`)
-- Private methods: prefix with `_` (e.g., `_validate_colors`)
+- Constants: UPPER_SNAKE_CASE (e.g., `DATABASE_URL`)
+- Private functions: prefix with `_` (e.g., `_compute_player_statistics`)
 
 **Docstrings:**
-- Use docstrings for classes and non-obvious functions
+- Use docstrings for public functions and classes
 - Format: `"""Brief description."""` or multi-line with details
 
-**Models:**
+**Models (SQLModel):**
 - Use descriptive field names
-- Add `related_name` to ForeignKeys (e.g., `related_name="games_as_player1"`)
-- Implement `__str__` method
-- Add `Meta` class with `ordering` where appropriate
-- Implement `clean()` for validation
+- Add `Field()` for constraints and metadata
+- Implement `Relationship()` for foreign keys with back_populates
+- Implement `__str__` method for string representation
+- Example:
+```python
+class Player(SQLModel, table=True):
+    """Model to store player information."""
+    
+    aga_id: str = Field(primary_key=True, max_length=20)
+    name: str = Field(max_length=200, index=True)
+    age: int
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    # Relationships
+    games_as_player_black: list["Game"] = Relationship(back_populates="player_black")
+    
+    def __str__(self) -> str:
+        return f"{self.name} ({self.aga_id})"
+```
 
-**Views:**
-- Use ViewSets for REST APIs (e.g., `PlayerViewSet`, `GameViewSet`)
-- Add docstrings to ViewSets and custom actions
-- Use proper HTTP status codes from `rest_framework.status`
+**Routers (FastAPI):**
+- Use APIRouter for organizing endpoints
+- Add docstrings to router functions for OpenAPI documentation
+- Use proper HTTP status codes from `fastapi.status`
+- Use dependency injection for database sessions
+- Example:
+```python
+router = APIRouter(prefix="/api/players", tags=["players"])
+
+@router.get("/", response_model=list[PlayerResponse])
+def list_players(session: Session = Depends(get_session)):
+    """List all players with computed statistics."""
+    statement = select(Player).order_by(Player.name)
+    players = session.exec(statement).all()
+    return [_player_to_response(player) for player in players]
+```
+
+**Schemas (Pydantic):**
+- Separate Base, Create, Update, and Response schemas
+- Use field validators for custom validation
+- Use `ConfigDict(from_attributes=True)` for ORM compatibility
+- Example:
+```python
+class PlayerBase(BaseModel):
+    """Base schema for player with common fields."""
+    name: str
+    aga_rank: str
+    age: int
+
+class PlayerCreate(PlayerBase):
+    """Schema for creating a new player."""
+    aga_id: str
+
+class PlayerResponse(PlayerBase):
+    """Schema for player response with computed statistics."""
+    aga_id: str
+    games_played: int
+    games_won: int
+    games_lost: int
+    created_at: datetime
+    updated_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+```
 
 **Error Handling:**
-- Use try/except with specific exceptions (e.g., `Player.DoesNotExist`)
-- Return appropriate HTTP responses with error messages
-- Validate data with serializers (`raise_exception=True`)
+- Use HTTPException for API errors
+- Provide descriptive error messages
+- Use appropriate HTTP status codes
+- Example:
+```python
+from fastapi import HTTPException, status
+
+if not player:
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Player with aga_id '{aga_id}' not found",
+    )
+```
 
 ### Frontend (JavaScript/React)
 
@@ -212,22 +288,24 @@ import { playerService } from '../services/api';
 
 **Endpoints:**
 - Use RESTful conventions
-- Use trailing slashes (Django convention): `/api/players/`
-- Lookup by custom field: `lookup_field = "aga_id"` → `/api/players/{aga_id}/`
-- Return proper status codes: 200, 201, 404, 400, 500
+- Use trailing slashes: `/api/players/`
+- Path parameters for lookups: `/api/players/{aga_id}/`
+- Return proper status codes: 200 (OK), 201 (Created), 404 (Not Found), 400 (Bad Request), 500 (Server Error)
 
 **Request/Response:**
 - Content-Type: application/json
-- Use serializers for validation and transformation
+- Use Pydantic schemas for validation and serialization
 - Return error messages in format: `{"detail": "Error message"}`
+- FastAPI auto-generates OpenAPI docs at `/docs` and `/redoc`
 
 ## Database
 
 **Models:**
 - SQLite for development
-- Use migrations for all schema changes
-- Never edit migration files manually
+- SQLModel auto-creates tables on startup (no migrations needed)
+- Schema changes: update models.py, delete db.sqlite3, restart server
 - Foreign keys cascade on delete where appropriate
+- Use `Relationship()` with `back_populates` for bidirectional relationships
 
 ## Git Commit Style
 
@@ -274,16 +352,31 @@ const ComponentName = () => {
 export default ComponentName;
 ```
 
-**Django ViewSet Pattern:**
+**FastAPI Router Pattern:**
 ```python
-from rest_framework import viewsets
-from .models import ModelName
-from .serializers import ModelSerializer
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlmodel import Session, select
+from database import get_session
+from models import ModelName
+from schemas import ModelCreate, ModelUpdate, ModelResponse
 
-class ModelViewSet(viewsets.ModelViewSet):
-    """ViewSet for ModelName."""
-    queryset = ModelName.objects.all()
-    serializer_class = ModelSerializer
+router = APIRouter(prefix="/api/models", tags=["models"])
+
+@router.get("/", response_model=list[ModelResponse])
+def list_models(session: Session = Depends(get_session)):
+    """List all models."""
+    statement = select(ModelName)
+    models = session.exec(statement).all()
+    return models
+
+@router.post("/", response_model=ModelResponse, status_code=status.HTTP_201_CREATED)
+def create_model(model_data: ModelCreate, session: Session = Depends(get_session)):
+    """Create a new model."""
+    model = ModelName.model_validate(model_data)
+    session.add(model)
+    session.commit()
+    session.refresh(model)
+    return model
 ```
 
 ## Notes for Agents
