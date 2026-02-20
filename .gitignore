@@ -49,3 +49,5 @@ htmlcov/
 
 # Docker
 docker-compose.override.yml
+.vercel
+.env*.local

@@ -2,3 +2,5 @@ coverage.xml
 htmlcov/
 .coverage
 *.backup
+.vercel
+.env*.local
