@@ -1,12 +1,8 @@
 """SQLModel database models for tournament management."""
 
 from datetime import datetime
-from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
-
-if TYPE_CHECKING:
-    from typing import List
 
 
 class Player(SQLModel, table=True):
@@ -20,11 +16,11 @@ class Player(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships for efficient querying
-    games_as_player_black: "List[Game]" = Relationship(
-        back_populates="player_black", sa_relationship_kwargs={"foreign_keys": "Game.player_black_id"}
+    games_as_player_black: list["Game"] = Relationship(
+        back_populates="player_black", sa_relationship_kwargs={"foreign_keys": "[Game.player_black_id]"}
     )
-    games_as_player_white: "List[Game]" = Relationship(
-        back_populates="player_white", sa_relationship_kwargs={"foreign_keys": "Game.player_white_id"}
+    games_as_player_white: list["Game"] = Relationship(
+        back_populates="player_white", sa_relationship_kwargs={"foreign_keys": "[Game.player_white_id]"}
     )
 
     def __str__(self) -> str:
@@ -46,11 +42,11 @@ class Game(SQLModel, table=True):
     # Relationships
     player_black: Player = Relationship(
         back_populates="games_as_player_black",
-        sa_relationship_kwargs={"foreign_keys": "Game.player_black_id"}
+        sa_relationship_kwargs={"foreign_keys": "[Game.player_black_id]"}
     )
     player_white: Player = Relationship(
         back_populates="games_as_player_white",
-        sa_relationship_kwargs={"foreign_keys": "Game.player_white_id"}
+        sa_relationship_kwargs={"foreign_keys": "[Game.player_white_id]"}
     )
 
     def __str__(self) -> str:
