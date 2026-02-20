@@ -1,0 +1,581 @@
+openapi: 3.0.3
+info:
+  title: Baum Tournament Management API
+  version: 1.0.0
+  description: REST API for managing Go tournament players and game results. This
+    API provides endpoints to manage player information (CRUD operations), record
+    and manage game results, and track player statistics.
+  contact:
+    name: Baum Tournament System
+paths:
+  /api/games/:
+    get:
+      operationId: games_list
+      description: |-
+        ViewSet for Game model.
+
+        Provides CRUD operations for recording and managing game results between
+        two players. Validates that players are different.
+      tags:
+      - games
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+          description: ''
+    post:
+      operationId: games_create
+      description: Record the result of a completed game between two players
+      summary: Create a new game result
+      tags:
+      - games
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GameRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GameRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+          description: ''
+  /api/games/{id}/:
+    get:
+      operationId: games_retrieve
+      description: |-
+        ViewSet for Game model.
+
+        Provides CRUD operations for recording and managing game results between
+        two players. Validates that players are different.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this game.
+        required: true
+      tags:
+      - games
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+          description: ''
+    put:
+      operationId: games_update
+      description: |-
+        ViewSet for Game model.
+
+        Provides CRUD operations for recording and managing game results between
+        two players. Validates that players are different.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this game.
+        required: true
+      tags:
+      - games
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GameRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GameRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+          description: ''
+    patch:
+      operationId: games_partial_update
+      description: |-
+        ViewSet for Game model.
+
+        Provides CRUD operations for recording and managing game results between
+        two players. Validates that players are different.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this game.
+        required: true
+      tags:
+      - games
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGameRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGameRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGameRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+          description: ''
+    delete:
+      operationId: games_destroy
+      description: |-
+        ViewSet for Game model.
+
+        Provides CRUD operations for recording and managing game results between
+        two players. Validates that players are different.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this game.
+        required: true
+      tags:
+      - games
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/players/:
+    get:
+      operationId: players_list
+      description: |-
+        ViewSet for Player model.
+
+        Provides complete CRUD operations for tournament players with automatic
+        statistics calculation (games played, won, lost).
+      tags:
+      - players
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
+          description: ''
+    post:
+      operationId: players_create
+      description: |-
+        ViewSet for Player model.
+
+        Provides complete CRUD operations for tournament players with automatic
+        statistics calculation (games played, won, lost).
+      tags:
+      - players
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PlayerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PlayerRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+          description: ''
+  /api/players/{aga_id}/:
+    get:
+      operationId: players_retrieve
+      description: |-
+        ViewSet for Player model.
+
+        Provides complete CRUD operations for tournament players with automatic
+        statistics calculation (games played, won, lost).
+      parameters:
+      - in: path
+        name: aga_id
+        schema:
+          type: string
+        description: A unique value identifying this player.
+        required: true
+      tags:
+      - players
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+          description: ''
+    put:
+      operationId: players_update
+      description: |-
+        ViewSet for Player model.
+
+        Provides complete CRUD operations for tournament players with automatic
+        statistics calculation (games played, won, lost).
+      parameters:
+      - in: path
+        name: aga_id
+        schema:
+          type: string
+        description: A unique value identifying this player.
+        required: true
+      tags:
+      - players
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PlayerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PlayerRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+          description: ''
+    patch:
+      operationId: players_partial_update
+      description: |-
+        ViewSet for Player model.
+
+        Provides complete CRUD operations for tournament players with automatic
+        statistics calculation (games played, won, lost).
+      parameters:
+      - in: path
+        name: aga_id
+        schema:
+          type: string
+        description: A unique value identifying this player.
+        required: true
+      tags:
+      - players
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayerRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+          description: ''
+    delete:
+      operationId: players_destroy
+      description: |-
+        ViewSet for Player model.
+
+        Provides complete CRUD operations for tournament players with automatic
+        statistics calculation (games played, won, lost).
+      parameters:
+      - in: path
+        name: aga_id
+        schema:
+          type: string
+        description: A unique value identifying this player.
+        required: true
+      tags:
+      - players
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/players/{aga_id}/lookup/:
+    get:
+      operationId: players_lookup_retrieve
+      description: Alternative endpoint to retrieve a player by their AGA ID
+      summary: Lookup player by AGA ID
+      parameters:
+      - in: path
+        name: aga_id
+        schema:
+          type: string
+        description: A unique value identifying this player.
+        required: true
+      tags:
+      - players
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+          description: ''
+        '404':
+          description: Player not found
+components:
+  schemas:
+    Game:
+      type: object
+      description: Serializer for Game model with nested player objects.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        player_black:
+          type: string
+          readOnly: true
+        player_white:
+          type: string
+          readOnly: true
+        handicap:
+          type: integer
+        rated:
+          type: boolean
+        winner:
+          $ref: '#/components/schemas/WinnerEnum'
+        valid_for_prizes:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - player_black
+      - player_white
+      - winner
+    GameRequest:
+      type: object
+      description: Serializer for Game model with nested player objects.
+      properties:
+        player_black_id:
+          type: string
+          minLength: 1
+          writeOnly: true
+        player_white_id:
+          type: string
+          minLength: 1
+          writeOnly: true
+        handicap:
+          type: integer
+        rated:
+          type: boolean
+        winner:
+          $ref: '#/components/schemas/WinnerEnum'
+        valid_for_prizes:
+          type: boolean
+      required:
+      - player_black_id
+      - player_white_id
+      - winner
+    PatchedGameRequest:
+      type: object
+      description: Serializer for Game model with nested player objects.
+      properties:
+        player_black_id:
+          type: string
+          minLength: 1
+          writeOnly: true
+        player_white_id:
+          type: string
+          minLength: 1
+          writeOnly: true
+        handicap:
+          type: integer
+        rated:
+          type: boolean
+        winner:
+          $ref: '#/components/schemas/WinnerEnum'
+        valid_for_prizes:
+          type: boolean
+    PatchedPlayerRequest:
+      type: object
+      description: Serializer for Player model.
+      properties:
+        aga_id:
+          type: string
+          minLength: 1
+          maxLength: 20
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        aga_rank:
+          type: string
+          minLength: 1
+          maxLength: 10
+        age:
+          type: integer
+    Player:
+      type: object
+      description: Serializer for Player model.
+      properties:
+        aga_id:
+          type: string
+          maxLength: 20
+        name:
+          type: string
+          maxLength: 200
+        aga_rank:
+          type: string
+          maxLength: 10
+        age:
+          type: integer
+        games_played:
+          type: string
+          readOnly: true
+        games_won:
+          type: string
+          readOnly: true
+        games_lost:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - aga_id
+      - aga_rank
+      - age
+      - created_at
+      - games_lost
+      - games_played
+      - games_won
+      - name
+      - updated_at
+    PlayerRequest:
+      type: object
+      description: Serializer for Player model.
+      properties:
+        aga_id:
+          type: string
+          minLength: 1
+          maxLength: 20
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        aga_rank:
+          type: string
+          minLength: 1
+          maxLength: 10
+        age:
+          type: integer
+      required:
+      - aga_id
+      - aga_rank
+      - age
+      - name
+    WinnerEnum:
+      enum:
+      - black
+      - white
+      type: string
+      description: |-
+        * `black` - Black
+        * `white` - White
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+tags:
+- name: players
+  description: Player management operations
+- name: games
+  description: Game result operations

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "rest_framework",
     "corsheaders",
+    "drf_spectacular",
     "tournament",
 ]
 
@@ -141,5 +142,35 @@ CORS_ALLOWED_ORIGINS = env.list(
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# OpenAPI schema settings
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Baum Tournament Management API",
+    "DESCRIPTION": (
+        "REST API for managing Go tournament players and game results. "
+        "This API provides endpoints to manage player information (CRUD operations), "
+        "record and manage game results, and track player statistics."
+    ),
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "CONTACT": {
+        "name": "Baum Tournament System",
+    },
+    # Schema generation settings
+    "COMPONENT_SPLIT_REQUEST": True,  # Separate request/response schemas
+    "SCHEMA_PATH_PREFIX": "/api/",
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
+    # Operation ID naming
+    "CAMELIZE_NAMES": False,  # Keep snake_case
+    "ENUM_NAME_OVERRIDES": {
+        "WinnerEnum": "tournament.game.models.Game.WINNER_CHOICES",
+    },
+    # Documentation
+    "TAGS": [
+        {"name": "players", "description": "Player management operations"},
+        {"name": "games", "description": "Game result operations"},
     ],
 }
