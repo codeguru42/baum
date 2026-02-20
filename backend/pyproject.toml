@@ -84,15 +84,13 @@ ignore = [
 
 # Pytest - Testing framework
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "tournament_app.settings"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=tournament",
-    "--cov=tournament_app",
+    "--cov=.",
     "--cov-report=html",
     "--cov-report=term-missing:skip-covered",
     "--cov-report=xml",
@@ -128,17 +126,16 @@ django_settings_module = "tournament_app.settings"
 
 # Coverage - Code coverage
 [tool.coverage.run]
-source = ["tournament", "tournament_app"]
+source = ["."]
 omit = [
-    "*/migrations/*",
     "*/tests/*",
     "*/test_*.py",
     "*/__pycache__/*",
     "*/venv/*",
     "*/env/*",
-    "manage.py",
-    "*/asgi.py",
-    "*/wsgi.py",
+    "*/.venv/*",
+    "conftest.py",
+    "*/conftest.py",
 ]
 branch = true
 
