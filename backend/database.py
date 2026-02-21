@@ -6,14 +6,23 @@ from sqlmodel import Session, SQLModel, create_engine
 
 from config import settings
 
-# Get database URL from settings (handles Vercel /tmp automatically)
+# Get database URL from settings (handles PostgreSQL and SQLite)
 DATABASE_URL = settings.database_url
 
-# Create engine with connection args for SQLite
+# Determine if we're using SQLite
+is_sqlite = DATABASE_URL.startswith("sqlite")
+
+# Create engine with appropriate connection args
+connect_args = {"check_same_thread": False} if is_sqlite else {}
+
 engine = create_engine(
     DATABASE_URL,
     echo=False,  # Set to True for SQL query logging
-    connect_args={"check_same_thread": False},  # Needed for SQLite
+    connect_args=connect_args,
+    # PostgreSQL connection pool settings (ignored for SQLite)
+    pool_pre_ping=True,  # Verify connections before using them
+    pool_size=5,  # Number of connections to maintain
+    max_overflow=10,  # Additional connections when pool is exhausted
 )
 
 

@@ -300,12 +300,46 @@ import { playerService } from '../services/api';
 
 ## Database
 
+**Database System:**
+- **Production (Vercel)**: PostgreSQL (via Vercel Postgres or other hosted provider)
+- **Local Development**: SQLite (default, no setup required)
+- SQLModel/SQLAlchemy provides database-agnostic ORM
+
+**Configuration:**
+- Database URL is set via `DATABASE_URL` environment variable
+- If not set, defaults to `sqlite:///./db.sqlite3` for local development
+- PostgreSQL URLs are automatically normalized (`postgres://` → `postgresql://`)
+
 **Models:**
-- SQLite for development
 - SQLModel auto-creates tables on startup (no migrations needed)
-- Schema changes: update models.py, delete db.sqlite3, restart server
+- Schema changes: update models.py, delete database, restart server
 - Foreign keys cascade on delete where appropriate
 - Use `Relationship()` with `back_populates` for bidirectional relationships
+
+**Seeding Data:**
+- Use `seed_data.py` to populate database with test data
+- Run directly: `uv run python seed_data.py`
+- Auto-seed on startup: Set `SEED_DATABASE=true` environment variable
+- Useful for initial deployment to Vercel with test data
+
+**Setup Instructions:**
+
+*Local Development (SQLite):*
+```bash
+cd backend
+# Database auto-created on first run, no setup needed
+uv run uvicorn app:app --reload
+
+# Optional: Seed with test data
+uv run python seed_data.py
+```
+
+*Production (Vercel Postgres):*
+1. Create Vercel Postgres database in Vercel dashboard
+2. Set `DATABASE_URL` environment variable in Vercel project settings
+3. Set `SEED_DATABASE=true` for initial deployment (optional)
+4. Deploy - tables auto-create, data auto-seeds if enabled
+5. Remove `SEED_DATABASE` after initial setup (optional)
 
 ## Git Commit Style
 

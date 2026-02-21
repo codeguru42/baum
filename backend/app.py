@@ -1,5 +1,6 @@
 """FastAPI application entry point for Baum Tournament Management System."""
 
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
@@ -16,6 +17,15 @@ async def lifespan(app: FastAPI):
     """Handle startup and shutdown events."""
     # Startup: create database tables
     create_db_and_tables()
+
+    # Optionally seed database with test data
+    # Set SEED_DATABASE=true in environment to enable
+    if os.getenv("SEED_DATABASE", "").lower() in ("true", "1", "yes"):
+        print("Seeding database with test data...")
+        from seed_data import seed_database
+
+        seed_database()
+
     yield
     # Shutdown: dispose of the engine
     engine.dispose()

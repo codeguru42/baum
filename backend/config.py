@@ -41,18 +41,20 @@ class Settings(BaseSettings):
         """
         Get database URL from environment or use defaults.
         
-        Uses /tmp directory for SQLite in Vercel serverless environment,
-        since the filesystem is read-only except for /tmp.
+        For production (Vercel), expects DATABASE_URL environment variable
+        pointing to PostgreSQL. For local development, uses SQLite.
+        
+        Note: Vercel Postgres URLs may use 'postgres://' scheme, which needs
+        to be converted to 'postgresql://' for SQLAlchemy compatibility.
         """
         db_url = os.getenv("DATABASE_URL")
         if db_url:
+            # Convert postgres:// to postgresql:// for SQLAlchemy compatibility
+            if db_url.startswith("postgres://"):
+                db_url = db_url.replace("postgres://", "postgresql://", 1)
             return db_url
         
-        # Use /tmp for SQLite in Vercel serverless environment
-        if os.getenv("VERCEL"):
-            return "sqlite:////tmp/db.sqlite3"
-        
-        # Default for local development
+        # Default for local development - use SQLite
         return "sqlite:///./db.sqlite3"
 
     model_config = SettingsConfigDict(
