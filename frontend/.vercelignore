@@ -3,9 +3,6 @@ node_modules/
 
 # Testing
 coverage/
-src/**/*.test.js
-src/**/*.test.jsx
-src/setupTests.js
 
 # Logs and cache
 npm-debug.log*
@@ -20,10 +17,6 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-# Build artifacts (Vercel handles these)
-build/
-dist/
-
 # OS files
 .DS_Store
 Thumbs.db
@@ -31,12 +24,3 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
-
-# Documentation
-README.md
-
-# Config files not needed in deployment
-vite.config.js
-eslint.config.js
-.prettierrc.json
-.prettierignore
