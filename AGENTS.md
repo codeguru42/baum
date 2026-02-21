@@ -306,9 +306,11 @@ import { playerService } from '../services/api';
 - SQLModel/SQLAlchemy provides database-agnostic ORM
 
 **Configuration:**
-- Database URL is set via `DATABASE_URL` environment variable
-- If not set, defaults to `sqlite:///./db.sqlite3` for local development
+- Database URL is set via `POSTGRES_URL` (Supabase/connection pooling) or `DATABASE_URL` (other providers)
+- If neither set, defaults to `sqlite:///./db.sqlite3` for local development
 - PostgreSQL URLs are automatically normalized (`postgres://` → `postgresql://`)
+- Connection logging helps debug deployment issues (passwords are masked in logs)
+- Health check endpoint: `GET /health/database` - verifies database connectivity
 
 **Models:**
 - SQLModel auto-creates tables on startup (no migrations needed)
@@ -334,12 +336,130 @@ uv run uvicorn app:app --reload
 uv run python seed_data.py
 ```
 
-*Production (Vercel Postgres):*
-1. Create Vercel Postgres database in Vercel dashboard
-2. Set `DATABASE_URL` environment variable in Vercel project settings
-3. Set `SEED_DATABASE=true` for initial deployment (optional)
-4. Deploy - tables auto-create, data auto-seeds if enabled
-5. Remove `SEED_DATABASE` after initial setup (optional)
+*Production (Supabase + Vercel):*
+1. **Create Supabase Project:**
+   - Go to https://supabase.com and create new project
+   - Wait for database to provision (~2 minutes)
+
+2. **Get Connection String:**
+   - Go to Project Settings → Database → Connection String
+   - Copy the "Connection Pooling" URL (starts with `postgres://`)
+   - Note: Use Transaction mode for serverless (default)
+
+3. **Set Environment Variables in Vercel:**
+   ```bash
+   cd backend
+   vercel env add POSTGRES_URL production
+   # Paste the Supabase connection string when prompted
+   
+   # Optional: Seed database on first deploy
+   vercel env add SEED_DATABASE production
+   # Enter: true
+   ```
+
+4. **Deploy:**
+   ```bash
+   git push origin main
+   # Vercel auto-deploys
+   ```
+
+5. **Verify Deployment:**
+   ```bash
+   # Check database health
+   curl https://baum-backend.vercel.app/health/database
+   
+   # Test API endpoints
+   curl https://baum-backend.vercel.app/api/players/
+   curl https://baum-backend.vercel.app/api/games/
+   ```
+
+6. **Cleanup (Optional):**
+   ```bash
+   # After confirming data persists, remove seeding
+   vercel env rm SEED_DATABASE production
+   ```
+
+**Health Check:**
+- Endpoint: `GET /health/database`
+- Tests database connectivity and returns connection status
+- Returns 503 if database is unreachable
+- Logs errors server-side for debugging (not exposed to client)
+- Example: `curl https://baum-backend.vercel.app/health/database`
+
+**Response Example:**
+```json
+{
+  "status": "ok",
+  "database_type": "postgresql",
+  "connection_pooling": true,
+  "can_query": true,
+  "message": "Database connection is healthy"
+}
+```
+
+**Troubleshooting Supabase Connection:**
+
+*Issue: "Database connection failed" in health check*
+- **Check:** Verify `POSTGRES_URL` is set in Vercel environment variables
+- **Check:** Connection string format: `postgres://user:pass@host:port/postgres`
+- **Check:** Supabase project is not paused (auto-pauses after 1 week inactivity on free tier)
+- **Check:** Vercel logs for connection errors: `vercel logs`
+- **Solution:** Go to Supabase dashboard → Project → Resume if paused
+
+*Issue: "No players registered yet" on first load*
+- **Cause:** Database is empty (tables exist but no data)
+- **Solution 1:** Set `SEED_DATABASE=true` and redeploy
+- **Solution 2:** Manually add players through API or admin interface
+- **Verify:** Check database has data: `curl https://your-app.vercel.app/api/players/`
+
+*Issue: SSL/TLS connection errors*
+- **Cause:** Supabase requires SSL connections
+- **Solution:** Connection string should include `?sslmode=require` (Supabase adds this automatically)
+- **Check:** Verify SSL is enabled in connection string
+- **Note:** SQLAlchemy/SQLModel handles SSL automatically with proper connection string
+
+*Issue: "Too many connections" error*
+- **Cause:** Supabase free tier has connection limits (50-100 connections)
+- **Solution:** Use connection pooling (Transaction mode) - this is default with `POSTGRES_URL`
+- **Check:** Verify `connection_pooling: true` in `/health/database` response
+- **Note:** Connection pooling URL has `6543` port, direct connection uses `5432`
+
+*Issue: Slow queries or timeouts*
+- **Cause:** Supabase free tier has performance limits
+- **Solution:** Ensure you're using Transaction mode pooling (fastest for serverless)
+- **Check:** Connection string should be from "Connection Pooling" section in Supabase
+- **Upgrade:** Consider Supabase Pro for better performance
+
+*Issue: "Invalid password" or authentication errors*
+- **Cause:** Password contains special characters that need URL encoding
+- **Solution:** Supabase provides pre-encoded connection strings - use as-is
+- **Don't:** Manually construct connection strings from individual components
+- **Do:** Copy the full connection string from Supabase dashboard
+
+*Debugging Commands:*
+```bash
+# Check environment variables are set
+cd backend
+vercel env ls | grep POSTGRES
+
+# View deployment logs
+vercel logs --follow
+
+# Test health check locally (with Supabase URL)
+export POSTGRES_URL="your-supabase-connection-string"
+uv run uvicorn app:app --reload
+curl http://localhost:8000/health/database
+
+# Check database from command line (requires psql)
+psql "your-supabase-connection-string"
+\dt  # List tables
+SELECT COUNT(*) FROM player;  # Check player count
+```
+
+*Useful Links:*
+- Supabase Dashboard: https://supabase.com/dashboard
+- Supabase Docs - Connection Pooling: https://supabase.com/docs/guides/database/connecting-to-postgres#connection-pooler
+- Vercel Environment Variables: https://vercel.com/docs/concepts/projects/environment-variables
 
 ## Git Commit Style
 
