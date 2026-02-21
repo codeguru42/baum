@@ -46,39 +46,29 @@ class Settings(BaseSettings):
         Get database URL from environment or use defaults.
         
         Priority order:
-        1. POSTGRES_HOST + components (builds connection string from parts)
+        1. POSTGRES_URL (Supabase connection pooling - recommended for serverless)
         2. SQLite for local development
         
-        Environment variables for PostgreSQL (Supabase):
-        - POSTGRES_HOST: Database hostname (e.g., db.xxx.supabase.co)
-        - POSTGRES_USER: Database user (default: postgres)
-        - POSTGRES_PASSWORD: Database password (required)
-        - POSTGRES_PORT: Database port (default: 5432)
-        - POSTGRES_DB: Database name (default: postgres)
+        Note: Use Supabase Connection Pooling URL for Vercel deployment.
+        Format: postgresql://user:pass@aws-0-region.pooler.supabase.com:6543/postgres
         """
-        # Check for component-based PostgreSQL configuration
-        postgres_host = os.getenv("POSTGRES_HOST")
+        # Try POSTGRES_URL (Supabase connection pooling)
+        postgres_url = os.getenv("POSTGRES_URL")
         
-        if postgres_host:
-            # Get other components (with defaults)
-            postgres_user = os.getenv("POSTGRES_USER", "postgres")
-            postgres_password = os.getenv("POSTGRES_PASSWORD")
-            postgres_port = os.getenv("POSTGRES_PORT", "5432")
-            postgres_db = os.getenv("POSTGRES_DB", "postgres")
+        if postgres_url:
+            # Convert postgres:// to postgresql:// for SQLAlchemy compatibility
+            if postgres_url.startswith("postgres://"):
+                postgres_url = postgres_url.replace("postgres://", "postgresql://", 1)
             
-            # Validate password is present
-            if not postgres_password:
-                logger.error("POSTGRES_HOST set but POSTGRES_PASSWORD is missing!")
-                raise ValueError("POSTGRES_PASSWORD environment variable is required when using POSTGRES_HOST")
+            # Strip query parameters that might cause parsing issues
+            # Some Supabase URLs have ?sslmode=require which can cause problems
+            if "?" in postgres_url:
+                postgres_url = postgres_url.split("?")[0]
             
-            # Build PostgreSQL connection URL from components
-            db_url = f"postgresql://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_db}"
-            
-            # Log connection info (with masked password)
-            masked_url = f"postgresql://{postgres_user}:***@{postgres_host}:{postgres_port}/{postgres_db}"
-            logger.info(f"Using PostgreSQL (component-based): {masked_url}")
-            
-            return db_url
+            # Log connection type (mask password for security)
+            masked_url = self._mask_db_password(postgres_url)
+            logger.info(f"Using Supabase connection pooling: {masked_url}")
+            return postgres_url
         
         # Default for local development - use SQLite
         logger.info("Using SQLite for local development: ./db.sqlite3")

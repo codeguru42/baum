@@ -348,33 +348,26 @@ uv run python seed_data.py
 
 3. **Set Environment Variables in Vercel:**
    
-   Get your Supabase connection details from:
+   Get your Supabase Connection Pooling URL:
    - Supabase Dashboard → Project Settings → Database → Connection String
-   - Use "URI" (direct connection) for standard PostgreSQL access
+   - Select **"Connection Pooling"** tab (NOT "URI")
+   - Copy the full connection string (starts with `postgres://` or `postgresql://`)
+   - Format: `postgresql://user:pass@aws-0-region.pooler.supabase.com:6543/postgres`
    
    ```bash
    cd backend
    
-   # Set PostgreSQL connection components
-   vercel env add POSTGRES_HOST production
-   # Enter: db.xxxxxxxxxxxxx.supabase.co
-   
-   vercel env add POSTGRES_USER production
-   # Enter: postgres
-   
-   vercel env add POSTGRES_PASSWORD production
-   # Paste your Supabase password
-   
-   vercel env add POSTGRES_DB production
-   # Enter: postgres
-   
-   # Optional: Set custom port (defaults to 5432 if not set)
-   vercel env add POSTGRES_PORT production
-   # Enter: 5432 (direct) or 6543 (pooling)
+   # Set the Supabase connection pooling URL
+   vercel env add POSTGRES_URL production
+   # Paste the full connection string from Supabase
+   # Example: postgresql://postgres.[ref]:[PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres
    ```
    
-   **Note:** Tables are automatically created on first request via SQLModel.
-   No manual migrations or seeding required unless you want test data.
+   **Important:** 
+   - Use **Connection Pooling** (port 6543), NOT Direct Connection (port 5432)
+   - Connection pooling is required for Vercel's serverless environment
+   - Tables are automatically created on first request via SQLModel
+   - No manual migrations or seeding required unless you want test data
 
 4. **Deploy:**
    ```bash
@@ -419,16 +412,21 @@ uv run python seed_data.py
 **Troubleshooting Supabase Connection:**
 
 *Issue: "Database connection failed" in health check*
-- **Check:** Verify `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` are set in Vercel environment variables
-- **Check:** Ensure `POSTGRES_PASSWORD` is not empty or truncated
+- **Check:** Verify `POSTGRES_URL` is set in Vercel environment variables
+- **Check:** Ensure you're using the Connection Pooling URL (port 6543, hostname with `.pooler.supabase.com`)
 - **Check:** Supabase project is not paused (auto-pauses after 1 week inactivity on free tier)
 - **Check:** Vercel logs for connection errors: `vercel logs`
 - **Solution:** Go to Supabase dashboard → Project → Resume if paused
 
+*Issue: "Cannot assign requested address" or connection timeout*
+- **Cause:** Using Direct Connection (port 5432) instead of Connection Pooling (port 6543)
+- **Solution:** Use Supabase Connection Pooling URL from dashboard (select "Connection Pooling" tab)
+- **Check:** URL should contain `.pooler.supabase.com:6543`, not `.supabase.co:5432`
+
 *Issue: "invalid dsn" or "invalid connection option" errors*
-- **Cause:** Malformed connection URL or special characters in password
-- **Solution:** Using component-based env vars (`POSTGRES_HOST`, etc.) avoids URL parsing issues
-- **Check:** Ensure all required env vars are set correctly in Vercel dashboard
+- **Cause:** Query parameters in connection URL causing parsing issues
+- **Solution:** The code automatically strips query parameters (e.g., `?sslmode=require`)
+- **Check:** Ensure `POSTGRES_URL` is the full connection string from Supabase
 
 *Issue: "No players registered yet" on first load*
 - **Cause:** Database is empty (tables exist but no data)
