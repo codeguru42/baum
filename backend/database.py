@@ -4,8 +4,10 @@ from collections.abc import Generator
 
 from sqlmodel import Session, SQLModel, create_engine
 
-# SQLite database URL
-DATABASE_URL = "sqlite:///./db.sqlite3"
+from config import settings
+
+# Get database URL from settings (handles Vercel /tmp automatically)
+DATABASE_URL = settings.database_url
 
 # Create engine with connection args for SQLite
 engine = create_engine(

@@ -36,7 +36,24 @@ class Settings(BaseSettings):
         ]
 
     # Database Configuration
-    database_url: str = "sqlite:///./db.sqlite3"
+    @property
+    def database_url(self) -> str:
+        """
+        Get database URL from environment or use defaults.
+        
+        Uses /tmp directory for SQLite in Vercel serverless environment,
+        since the filesystem is read-only except for /tmp.
+        """
+        db_url = os.getenv("DATABASE_URL")
+        if db_url:
+            return db_url
+        
+        # Use /tmp for SQLite in Vercel serverless environment
+        if os.getenv("VERCEL"):
+            return "sqlite:////tmp/db.sqlite3"
+        
+        # Default for local development
+        return "sqlite:///./db.sqlite3"
 
     model_config = SettingsConfigDict(
         env_file=".env.local",  # Only for local development
