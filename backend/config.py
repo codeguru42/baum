@@ -46,36 +46,38 @@ class Settings(BaseSettings):
         Get database URL from environment or use defaults.
         
         Priority order:
-        1. POSTGRES_URL (Supabase connection pooling - recommended for serverless)
-        2. DATABASE_URL (fallback for other PostgreSQL providers)
-        3. SQLite for local development
+        1. POSTGRES_HOST + components (builds connection string from parts)
+        2. SQLite for local development
         
-        Note: PostgreSQL URLs using 'postgres://' scheme are automatically
-        converted to 'postgresql://' for SQLAlchemy compatibility.
+        Environment variables for PostgreSQL (Supabase):
+        - POSTGRES_HOST: Database hostname (e.g., db.xxx.supabase.co)
+        - POSTGRES_USER: Database user (default: postgres)
+        - POSTGRES_PASSWORD: Database password (required)
+        - POSTGRES_PORT: Database port (default: 5432)
+        - POSTGRES_DB: Database name (default: postgres)
         """
-        # Try Supabase connection pooling URL first (best for serverless)
-        postgres_url = os.getenv("POSTGRES_URL")
+        # Check for component-based PostgreSQL configuration
+        postgres_host = os.getenv("POSTGRES_HOST")
         
-        if postgres_url:
-            # Convert postgres:// to postgresql:// for SQLAlchemy compatibility
-            if postgres_url.startswith("postgres://"):
-                postgres_url = postgres_url.replace("postgres://", "postgresql://", 1)
+        if postgres_host:
+            # Get other components (with defaults)
+            postgres_user = os.getenv("POSTGRES_USER", "postgres")
+            postgres_password = os.getenv("POSTGRES_PASSWORD")
+            postgres_port = os.getenv("POSTGRES_PORT", "5432")
+            postgres_db = os.getenv("POSTGRES_DB", "postgres")
             
-            # Log connection type (mask password for security)
-            masked_url = self._mask_db_password(postgres_url)
-            logger.info(f"Using Supabase connection pooling: {masked_url}")
-            return postgres_url
-        
-        # Fallback to generic DATABASE_URL for other providers
-        db_url = os.getenv("DATABASE_URL")
-        if db_url:
-            # Convert postgres:// to postgresql:// for SQLAlchemy compatibility
-            if db_url.startswith("postgres://"):
-                db_url = db_url.replace("postgres://", "postgresql://", 1)
+            # Validate password is present
+            if not postgres_password:
+                logger.error("POSTGRES_HOST set but POSTGRES_PASSWORD is missing!")
+                raise ValueError("POSTGRES_PASSWORD environment variable is required when using POSTGRES_HOST")
             
-            # Log connection type (mask password for security)
-            masked_url = self._mask_db_password(db_url)
-            logger.info(f"Using DATABASE_URL: {masked_url}")
+            # Build PostgreSQL connection URL from components
+            db_url = f"postgresql://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_db}"
+            
+            # Log connection info (with masked password)
+            masked_url = f"postgresql://{postgres_user}:***@{postgres_host}:{postgres_port}/{postgres_db}"
+            logger.info(f"Using PostgreSQL (component-based): {masked_url}")
+            
             return db_url
         
         # Default for local development - use SQLite

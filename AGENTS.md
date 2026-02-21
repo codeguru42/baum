@@ -347,15 +347,34 @@ uv run python seed_data.py
    - Note: Use Transaction mode for serverless (default)
 
 3. **Set Environment Variables in Vercel:**
+   
+   Get your Supabase connection details from:
+   - Supabase Dashboard → Project Settings → Database → Connection String
+   - Use "URI" (direct connection) for standard PostgreSQL access
+   
    ```bash
    cd backend
-   vercel env add POSTGRES_URL production
-   # Paste the Supabase connection string when prompted
    
-   # Optional: Seed database on first deploy
-   vercel env add SEED_DATABASE production
-   # Enter: true
+   # Set PostgreSQL connection components
+   vercel env add POSTGRES_HOST production
+   # Enter: db.xxxxxxxxxxxxx.supabase.co
+   
+   vercel env add POSTGRES_USER production
+   # Enter: postgres
+   
+   vercel env add POSTGRES_PASSWORD production
+   # Paste your Supabase password
+   
+   vercel env add POSTGRES_DB production
+   # Enter: postgres
+   
+   # Optional: Set custom port (defaults to 5432 if not set)
+   vercel env add POSTGRES_PORT production
+   # Enter: 5432 (direct) or 6543 (pooling)
    ```
+   
+   **Note:** Tables are automatically created on first request via SQLModel.
+   No manual migrations or seeding required unless you want test data.
 
 4. **Deploy:**
    ```bash
@@ -400,11 +419,16 @@ uv run python seed_data.py
 **Troubleshooting Supabase Connection:**
 
 *Issue: "Database connection failed" in health check*
-- **Check:** Verify `POSTGRES_URL` is set in Vercel environment variables
-- **Check:** Connection string format: `postgres://user:pass@host:port/postgres`
+- **Check:** Verify `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` are set in Vercel environment variables
+- **Check:** Ensure `POSTGRES_PASSWORD` is not empty or truncated
 - **Check:** Supabase project is not paused (auto-pauses after 1 week inactivity on free tier)
 - **Check:** Vercel logs for connection errors: `vercel logs`
 - **Solution:** Go to Supabase dashboard → Project → Resume if paused
+
+*Issue: "invalid dsn" or "invalid connection option" errors*
+- **Cause:** Malformed connection URL or special characters in password
+- **Solution:** Using component-based env vars (`POSTGRES_HOST`, etc.) avoids URL parsing issues
+- **Check:** Ensure all required env vars are set correctly in Vercel dashboard
 
 *Issue: "No players registered yet" on first load*
 - **Cause:** Database is empty (tables exist but no data)
