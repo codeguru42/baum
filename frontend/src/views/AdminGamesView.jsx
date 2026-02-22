@@ -1,11 +1,17 @@
 import { useState } from 'react';
+import Download from '@mui/icons-material/Download';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import { useNotification } from '../components/NotificationContext';
 import GamesTable from '../components/tables/GamesTable';
 import { useTournamentData } from '../components/TournamentDataContext';
+import { exportGamesToCSV } from '../utils/csvExport';
 
 /**
  * Admin view for managing games
@@ -16,6 +22,7 @@ const AdminGamesView = () => {
   const { games, loadingGames, gamesError, toggleGameValidity } = useTournamentData();
   const [sortBy, setSortBy] = useState('date');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [exportFilter, setExportFilter] = useState('all');
 
   const handleToggleValidity = async (gameId, _currentValidity) => {
     try {
@@ -103,6 +110,25 @@ const AdminGamesView = () => {
     return [...sortGames(validGames), ...sortGames(invalidGames)];
   };
 
+  const getFilteredGamesForExport = () => {
+    const sortedGames = getSortedGames();
+
+    switch (exportFilter) {
+      case 'valid':
+        return sortedGames.filter((game) => game.valid_for_prizes);
+      case 'invalid':
+        return sortedGames.filter((game) => !game.valid_for_prizes);
+      case 'all':
+      default:
+        return sortedGames;
+    }
+  };
+
+  const handleExport = () => {
+    const filteredGames = getFilteredGamesForExport();
+    exportGamesToCSV(filteredGames);
+  };
+
   if (loadingGames) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -128,9 +154,27 @@ const AdminGamesView = () => {
 
   return (
     <>
-      <Typography variant="subtitle1" gutterBottom align="center" color="text.secondary">
-        Total Games: {games.length}
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="subtitle1" color="text.secondary">
+          Total Games: {games.length}
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <Select
+              value={exportFilter}
+              onChange={(e) => setExportFilter(e.target.value)}
+              displayEmpty
+            >
+              <MenuItem value="all">All Games</MenuItem>
+              <MenuItem value="valid">Valid Games Only</MenuItem>
+              <MenuItem value="invalid">Invalid Games Only</MenuItem>
+            </Select>
+          </FormControl>
+          <Button variant="outlined" size="small" startIcon={<Download />} onClick={handleExport}>
+            Export to CSV
+          </Button>
+        </Box>
+      </Box>
       <GamesTable
         games={getSortedGames()}
         onToggleValid={handleToggleValidity}

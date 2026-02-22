@@ -422,8 +422,8 @@ describe('AdminGamesView', () => {
       });
 
       const buttons = screen.getAllByRole('button');
-      // Find validity toggle buttons (after 14 sortable headers)
-      const validityButton = buttons[14];
+      // Find validity toggle buttons (after 14 sortable headers + 1 dropdown + 1 export button)
+      const validityButton = buttons[16];
       fireEvent.click(validityButton);
 
       expect(mockToggleGameValidity).toHaveBeenCalled();
@@ -438,7 +438,7 @@ describe('AdminGamesView', () => {
       });
 
       const buttons = screen.getAllByRole('button');
-      const validityButton = buttons[14];
+      const validityButton = buttons[16];
       fireEvent.click(validityButton);
 
       await waitFor(() => {

@@ -51,7 +51,9 @@ describe('GameSubmissionView', () => {
   describe('Rendering', () => {
     it('renders the form title', () => {
       renderComponent();
-      expect(screen.getByRole('heading', { name: 'Go Tournament - Report Game Result', level: 1 })).toBeVisible();
+      expect(
+        screen.getByRole('heading', { name: 'Go Tournament - Report Game Result', level: 1 })
+      ).toBeVisible();
     });
 
     it('renders black player section', () => {

@@ -121,9 +121,7 @@ describe('TournamentDataContext', () => {
     );
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Failed to load players. Please try again later.')
-      ).toBeVisible();
+      expect(screen.getByText('Failed to load players. Please try again later.')).toBeVisible();
     });
   });
 

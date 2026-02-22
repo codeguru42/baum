@@ -71,7 +71,7 @@ describe('GamesTable', () => {
     const rows = screen.getAllByRole('row');
     const row1Cells = within(rows[1]).getAllByRole('cell');
     const row2Cells = within(rows[2]).getAllByRole('cell');
-    
+
     // Row 1: John Doe (black) vs Jane Smith (white)
     expect(row1Cells[0]).toHaveTextContent('John Doe');
     expect(row1Cells[4]).toHaveTextContent('Jane Smith');

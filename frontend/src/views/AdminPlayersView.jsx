@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import Download from '@mui/icons-material/Download';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import PlayersTable from '../components/tables/PlayersTable';
 import { useTournamentData } from '../components/TournamentDataContext';
+import { exportPlayersToCSV } from '../utils/csvExport';
 
 /**
  * Admin view for managing players
@@ -62,6 +65,11 @@ const AdminPlayersView = () => {
     });
   };
 
+  const handleExport = () => {
+    const sortedPlayers = getSortedPlayers();
+    exportPlayersToCSV(sortedPlayers);
+  };
+
   if (loadingPlayers) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -87,9 +95,14 @@ const AdminPlayersView = () => {
 
   return (
     <>
-      <Typography variant="subtitle1" gutterBottom align="center" color="text.secondary">
-        Total Players: {players.length}
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="subtitle1" color="text.secondary">
+          Total Players: {players.length}
+        </Typography>
+        <Button variant="outlined" size="small" startIcon={<Download />} onClick={handleExport}>
+          Export to CSV
+        </Button>
+      </Box>
       <PlayersTable
         players={getSortedPlayers()}
         sortBy={sortBy}

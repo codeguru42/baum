@@ -37,7 +37,7 @@ describe('PlayersTable', () => {
     const rows = screen.getAllByRole('row');
     const row1Cells = within(rows[1]).getAllByRole('cell');
     const row2Cells = within(rows[2]).getAllByRole('cell');
-    
+
     expect(row1Cells[0]).toHaveTextContent('AGA001');
     expect(row1Cells[1]).toHaveTextContent('John Doe');
     expect(row2Cells[0]).toHaveTextContent('AGA002');
@@ -62,7 +62,7 @@ describe('PlayersTable', () => {
     const rows = screen.getAllByRole('row');
     const row1Cells = within(rows[1]).getAllByRole('cell');
     const row2Cells = within(rows[2]).getAllByRole('cell');
-    
+
     expect(row1Cells[2]).toHaveTextContent('5d');
     expect(row2Cells[2]).toHaveTextContent('3k');
   });
