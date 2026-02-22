@@ -44,8 +44,8 @@ uv run python -m pytest --cov                   # Run with coverage
 **Linting and Formatting:**
 ```bash
 cd backend
-uv run python -m black .                        # Format code (line-length 88)
-uv run python -m black --check .                # Check formatting
+uv run python -m ruff format .                  # Format code (line-length 88)
+uv run python -m ruff format --check .          # Check formatting
 uv run python -m ruff check .                   # Lint code
 uv run python -m ruff check --fix .             # Auto-fix linting issues
 uv run mypy .                                   # Type checking
@@ -101,7 +101,7 @@ docker compose logs -f backend                  # View backend logs
 ### Backend (Python/FastAPI)
 
 **Formatting:**
-- Use Black formatter (line length: 88)
+- Use Ruff formatter (line length: 88)
 - Follow PEP 8 conventions
 - Ruff linter enforces style rules (pycodestyle, pyflakes, isort, flake8-bugbear)
 

@@ -34,9 +34,9 @@ jobs:
         docker run --rm baum-vibe-backend-dev:test uv run ruff check .
       continue-on-error: true  # Advisory
     
-    - name: Check black formatting
+    - name: Check ruff formatting
       run: |
-        docker run --rm baum-vibe-backend-dev:test uv run black --check .
+        docker run --rm baum-vibe-backend-dev:test uv run ruff format --check .
       continue-on-error: true  # Advisory
     
     - name: Run mypy type checking
