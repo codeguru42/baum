@@ -158,12 +158,13 @@ const AdminGamesView = () => {
         <Typography variant="subtitle1" color="text.secondary">
           Total Games: {games.length}
         </Typography>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'stretch' }}>
           <FormControl size="small" sx={{ minWidth: 150 }}>
             <Select
               value={exportFilter}
               onChange={(e) => setExportFilter(e.target.value)}
               displayEmpty
+              sx={{ height: '100%' }}
             >
               <MenuItem value="all">All Games</MenuItem>
               <MenuItem value="valid">Valid Games Only</MenuItem>
