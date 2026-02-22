@@ -99,7 +99,13 @@ const AdminPlayersView = () => {
         <Typography variant="subtitle1" color="text.secondary">
           Total Players: {players.length}
         </Typography>
-        <Button variant="outlined" size="small" startIcon={<Download />} onClick={handleExport}>
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<Download />}
+          onClick={handleExport}
+          sx={{ height: 40 }}
+        >
           Export to CSV
         </Button>
       </Box>

@@ -164,14 +164,20 @@ const AdminGamesView = () => {
               value={exportFilter}
               onChange={(e) => setExportFilter(e.target.value)}
               displayEmpty
-              sx={{ height: '100%' }}
+              sx={{ height: 40 }}
             >
               <MenuItem value="all">All Games</MenuItem>
               <MenuItem value="valid">Valid Games Only</MenuItem>
               <MenuItem value="invalid">Invalid Games Only</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="outlined" size="small" startIcon={<Download />} onClick={handleExport}>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<Download />}
+            onClick={handleExport}
+            sx={{ height: 40 }}
+          >
             Export to CSV
           </Button>
         </Box>
