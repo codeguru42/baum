@@ -1,6 +1,5 @@
 """FastAPI application entry point for Baum Tournament Management System."""
 
-import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
@@ -20,7 +19,7 @@ async def lifespan(app: FastAPI):
 
     # Optionally seed database with test data
     # Set SEED_DATABASE=true in environment to enable
-    if os.getenv("SEED_DATABASE", "").lower() in ("true", "1", "yes"):
+    if settings.seed_database:
         print("Seeding database with test data...")
         from seed_data import seed_database
 
@@ -47,7 +46,7 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -95,8 +94,8 @@ async def database_health_check():
         elif db_url.startswith("sqlite"):
             db_type = "sqlite"
         
-        # Check if using Supabase connection pooling
-        using_pooling = os.getenv("POSTGRES_URL") is not None
+        # Check if using connection pooling
+        using_pooling = settings.postgres_url is not None
         
         # Test database query - simple SELECT to verify connection
         with next(get_session()) as session:
