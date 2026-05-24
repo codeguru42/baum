@@ -136,7 +136,7 @@ def get_game(game_id: int, session: Session = Depends(get_session)):
     return _game_to_response(game)
 
 
-@router.put("/{game_id}/", response_model=GameResponse)
+@router.patch("/{game_id}/", response_model=GameResponse)
 def update_game(
     game_id: int, game_data: GameUpdate, session: Session = Depends(get_session)
 ):
